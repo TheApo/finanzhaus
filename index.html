@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VR Finanzhaus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom animations for the bloom effect */
+    .bloom-enter {
+      animation: bloomIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    
+    @keyframes bloomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.1) translate(0, 0);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translate(var(--tw-translate-x), var(--tw-translate-y));
+      }
+    }
+
+    .line-draw {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: dash 1s linear forwards;
+    }
+
+    @keyframes dash {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+    
+    /* Hide scrollbars for clean UI */
+    body {
+      overflow: hidden;
+      background-color: #f8fafc;
+    }
+
+    /* Tooltip Cloud Styling */
+    .tooltip-cloud {
+      position: absolute;
+      bottom: calc(100% + 16px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 2px 10px rgba(0,0,0,0.1);
+      min-width: 280px;
+      max-width: 320px;
+      z-index: 100;
+      pointer-events: none;
+      animation: tooltipFadeIn 0.2s ease-out;
+    }
+
+    .tooltip-cloud::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 10px solid transparent;
+      border-top-color: white;
+    }
+
+    @keyframes tooltipFadeIn {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    .tooltip-cloud b {
+      color: #334155;
+    }
+
+    .tooltip-cloud br + br {
+      display: block;
+      content: '';
+      margin-top: 8px;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
+    "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
+    "rxjs/ajax": "https://esm.sh/rxjs@^7.8.2/ajax?conditions=es2015",
+    "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
+    "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
+    "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
+    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.8?external=rxjs",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.8?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@^21.0.8?external=rxjs",
+    "@angular/core": "https://esm.sh/@angular/core@^21.0.8?external=rxjs"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
