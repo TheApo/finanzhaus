@@ -1,12 +1,12 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "newProjectRoot": "",
+  "newProjectRoot": ".",
   "projects": {
     "app": {
       "projectType": "application",
-      "root": "",
-      "sourceRoot": "./",
+      "root": ".",
+      "sourceRoot": ".",
       "prefix": "app",
       "architect": {
         "build": {
@@ -16,8 +16,10 @@
               "base": "./dist",
               "browser": "."
             },
-            "browser": "index.tsx",
-            "tsConfig": "tsconfig.json"
+            "index": "./index.html",
+            "browser": "./index.tsx",
+            "tsConfig": "./tsconfig.json",
+            "styles": ["./styles.css"]
           },
           "configurations": {
             "production": {

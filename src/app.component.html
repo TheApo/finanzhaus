@@ -1,29 +1,29 @@
-<div class="relative w-full h-screen bg-slate-50 overflow-hidden font-sans text-slate-800 mindmap-container" (click)="handleBackgroundClick($event)">
-  
-  <!-- Header Title (nur auf großen Bildschirmen) -->
-  <div class="absolute top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none header-title">
-    <h1 class="text-2xl font-light tracking-wide text-slate-600 pointer-events-auto">
-      <span class="font-semibold">Finanzhaus</span> Navigator
-    </h1>
-  </div>
+<div class="app-container" (click)="handleBackgroundClick($event)">
 
-  <!-- Filter Indicator (links auf kleinen, mittig auf großen Bildschirmen) -->
+  <!-- Header Title -->
+  <header class="header no-select">
+    <h1 class="header__title">
+      <span class="header__title-bold">Finanzhaus</span> Navigator
+    </h1>
+  </header>
+
+  <!-- Filter Indicator -->
   @if (activeCategory()) {
-    <div class="absolute z-50 pointer-events-none select-none filter-container">
-      <div class="flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-lg pointer-events-auto">
-        <span class="text-xs text-slate-400 uppercase tracking-wider">Filter</span>
+    <div class="filter-container no-select">
+      <div class="filter-indicator">
+        <span class="filter-indicator__label">Filter</span>
         <span
-          class="px-3 py-1 rounded-full text-xs font-medium shadow-sm"
-          [ngClass]="[getCategoryColor(activeCategory()!), getCategoryTextColor(activeCategory()!)]"
+          class="filter-indicator__value"
+          [ngClass]="'category-' + activeCategory()"
         >
           {{ getCategoryLabel(activeCategory()!) }}
         </span>
         <button
+          class="filter-indicator__close"
           (click)="activeCategory.set(null)"
-          class="w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
           title="Filter entfernen"
         >
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg class="filter-indicator__close-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -31,42 +31,33 @@
     </div>
   }
 
-  <!-- Legend / Filter (Bottom Left) -->
-  <div class="absolute bottom-4 left-4 z-50 finanzhaus-container">
-    <app-finanzhaus 
-      [activeCategory]="activeCategory()" 
+  <!-- Finanzhaus Legend -->
+  <div class="finanzhaus-wrapper">
+    <app-finanzhaus
+      [activeCategory]="activeCategory()"
       (categorySelected)="toggleCategory($event)"
-    ></app-finanzhaus>
+    />
   </div>
 
-  <!-- Main Visualization Container (Centered) -->
-  <div class="absolute inset-0 pointer-events-none">
-
-    <!-- Central point with responsive scaling -->
-    <div class="absolute top-1/2 left-1/2 w-0 h-0 mindmap-scale">
+  <!-- MindMap Visualization -->
+  <div class="mindmap">
+    <div class="mindmap__center mindmap-scale">
 
       @for (l1 of mainNodes(); track l1.id) {
-        <!-- Main Cluster Wrapper - Brought closer to center (reduced offsets) -->
+        <!-- L1 Cluster -->
         <div
-          class="absolute w-0 h-0 transition-all duration-700 ease-in-out"
-          [style.transform]="
-            l1.id === 'unternehmer_privat' ? 'translate(0, -220px)' :
-            l1.id === 'muster_gmbh' ? 'translate(0, 220px)' :
-            l1.id === 'lieferanten' ? 'translate(-420px, 0)' :
-            'translate(420px, 0)'
-          "
-          [class.opacity-10]="isNodeDimmed(l1, 1, null)"
+          class="l1-cluster"
+          [class.l1-cluster--dimmed]="isNodeDimmed(l1, 1, null)"
+          [style.transform]="getL1Transform(l1.id)"
         >
-
-          <!-- Level 1 Node - einheitliches Design mit Icon + Text -->
+          <!-- L1 Node -->
           <div
-            class="absolute pointer-events-auto z-30 w-28 h-28 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-2xl flex flex-col items-center justify-center text-center p-2 cursor-pointer hover:scale-105 transition-transform duration-300 border-4 border-slate-200 bg-white text-slate-600"
+            class="node node--l1"
             (click)="handleNodeClick(l1, 1)"
             (mouseenter)="onNodeMouseEnter($event, l1)"
             (mouseleave)="onNodeMouseLeave()"
           >
-            <!-- Icon (SVG) -->
-            <svg class="w-8 h-8 mb-1 text-slate-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <svg class="node__icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
               @switch (l1.icon) {
                 @case ('person') {
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
@@ -82,106 +73,101 @@
                 }
               }
             </svg>
-            <!-- Label -->
-            <span class="font-semibold text-[10px] leading-tight select-none">{{ l1.label }}</span>
+            <span class="node__label no-select">{{ l1.label }}</span>
           </div>
 
-          <!-- Level 2 Container -->
+          <!-- L2 Container -->
           @if (isL1Expanded(l1)) {
-             <div class="absolute top-0 left-0 w-0 h-0 overflow-visible flex items-center justify-center">
-                
-                @for (l2 of l1.children || []; track l2.id; let i = $index) {
-                  @let l2Pos = getL2Position(i, l1.children?.length || 0);
-                  @let l2Open = isL2Expanded(l2, l1);
+            <div class="l2-container">
+              @for (l2 of l1.children || []; track l2.id; let i = $index) {
+                @let l2Pos = getL2Position(i, l1.children?.length || 0);
+                @let l2Open = isL2Expanded(l2, l1);
 
-                  <!-- Level 2 Wrapper -->
+                <!-- L2 Wrapper -->
+                <div
+                  class="l2-wrapper"
+                  [style.--translate-x]="l2Pos.x + 'px'"
+                  [style.--translate-y]="l2Pos.y + 'px'"
+                  [style.transform]="'translate(' + l2Pos.x + 'px, ' + l2Pos.y + 'px)'"
+                  [class.node--dimmed]="isNodeDimmed(l2, 2, l1.id)"
+                >
+                  <!-- Connection Lines to L3 -->
+                  @if (l2Open && l2.children?.length) {
+                    <svg class="connections">
+                      @for (l3 of l2.children || []; track l3.id; let j = $index) {
+                        @let l3Pos = getL3Position(j, l2.children?.length || 0, l2Pos.angle);
+                        <line
+                          class="connections__line"
+                          x1="0" y1="0"
+                          [attr.x2]="l3Pos.x"
+                          [attr.y2]="l3Pos.y"
+                          marker-end="url(#arrowhead)"
+                        />
+                      }
+                      <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="36" refY="3.5" orient="auto">
+                          <polygon class="connections__arrowhead" points="0 0, 10 3.5, 0 7" />
+                        </marker>
+                      </defs>
+                    </svg>
+                  }
+
+                  <!-- L2 Node -->
                   <div
-                    class="absolute top-0 left-0 w-0 h-0 bloom-enter transition-all duration-500"
-                    [ngStyle]="getL2Style(i, l1.children?.length || 0)"
-                    [style.filter]="isNodeDimmed(l2, 2, l1.id) ? 'opacity(0.25) grayscale(0.8)' : null"
+                    class="node node--l2"
+                    [ngClass]="'category-' + getPrimaryCategory(l2)"
+                    (click)="handleNodeClick(l2, 2, l1)"
+                    (mouseenter)="onNodeMouseEnter($event, l2)"
+                    (mouseleave)="onNodeMouseLeave()"
                   >
-                    
-                    <!-- SVG Arrows to Level 3 -->
-                    @if (l2Open && l2.children?.length) {
-                       <svg class="absolute top-0 left-0 overflow-visible pointer-events-none" style="z-index: -1;">
-                          @for (l3 of l2.children || []; track l3.id; let j = $index) {
-                             @let l3Pos = getL3Position(j, l2.children?.length || 0, l2Pos.angle);
-                             <line 
-                                x1="0" y1="0" 
-                                [attr.x2]="l3Pos.x" 
-                                [attr.y2]="l3Pos.y" 
-                                stroke="#94a3b8" 
-                                stroke-width="2" 
-                                marker-end="url(#arrowhead)"
-                             />
-                          }
-                          <defs>
-                            <!-- refX adjusted for smaller L2 radius (approx 40px) -->
-                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="36" refY="3.5" orient="auto">
-                              <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
-                            </marker>
-                          </defs>
-                       </svg>
-                    }
-
-                    <!-- Level 2 Node -->
-                    <div
-                      class="absolute pointer-events-auto w-20 h-20 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-xl flex items-center justify-center text-center p-1.5 border-[3px] border-white hover:z-40 hover:scale-110 transition-transform cursor-pointer"
-                      [ngClass]="[getCategoryColor(getPrimaryCategory(l2)), getCategoryTextColor(getPrimaryCategory(l2))]"
-                      (click)="handleNodeClick(l2, 2, l1)"
-                      (mouseenter)="onNodeMouseEnter($event, l2)"
-                      (mouseleave)="onNodeMouseLeave()"
-                    >
-                      <span class="text-[9px] font-semibold leading-tight select-none drop-shadow-sm hyphens-auto break-words" lang="de">{{ l2.label }}</span>
-                    </div>
-
-                    <!-- Level 3 Children -->
-                    @if (l2Open) {
-                       <div class="absolute top-0 left-0 w-0 h-0 overflow-visible">
-                          @for (l3 of l2.children || []; track l3.id; let j = $index) {
-                             <!-- Level 3 Wrapper -->
-                             <div
-                                class="absolute top-0 left-0 w-0 h-0 bloom-enter"
-                                [ngStyle]="getL3Style(j, l2.children?.length || 0, l2Pos.angle)"
-                             >
-                                <!-- Level 3 Node -->
-                                <div
-                                  class="absolute pointer-events-auto w-14 h-14 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-md flex items-center justify-center text-center p-1 border-2 border-white cursor-pointer hover:scale-110 transition-transform"
-                                  [ngClass]="[getCategoryColor(getPrimaryCategory(l3)), getCategoryTextColor(getPrimaryCategory(l3))]"
-                                  [style.filter]="isNodeDimmed(l3, 3, l2.id) ? 'opacity(0.25) grayscale(0.8)' : null"
-                                  (mouseenter)="onNodeMouseEnter($event, l3)"
-                                  (mouseleave)="onNodeMouseLeave()"
-                                >
-                                  <span class="text-[8px] font-medium leading-tight select-none hyphens-auto break-words" lang="de">{{ l3.label }}</span>
-                                </div>
-                             </div>
-                          }
-                       </div>
-                    }
-
+                    <span class="node__label no-select hyphens-auto" lang="de">{{ l2.label }}</span>
                   </div>
-                }
 
-             </div>
+                  <!-- L3 Children -->
+                  @if (l2Open) {
+                    <div class="l3-container">
+                      @for (l3 of l2.children || []; track l3.id; let j = $index) {
+                        @let l3Pos = getL3Position(j, l2.children?.length || 0, l2Pos.angle);
+
+                        <!-- L3 Wrapper -->
+                        <div
+                          class="l3-wrapper"
+                          [style.--translate-x]="l3Pos.x + 'px'"
+                          [style.--translate-y]="l3Pos.y + 'px'"
+                          [style.transform]="'translate(' + l3Pos.x + 'px, ' + l3Pos.y + 'px)'"
+                        >
+                          <!-- L3 Node -->
+                          <div
+                            class="node node--l3"
+                            [ngClass]="'category-' + getPrimaryCategory(l3)"
+                            [class.node--dimmed]="isNodeDimmed(l3, 3, l2.id)"
+                            (mouseenter)="onNodeMouseEnter($event, l3)"
+                            (mouseleave)="onNodeMouseLeave()"
+                          >
+                            <span class="node__label no-select hyphens-auto" lang="de">{{ l3.label }}</span>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
           }
-
         </div>
       }
     </div>
   </div>
 
-  <!-- Tooltip (außerhalb der MindMap-Hierarchie für korrekten z-index) -->
+  <!-- Tooltip (rendered outside MindMap hierarchy) -->
   @if (hoveredNode()?.tooltip && tooltipPosition()) {
     <div
-      class="fixed pointer-events-none z-[99999] tooltip-fixed"
+      class="tooltip"
+      [class.tooltip--below]="tooltipPosition()!.showBelow"
       [style.left.px]="tooltipPosition()!.x"
       [style.top.px]="tooltipPosition()!.y"
-      [class.tooltip-below]="tooltipPosition()!.showBelow"
     >
-      <div
-        class="bg-white rounded-xl px-5 py-4 shadow-2xl text-slate-600 text-xs leading-relaxed text-left min-w-[280px] max-w-[320px]"
-        [innerHTML]="hoveredNode()!.tooltip"
-      ></div>
+      <div class="tooltip__content" [innerHTML]="hoveredNode()!.tooltip"></div>
     </div>
   }
 </div>

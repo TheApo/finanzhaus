@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 tmpclaude-2c3b-cwd
+
+.claude/
+
+.angular/

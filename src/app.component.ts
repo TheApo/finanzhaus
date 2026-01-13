@@ -27,19 +27,18 @@ export class AppComponent {
   // Map für L2 - pro L1 kann ein L2 offen sein
   expandedL2Map = signal<Map<string, string>>(new Map()); 
 
-  getCategoryColor(catId: CategoryId): string {
-    const cat = this.categories().find(c => c.id === catId);
-    return cat ? cat.color : 'bg-gray-400';
-  }
-
-  getCategoryTextColor(catId: CategoryId): string {
-    const cat = this.categories().find(c => c.id === catId);
-    return cat ? cat.textColor : 'text-slate-800';
-  }
-
   getCategoryLabel(catId: CategoryId): string {
     const cat = this.categories().find(c => c.id === catId);
     return cat ? cat.label : '';
+  }
+
+  getL1Transform(id: string): string {
+    switch (id) {
+      case 'unternehmer_privat': return 'translate(0, -220px)';
+      case 'muster_gmbh': return 'translate(0, 220px)';
+      case 'lieferanten': return 'translate(-420px, 0)';
+      default: return 'translate(420px, 0)';
+    }
   }
 
   // Gibt die "Hauptkategorie" eines Nodes zurück (erste die nicht strategie ist, sonst strategie)

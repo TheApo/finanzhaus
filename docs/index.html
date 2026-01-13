@@ -3,237 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VR Finanzhaus</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Custom animations for the bloom effect */
-    .bloom-enter {
-      animation: bloomIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  <title>VR Finanzhaus Navigator</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
+      "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
+      "rxjs/ajax": "https://esm.sh/rxjs@^7.8.2/ajax?conditions=es2015",
+      "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
+      "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
+      "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
+      "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.8?external=rxjs",
+      "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.8?external=rxjs",
+      "@angular/common": "https://esm.sh/@angular/common@^21.0.8?external=rxjs",
+      "@angular/core": "https://esm.sh/@angular/core@^21.0.8?external=rxjs"
     }
-    
-    @keyframes bloomIn {
-      from {
-        opacity: 0;
-        transform: scale(0.1) translate(0, 0);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translate(var(--tw-translate-x), var(--tw-translate-y));
-      }
-    }
-
-    .line-draw {
-      stroke-dasharray: 1000;
-      stroke-dashoffset: 1000;
-      animation: dash 1s linear forwards;
-    }
-
-    @keyframes dash {
-      to {
-        stroke-dashoffset: 0;
-      }
-    }
-    
-    /* Hide scrollbars for clean UI */
-    body {
-      overflow: hidden;
-      background-color: #f8fafc;
-    }
-
-    /* Automatische Silbentrennung */
-    .hyphens-auto {
-      hyphens: auto;
-      -webkit-hyphens: auto;
-      -ms-hyphens: auto;
-      overflow-wrap: break-word;
-      word-wrap: break-word;
-    }
-
-    /* Responsive Scaling für die MindMap */
-    .mindmap-scale {
-      --scale: 1;
-      transform: scale(var(--scale));
-      transform-origin: center center;
-    }
-
-    @media (max-width: 1400px) {
-      .mindmap-scale { --scale: 0.9; }
-    }
-
-    @media (max-width: 1200px) {
-      .mindmap-scale { --scale: 0.8; }
-    }
-
-    @media (max-width: 1000px) {
-      .mindmap-scale { --scale: 0.7; }
-    }
-
-    @media (max-width: 800px) {
-      .mindmap-scale { --scale: 0.6; }
-    }
-
-    @media (max-width: 600px) {
-      .mindmap-scale { --scale: 0.5; }
-    }
-
-    /* Responsive Header */
-    .header-title {
-      display: block;
-    }
-
-    .filter-container {
-      top: 4.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    @media (max-width: 1500px) {
-      .header-title {
-        display: none !important;
-      }
-
-      .filter-container {
-        top: 1rem;
-        left: 1rem;
-        transform: none;
-      }
-    }
-
-    /* Responsive Finanzhaus */
-    .finanzhaus-container {
-      transform-origin: bottom left;
-    }
-
-    @media (max-width: 1600px) {
-      .finanzhaus-container {
-        transform: scale(0.9);
-      }
-    }
-
-    @media (max-width: 1400px) {
-      .finanzhaus-container {
-        transform: scale(0.8);
-      }
-    }
-
-    @media (max-width: 1200px) {
-      .finanzhaus-container {
-        transform: scale(0.7);
-      }
-    }
-
-    @media (max-width: 1000px) {
-      .finanzhaus-container {
-        transform: scale(0.6);
-      }
-    }
-
-    @media (max-width: 800px) {
-      .finanzhaus-container {
-        transform: scale(0.5);
-      }
-    }
-
-    @media (max-width: 600px) {
-      .finanzhaus-container {
-        transform: scale(0.4);
-      }
-    }
-
-    /* Tooltip Cloud Styling */
-    .tooltip-cloud {
-      position: absolute;
-      bottom: calc(100% + 16px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      border-radius: 12px;
-      padding: 16px 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 2px 10px rgba(0,0,0,0.1);
-      min-width: 280px;
-      max-width: 320px;
-      z-index: 100;
-      pointer-events: none;
-      animation: tooltipFadeIn 0.2s ease-out;
-    }
-
-    .tooltip-cloud::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 10px solid transparent;
-      border-top-color: white;
-    }
-
-    @keyframes tooltipFadeIn {
-      from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-    }
-
-    .tooltip-cloud b {
-      color: #334155;
-    }
-
-    .tooltip-cloud br + br {
-      display: block;
-      content: '';
-      margin-top: 8px;
-    }
-
-    /* Fixed Tooltip (außerhalb der MindMap-Hierarchie) */
-    .tooltip-fixed {
-      transform: translateX(-50%) translateY(-100%);
-    }
-
-    .tooltip-fixed.tooltip-below {
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .tooltip-fixed b {
-      color: #334155;
-    }
-
-    .tooltip-fixed > div {
-      animation: tooltipAppear 0.15s ease-out;
-    }
-
-    @keyframes tooltipAppear {
-      from {
-        opacity: 0;
-        transform: scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-  </style>
-<script type="importmap">
-{
-  "imports": {
-    "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
-    "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
-    "rxjs/ajax": "https://esm.sh/rxjs@^7.8.2/ajax?conditions=es2015",
-    "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
-    "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
-    "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
-    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.8?external=rxjs",
-    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.8?external=rxjs",
-    "@angular/common": "https://esm.sh/@angular/common@^21.0.8?external=rxjs",
-    "@angular/core": "https://esm.sh/@angular/core@^21.0.8?external=rxjs"
   }
-}
-</script>
-</head>
+  </script>
+<style>:root{--color-strategie:#e2e8f0;--color-strategie-text:#1e293b;--color-privat-finanz:#0f172a;--color-privat-finanz-text:#ffffff;--color-gruendung:#1e40af;--color-gruendung-text:#ffffff;--color-absicherung:#ea580c;--color-absicherung-text:#ffffff;--color-vorsorge:#be123c;--color-vorsorge-text:#ffffff;--color-vermoegen:#4d7c0f;--color-vermoegen-text:#ffffff;--color-ausland:#eab308;--color-ausland-text:#1e293b;--color-finanzierung:#4c1d95;--color-finanzierung-text:#ffffff;--color-zahlungsverkehr:#0ea5e9;--color-zahlungsverkehr-text:#ffffff;--color-background:#f8fafc;--color-text-primary:#1e293b;--color-text-secondary:#64748b;--color-text-muted:#94a3b8;--color-white:#ffffff;--color-border:#e2e8f0;--color-shadow:rgba(0, 0, 0, .1);--color-highlight:#dc2626;--spacing-xs:.25rem;--spacing-sm:.5rem;--spacing-md:1rem;--spacing-lg:1.5rem;--spacing-xl:2rem;--radius-sm:.25rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-full:9999px;--transition-fast:.15s ease-out;--transition-normal:.3s ease-in-out;--transition-slow:.5s ease-in-out;--font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;--font-size-xs:.5rem;--font-size-sm:.5625rem;--font-size-base:.75rem;--font-size-lg:1.5rem}*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--font-family);background-color:var(--color-background);color:var(--color-text-primary);overflow:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}</style><link rel="stylesheet" href="styles-WN2KAZNZ.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="styles-WN2KAZNZ.css"></noscript></head>
 <body>
   <app-root></app-root>
-<script src="main-BQ2NU46H.js" type="module"></script></body>
+<script src="main-OOOCKMID.js" type="module"></script></body>
 </html>

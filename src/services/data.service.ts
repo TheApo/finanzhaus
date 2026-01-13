@@ -14,8 +14,6 @@ export type CategoryId =
 export interface Category {
   id: CategoryId;
   label: string;
-  color: string; // Tailwind class for background
-  textColor: string;
 }
 
 export interface Node {
@@ -218,60 +216,15 @@ const RAW_DATA = {
 export class DataService {
   getCategories(): Category[] {
     return [
-      {
-        id: "strategie",
-        label: "Genossenschaftliche Idee",
-        color: "bg-slate-200",
-        textColor: "text-slate-800",
-      },
-      {
-        id: "privat_finanz",
-        label: "Private FinanzPlanung",
-        color: "bg-[#0f172a]",
-        textColor: "text-white",
-      },
-      {
-        id: "gruendung",
-        label: "Gründung und Nachfolge",
-        color: "bg-[#1e40af]",
-        textColor: "text-white",
-      },
-      {
-        id: "absicherung",
-        label: "Versicherung",
-        color: "bg-[#ea580c]",
-        textColor: "text-white",
-      },
-      {
-        id: "vorsorge",
-        label: "Vorsorge & Mitarbeiter",
-        color: "bg-[#be123c]",
-        textColor: "text-white",
-      },
-      {
-        id: "vermoegen",
-        label: "Vermögen & Eigenkapital",
-        color: "bg-[#4d7c0f]",
-        textColor: "text-white",
-      },
-      {
-        id: "ausland",
-        label: "Auslandsgeschäft",
-        color: "bg-[#eab308]",
-        textColor: "text-slate-900",
-      },
-      {
-        id: "finanzierung",
-        label: "Finanzierung",
-        color: "bg-[#4c1d95]",
-        textColor: "text-white",
-      },
-      {
-        id: "zahlungsverkehr",
-        label: "Zahlungsverkehr",
-        color: "bg-[#0ea5e9]",
-        textColor: "text-white",
-      },
+      { id: "strategie", label: "Genossenschaftliche Idee" },
+      { id: "privat_finanz", label: "Private FinanzPlanung" },
+      { id: "gruendung", label: "Gründung und Nachfolge" },
+      { id: "absicherung", label: "Versicherung" },
+      { id: "vorsorge", label: "Vorsorge & Mitarbeiter" },
+      { id: "vermoegen", label: "Vermögen & Eigenkapital" },
+      { id: "ausland", label: "Auslandsgeschäft" },
+      { id: "finanzierung", label: "Finanzierung" },
+      { id: "zahlungsverkehr", label: "Zahlungsverkehr" },
     ];
   }
 
