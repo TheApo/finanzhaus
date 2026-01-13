@@ -35,6 +35,7 @@
   <div class="finanzhaus-wrapper">
     <app-finanzhaus
       [activeCategory]="activeCategory()"
+      [hoveredCategories]="hoveredCategories()"
       (categorySelected)="toggleCategory($event)"
     />
   </div>

@@ -19,6 +19,7 @@ export class AppComponent {
   // State
   activeCategory = signal<CategoryId | null>(null);
   hoveredNode = signal<Node | null>(null);
+  hoveredCategories = signal<CategoryId[]>([]);
   tooltipPosition = signal<{ x: number; y: number; showBelow: boolean } | null>(null);
 
   // Expanded Nodes IDs (Manual interaction)
@@ -257,6 +258,11 @@ export class AppComponent {
 
   // Tooltip Event Handler
   onNodeMouseEnter(event: MouseEvent, node: Node) {
+    // Hover-Kategorien nur setzen wenn kein Filter aktiv
+    if (!this.activeCategory()) {
+      this.hoveredCategories.set(node.categoryIds);
+    }
+
     if (!node.tooltip) return;
 
     this.hoveredNode.set(node);
@@ -284,6 +290,7 @@ export class AppComponent {
 
   onNodeMouseLeave() {
     this.hoveredNode.set(null);
+    this.hoveredCategories.set([]);
     this.tooltipPosition.set(null);
   }
 }
