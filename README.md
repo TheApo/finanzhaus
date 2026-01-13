@@ -63,23 +63,37 @@ Die MindMap-Daten werden in `src/data/finanzhaus-data.json` verwaltet. Diese Dat
 - **categories**: Liste aller Finanzhaus-Kategorien mit ID und Label
 - **topics**: Hierarchische Struktur der MindMap-Knoten
 
-### Struktur eines Topics
+### Struktur der Topics (3 Ebenen)
+
+Die MindMap unterstützt 3 Hierarchieebenen: **L1** (Hauptknoten) → **L2** (Unterthemen) → **L3** (Details)
 
 ```json
 {
-  "id": "eindeutige_id",
-  "name": "Anzeigename",
-  "finanzhaus": "kategorie_id",
-  "icon": "icon_name",
+  "id": "muster_gmbh",
+  "name": "Muster GmbH",
+  "finanzhaus": "strategie",
+  "icon": "building",
   "blaetter": [
     {
-      "name": "Unterthema",
-      "finanzhaus": ["kategorie1", "kategorie2"],
-      "tooltip": "<b>HTML</b> Tooltip-Inhalt"
+      "name": "Investitionen planen",
+      "finanzhaus": ["strategie", "finanzierung"],
+      "blaetter": [
+        {
+          "name": "Liquide bleiben",
+          "finanzhaus": "zahlungsverkehr",
+          "tooltip": "<b>Liquiditätsplanung</b><br>Details..."
+        }
+      ]
     }
   ]
 }
 ```
+
+| Ebene | Felder | Beschreibung |
+|-------|--------|--------------|
+| **L1** | `id`, `name`, `finanzhaus`, `icon`, `blaetter` | Hauptknoten mit Icon |
+| **L2** | `name`, `finanzhaus`, `blaetter` | Unterthemen, können L3-Knoten enthalten |
+| **L3** | `name`, `finanzhaus`, `tooltip` | Detailknoten mit optionalem Tooltip |
 
 | Feld | Beschreibung |
 |------|--------------|
@@ -87,7 +101,7 @@ Die MindMap-Daten werden in `src/data/finanzhaus-data.json` verwaltet. Diese Dat
 | `name` | Anzeigename des Knotens |
 | `finanzhaus` | Kategorie-ID als String oder Array von IDs |
 | `icon` | Icon-Name für L1-Knoten (`person`, `truck`, `users`, `building`) |
-| `blaetter` | Array von Unterknoten (optional) |
+| `blaetter` | Array von Unterknoten (L1 → L2, L2 → L3) |
 | `tooltip` | HTML-Tooltip für L3-Knoten (optional) |
 
 ## Finanzhaus-Kategorien
