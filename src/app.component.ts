@@ -22,8 +22,8 @@ export class AppComponent {
   tooltipPosition = signal<{ x: number; y: number; showBelow: boolean } | null>(null);
 
   // Expanded Nodes IDs (Manual interaction)
-  // Set für L1 - mehrere können gleichzeitig offen sein (alle L1 initial offen)
-  expandedL1Set = signal<Set<string>>(new Set(['unternehmer_privat', 'lieferanten', 'kunden', 'muster_gmbh']));
+  // Set für L1 - mehrere können gleichzeitig offen sein (initial geschlossen)
+  expandedL1Set = signal<Set<string>>(new Set());
   // Map für L2 - pro L1 kann ein L2 offen sein
   expandedL2Map = signal<Map<string, string>>(new Map()); 
 
