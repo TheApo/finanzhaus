@@ -187,6 +187,34 @@
       content: '';
       margin-top: 8px;
     }
+
+    /* Fixed Tooltip (außerhalb der MindMap-Hierarchie) */
+    .tooltip-fixed {
+      transform: translateX(-50%) translateY(-100%);
+    }
+
+    .tooltip-fixed.tooltip-below {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .tooltip-fixed b {
+      color: #334155;
+    }
+
+    .tooltip-fixed > div {
+      animation: tooltipAppear 0.15s ease-out;
+    }
+
+    @keyframes tooltipAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
   </style>
 <script type="importmap">
 {
@@ -207,5 +235,5 @@
 </head>
 <body>
   <app-root></app-root>
-<script src="main-7MNKC7E2.js" type="module"></script></body>
+<script src="main-VK6HU2XK.js" type="module"></script></body>
 </html>

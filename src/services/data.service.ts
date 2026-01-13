@@ -37,11 +37,23 @@ const RAW_DATA = {
       icon: "person",
       blaetter: [
         { name: "Altersvorsorge", finanzhaus: ["strategie", "privat_finanz"] },
-        { name: "Private Kontoverbindung", finanzhaus: ["strategie", "privat_finanz"] },
-        { name: "Vermögen ansparen und anlegen", finanzhaus: ["strategie", "privat_finanz"] },
+        {
+          name: "Private Kontoverbindung",
+          finanzhaus: ["strategie", "privat_finanz"],
+        },
+        {
+          name: "Vermögen ansparen und anlegen",
+          finanzhaus: ["strategie", "privat_finanz"],
+        },
         { name: "Finanzierung", finanzhaus: ["strategie", "privat_finanz"] },
-        { name: "Vermögenswerte absichern", finanzhaus: ["strategie", "privat_finanz"] },
-        { name: "Familie und Gesundheit", finanzhaus: ["strategie", "privat_finanz"] },
+        {
+          name: "Vermögenswerte absichern",
+          finanzhaus: ["strategie", "privat_finanz"],
+        },
+        {
+          name: "Familie und Gesundheit",
+          finanzhaus: ["strategie", "privat_finanz"],
+        },
       ],
     },
     {
@@ -50,17 +62,29 @@ const RAW_DATA = {
       finanzhaus: "strategie",
       icon: "truck",
       blaetter: [
-        { name: "Zahlungsziele und Skonto", finanzhaus: ["strategie", "vermoegen"] },
-        { name: "Transporte absichern", finanzhaus: ["strategie", "absicherung"] },
-        { name: "Nachhaltige Faktoren berücksichtigen", finanzhaus: ["strategie", "gruendung"] },
+        {
+          name: "Zahlungsziele und Skonto",
+          finanzhaus: ["strategie", "vermoegen"],
+        },
+        {
+          name: "Transporte absichern",
+          finanzhaus: ["strategie", "absicherung"],
+        },
+        {
+          name: "Nachhaltige Faktoren berücksichtigen",
+          finanzhaus: ["strategie", "gruendung"],
+        },
         {
           name: "Auslandsgeschäfte abwickeln",
           finanzhaus: ["strategie", "ausland"],
-          blaetter: [{
-            name: "AZV",
-            finanzhaus: "zahlungsverkehr",
-            tooltip: "<b>Auslandszahlungsverkehr (AZV)</b><br><br>Effiziente Abwicklung Ihrer internationalen Zahlungen mit <b>optimierten Konditionen</b> und schnellen Laufzeiten.<br><br>• SEPA & SWIFT-Überweisungen<br>• Währungsmanagement<br>• Dokumenteninkasso"
-          }],
+          blaetter: [
+            {
+              name: "AZV",
+              finanzhaus: "zahlungsverkehr",
+              tooltip:
+                "<b>Auslandszahlungsverkehr (AZV)</b><br><br>Effiziente Abwicklung Ihrer internationalen Zahlungen mit <b>optimierten Konditionen</b> und schnellen Laufzeiten.<br><br>• SEPA & SWIFT-Überweisungen<br>• Währungsmanagement<br>• Dokumenteninkasso",
+            },
+          ],
         },
       ],
     },
@@ -70,12 +94,30 @@ const RAW_DATA = {
       finanzhaus: "strategie",
       icon: "users",
       blaetter: [
-        { name: "Forderungen schützen", finanzhaus: ["strategie", "absicherung"] },
-        { name: "Bürgschaften und Liquidität optimieren", finanzhaus: ["strategie", "zahlungsverkehr"] },
-        { name: "Moderne Zahlungsmöglichk. anbieten", finanzhaus: ["strategie", "zahlungsverkehr"] },
-        { name: "Zahlungsziele und Liquidität steuern", finanzhaus: ["strategie", "zahlungsverkehr"] },
-        { name: "Transporte absichern", finanzhaus: ["strategie", "absicherung"] },
-        { name: "Auslandsgeschäfte abwickeln", finanzhaus: ["strategie", "ausland"] },
+        {
+          name: "Forderungen schützen",
+          finanzhaus: ["strategie", "absicherung"],
+        },
+        {
+          name: "Bürgschaften und Liquidität optimieren",
+          finanzhaus: ["strategie", "zahlungsverkehr"],
+        },
+        {
+          name: "Moderne Zahlungsmöglichk. anbieten",
+          finanzhaus: ["strategie", "zahlungsverkehr"],
+        },
+        {
+          name: "Zahlungsziele und Liquidität steuern",
+          finanzhaus: ["strategie", "zahlungsverkehr"],
+        },
+        {
+          name: "Transporte absichern",
+          finanzhaus: ["strategie", "absicherung"],
+        },
+        {
+          name: "Auslandsgeschäfte abwickeln",
+          finanzhaus: ["strategie", "ausland"],
+        },
       ],
     },
     {
@@ -91,15 +133,18 @@ const RAW_DATA = {
             {
               name: "Kontokorrent",
               finanzhaus: "zahlungsverkehr",
-              tooltip: "<b>Kontokorrentkredit</b><br><br>Flexible Liquiditätsreserve für Ihr Unternehmen mit <b>sofortiger Verfügbarkeit</b>.<br><br>• Individueller Kreditrahmen<br>• Zinsen nur bei Inanspruchnahme<br>• Schnelle Anpassung an Ihren Bedarf"
+              tooltip:
+                "<b>Kontokorrentkredit</b><br><br>Flexible Liquiditätsreserve für Ihr Unternehmen mit <b>sofortiger Verfügbarkeit</b>.<br><br>• Individueller Kreditrahmen<br>• Zinsen nur bei Inanspruchnahme<br>• Schnelle Anpassung an Ihren Bedarf",
             },
             {
               name: "Tagesgeld",
               finanzhaus: "vermoegen",
-              tooltip: "<b>Tagesgeldanlage</b><br><br>Parken Sie überschüssige Liquidität <b>flexibel und sicher</b> mit täglicher Verfügbarkeit.<br><br>• Attraktive Verzinsung<br>• Keine Kündigungsfristen<br>• Einlagensicherung"
+              tooltip:
+                "<b>Tagesgeldanlage</b><br><br>Parken Sie überschüssige Liquidität <b>flexibel und sicher</b> mit täglicher Verfügbarkeit.<br><br>• Attraktive Verzinsung<br>• Keine Kündigungsfristen<br>• Einlagensicherung",
             },
           ],
         },
+        { name: "Gründen & Nachfolge", finanzhaus: ["strategie", "gruendung"] },
         {
           name: "Investitionen planen",
           finanzhaus: ["strategie", "finanzierung"],
@@ -107,30 +152,35 @@ const RAW_DATA = {
             {
               name: "Liquide bleiben",
               finanzhaus: "zahlungsverkehr",
-              tooltip: "<b>Liquiditätsplanung bei Investitionen</b><br><br>Sichern Sie Ihre <b>Zahlungsfähigkeit</b> auch während großer Investitionsphasen.<br><br>• Cashflow-Analyse<br>• Liquiditätsreserven planen<br>• Working Capital optimieren"
+              tooltip:
+                "<b>Liquiditätsplanung bei Investitionen</b><br><br>Sichern Sie Ihre <b>Zahlungsfähigkeit</b> auch während großer Investitionsphasen.<br><br>• Cashflow-Analyse<br>• Liquiditätsreserven planen<br>• Working Capital optimieren",
             },
             {
               name: "Mitarbeiter halten und gewinnen",
               finanzhaus: "vorsorge",
-              tooltip: "<b>Betriebliche Vorsorge</b><br><br>Stärken Sie Ihre <b>Arbeitgeberattraktivität</b> durch moderne Vorsorgekonzepte.<br><br>• Betriebliche Altersvorsorge (bAV)<br>• Zeitwertkonten<br>• Gruppen-Unfallversicherung"
+              tooltip:
+                "<b>Betriebliche Vorsorge</b><br><br>Stärken Sie Ihre <b>Arbeitgeberattraktivität</b> durch moderne Vorsorgekonzepte.<br><br>• Betriebliche Altersvorsorge (bAV)<br>• Zeitwertkonten<br>• Gruppen-Unfallversicherung",
             },
             {
               name: "Vermögenswerte absichern",
               finanzhaus: "absicherung",
-              tooltip: "<b>Investitionsschutz</b><br><br>Schützen Sie Ihre <b>Neuinvestitionen</b> von Anfang an umfassend ab.<br><br>• Maschinenversicherung<br>• Elektronikversicherung<br>• Montageversicherung"
+              tooltip:
+                "<b>Investitionsschutz</b><br><br>Schützen Sie Ihre <b>Neuinvestitionen</b> von Anfang an umfassend ab.<br><br>• Maschinenversicherung<br>• Elektronikversicherung<br>• Montageversicherung",
             },
           ],
         },
         {
           name: "Vermögen und Eigenkapital bilden/anlegen",
           finanzhaus: ["strategie", "vermoegen"],
-          blaetter: [{
-            name: "Anlagemanagement",
-            finanzhaus: "vermoegen",
-            tooltip: "<b>Professionelles Anlagemanagement</b><br><br>Strategische Vermögensanlage für <b>nachhaltigen Unternehmenserfolg</b>.<br><br>• Individuelle Anlagestrategie<br>• Risikodiversifikation<br>• Regelmäßiges Reporting<br>• ESG-konforme Investments"
-          }],
+          blaetter: [
+            {
+              name: "Anlagemanagement",
+              finanzhaus: "vermoegen",
+              tooltip:
+                "<b>Professionelles Anlagemanagement</b><br><br>Strategische Vermögensanlage für <b>nachhaltigen Unternehmenserfolg</b>.<br><br>• Individuelle Anlagestrategie<br>• Risikodiversifikation<br>• Regelmäßiges Reporting<br>• ESG-konforme Investments",
+            },
+          ],
         },
-        { name: "Gründen & Nachfolge", finanzhaus: ["strategie", "gruendung"] },
         {
           name: "Vermögenswerte absichern",
           finanzhaus: ["strategie", "absicherung"],
@@ -138,17 +188,25 @@ const RAW_DATA = {
             {
               name: "Sachwerte",
               finanzhaus: "absicherung",
-              tooltip: "<b>Sachwertversicherung</b><br><br>Umfassender Schutz für Ihre <b>betrieblichen Vermögenswerte</b>.<br><br>• Gebäudeversicherung<br>• Inhaltsversicherung<br>• Technische Versicherungen<br>• All-Risk-Deckungen"
+              tooltip:
+                "<b>Sachwertversicherung</b><br><br>Umfassender Schutz für Ihre <b>betrieblichen Vermögenswerte</b>.<br><br>• Gebäudeversicherung<br>• Inhaltsversicherung<br>• Technische Versicherungen<br>• All-Risk-Deckungen",
             },
             {
               name: "Ertragsausfall",
               finanzhaus: "absicherung",
-              tooltip: "<b>Ertragsausfallversicherung</b><br><br>Sichern Sie Ihre <b>Ertragskraft</b> auch bei Betriebsunterbrechungen.<br><br>• Betriebsunterbrechung<br>• Mehrkostenversicherung<br>• Supply-Chain-Absicherung<br>• Cyber-Ertragsausfall"
+              tooltip:
+                "<b>Ertragsausfallversicherung</b><br><br>Sichern Sie Ihre <b>Ertragskraft</b> auch bei Betriebsunterbrechungen.<br><br>• Betriebsunterbrechung<br>• Mehrkostenversicherung<br>• Supply-Chain-Absicherung<br>• Cyber-Ertragsausfall",
             },
           ],
         },
-        { name: "Mitarbeiter halten und gewinnen", finanzhaus: ["strategie", "vorsorge"] },
-        { name: "Zahlungen abwickeln", finanzhaus: ["strategie", "zahlungsverkehr"] },
+        {
+          name: "Mitarbeiter halten und gewinnen",
+          finanzhaus: ["strategie", "vorsorge"],
+        },
+        {
+          name: "Zahlungen abwickeln",
+          finanzhaus: ["strategie", "zahlungsverkehr"],
+        },
       ],
     },
   ],
@@ -229,7 +287,7 @@ export class DataService {
     } else if (data.finanzhaus) {
       categoryIds = [data.finanzhaus as CategoryId];
     } else {
-      categoryIds = ['strategie']; // Default: Genossenschaftliche Idee
+      categoryIds = ["strategie"]; // Default: Genossenschaftliche Idee
     }
 
     return {

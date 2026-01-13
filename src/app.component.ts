@@ -19,6 +19,7 @@ export class AppComponent {
   // State
   activeCategory = signal<CategoryId | null>(null);
   hoveredNode = signal<Node | null>(null);
+  tooltipPosition = signal<{ x: number; y: number; showBelow: boolean } | null>(null);
 
   // Expanded Nodes IDs (Manual interaction)
   // Set für L1 - mehrere können gleichzeitig offen sein (alle L1 initial offen)
@@ -220,8 +221,7 @@ export class AppComponent {
     const pos = this.getL2Position(index, total);
     return {
       '--tw-translate-x': `${pos.x}px`,
-      '--tw-translate-y': `${pos.y}px`,
-      'z-index': 10
+      '--tw-translate-y': `${pos.y}px`
     };
   }
 
@@ -252,8 +252,39 @@ export class AppComponent {
     const pos = this.getL3Position(index, total, parentAngle);
     return {
       '--tw-translate-x': `${pos.x}px`,
-      '--tw-translate-y': `${pos.y}px`,
-      'z-index': 20
+      '--tw-translate-y': `${pos.y}px`
     };
+  }
+
+  // Tooltip Event Handler
+  onNodeMouseEnter(event: MouseEvent, node: Node) {
+    if (!node.tooltip) return;
+
+    this.hoveredNode.set(node);
+
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    const tooltipHeight = 200; // Geschätzte Höhe
+    const tooltipWidth = 320;
+
+    // Prüfen ob Tooltip oben oder unten angezeigt werden soll
+    const showBelow = rect.top < tooltipHeight + 20;
+
+    // X-Position: Zentriert über dem Element, aber im Viewport bleiben
+    let x = rect.left + rect.width / 2;
+    if (x - tooltipWidth / 2 < 10) {
+      x = tooltipWidth / 2 + 10;
+    } else if (x + tooltipWidth / 2 > window.innerWidth - 10) {
+      x = window.innerWidth - tooltipWidth / 2 - 10;
+    }
+
+    // Y-Position
+    const y = showBelow ? rect.bottom + 16 : rect.top - 16;
+
+    this.tooltipPosition.set({ x, y, showBelow });
+  }
+
+  onNodeMouseLeave() {
+    this.hoveredNode.set(null);
+    this.tooltipPosition.set(null);
   }
 }
