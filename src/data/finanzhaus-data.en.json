@@ -1,0 +1,140 @@
+{
+  "categories": [
+    { "id": "strategie", "label": "Cooperative Idea" },
+    { "id": "privat_finanz", "label": "Private Financial Planning" },
+    { "id": "gruendung", "label": "Founding and Succession" },
+    { "id": "absicherung", "label": "Insurance" },
+    { "id": "vorsorge", "label": "Retirement & Employees" },
+    { "id": "vermoegen", "label": "Assets & Equity" },
+    { "id": "ausland", "label": "International Business" },
+    { "id": "finanzierung", "label": "Financing" },
+    { "id": "zahlungsverkehr", "label": "Payment Transactions" }
+  ],
+  "topics": [
+    {
+      "id": "unternehmer_privat",
+      "name": "Entrepreneur Private",
+      "finanzhaus": "privat_finanz",
+      "icon": "person",
+      "blaetter": [
+        { "name": "Retirement Planning", "finanzhaus": ["strategie", "privat_finanz"] },
+        { "name": "Private Bank Account", "finanzhaus": ["strategie", "privat_finanz"] },
+        { "name": "Save and Invest Assets", "finanzhaus": ["strategie", "privat_finanz"] },
+        { "name": "Financing", "finanzhaus": ["strategie", "privat_finanz"] },
+        { "name": "Protect Assets", "finanzhaus": ["strategie", "privat_finanz"] },
+        { "name": "Family and Health", "finanzhaus": ["strategie", "privat_finanz"] }
+      ]
+    },
+    {
+      "id": "lieferanten",
+      "name": "Suppliers",
+      "finanzhaus": "strategie",
+      "icon": "truck",
+      "blaetter": [
+        { "name": "Payment Terms and Discounts", "finanzhaus": ["strategie", "vermoegen"] },
+        { "name": "Insure Transports", "finanzhaus": ["strategie", "absicherung"] },
+        { "name": "Consider Sustainable Factors", "finanzhaus": ["strategie", "gruendung"] },
+        {
+          "name": "Process International Business",
+          "finanzhaus": ["strategie", "ausland"],
+          "blaetter": [
+            {
+              "name": "IPS",
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>International Payment Services (IPS)</b><br><br>Efficient processing of your international payments with <b>optimized conditions</b> and fast turnaround times.<br><br>• SEPA & SWIFT transfers<br>• Currency management<br>• Documentary collection"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kunden",
+      "name": "Customers",
+      "finanzhaus": "strategie",
+      "icon": "users",
+      "blaetter": [
+        { "name": "Protect Receivables", "finanzhaus": ["strategie", "absicherung"] },
+        { "name": "Optimize Guarantees and Liquidity", "finanzhaus": ["strategie", "zahlungsverkehr"] },
+        { "name": "Offer Modern Payment Options", "finanzhaus": ["strategie", "zahlungsverkehr"] },
+        { "name": "Manage Payment Terms and Liquidity", "finanzhaus": ["strategie", "zahlungsverkehr"] },
+        { "name": "Insure Transports", "finanzhaus": ["strategie", "absicherung"] },
+        { "name": "Process International Business", "finanzhaus": ["strategie", "ausland"] }
+      ]
+    },
+    {
+      "id": "muster_gmbh",
+      "name": "Sample Ltd.",
+      "finanzhaus": "strategie",
+      "icon": "building",
+      "blaetter": [
+        {
+          "name": "Stay Liquid",
+          "finanzhaus": ["strategie", "zahlungsverkehr"],
+          "blaetter": [
+            {
+              "name": "Overdraft",
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Overdraft Facility</b><br><br>Flexible liquidity reserve for your company with <b>immediate availability</b>.<br><br>• Individual credit line<br>• Interest only when used<br>• Quick adjustment to your needs"
+            },
+            {
+              "name": "Call Money",
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>Call Money Account</b><br><br>Park excess liquidity <b>flexibly and securely</b> with daily availability.<br><br>• Attractive interest rates<br>• No notice periods<br>• Deposit protection"
+            }
+          ]
+        },
+        { "name": "Founding & Succession", "finanzhaus": ["strategie", "gruendung"] },
+        {
+          "name": "Plan Investments",
+          "finanzhaus": ["strategie", "finanzierung"],
+          "blaetter": [
+            {
+              "name": "Stay Liquid",
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Liquidity Planning for Investments</b><br><br>Secure your <b>solvency</b> even during major investment phases.<br><br>• Cash flow analysis<br>• Plan liquidity reserves<br>• Optimize working capital"
+            },
+            {
+              "name": "Retain and Attract Employees",
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>Occupational Benefits</b><br><br>Strengthen your <b>employer attractiveness</b> through modern pension concepts.<br><br>• Company pension scheme<br>• Working time accounts<br>• Group accident insurance"
+            },
+            {
+              "name": "Protect Assets",
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>Investment Protection</b><br><br>Comprehensively protect your <b>new investments</b> from the start.<br><br>• Machinery insurance<br>• Electronics insurance<br>• Installation insurance"
+            }
+          ]
+        },
+        {
+          "name": "Build/Invest Assets and Equity",
+          "finanzhaus": ["strategie", "vermoegen"],
+          "blaetter": [
+            {
+              "name": "Asset Management",
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>Professional Asset Management</b><br><br>Strategic asset investment for <b>sustainable business success</b>.<br><br>• Individual investment strategy<br>• Risk diversification<br>• Regular reporting<br>• ESG-compliant investments"
+            }
+          ]
+        },
+        {
+          "name": "Protect Assets",
+          "finanzhaus": ["strategie", "absicherung"],
+          "blaetter": [
+            {
+              "name": "Tangible Assets",
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>Tangible Asset Insurance</b><br><br>Comprehensive protection for your <b>business assets</b>.<br><br>• Building insurance<br>• Contents insurance<br>• Technical insurances<br>• All-risk coverage"
+            },
+            {
+              "name": "Loss of Earnings",
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>Business Interruption Insurance</b><br><br>Secure your <b>earning power</b> even during business interruptions.<br><br>• Business interruption<br>• Additional cost insurance<br>• Supply chain protection<br>• Cyber loss of earnings"
+            }
+          ]
+        },
+        { "name": "Retain and Attract Employees", "finanzhaus": ["strategie", "vorsorge"] },
+        { "name": "Process Payments", "finanzhaus": ["strategie", "zahlungsverkehr"] }
+      ]
+    }
+  ]
+}

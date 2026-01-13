@@ -1,0 +1,88 @@
+<div class="finanzhaus">
+  <!-- Roof (Triangle) -->
+  <div class="finanzhaus__roof">
+    <div
+      class="finanzhaus__roof-shape"
+      [class.finanzhaus__roof-shape--active]="activeCategory() === 'strategie'"
+      [class.finanzhaus__roof-shape--hovered]="isHovered('strategie')"
+      (click)="selectCategory('strategie')"
+    ></div>
+    <span class="finanzhaus__roof-label">{{ t('finanzhaus.strategie') }}</span>
+  </div>
+
+  <!-- Private FinanzPlanung -->
+  <div
+    class="finanzhaus__section finanzhaus__section--privat"
+    [class.finanzhaus__section--active]="activeCategory() === 'privat_finanz'"
+    [class.finanzhaus__section--hovered]="isHovered('privat_finanz')"
+    (click)="selectCategory('privat_finanz')"
+  >
+    {{ t('finanzhaus.privat_finanz') }}
+  </div>
+
+  <!-- Gründung und Nachfolge -->
+  <div
+    class="finanzhaus__section finanzhaus__section--gruendung"
+    [class.finanzhaus__section--active]="activeCategory() === 'gruendung'"
+    [class.finanzhaus__section--hovered]="isHovered('gruendung')"
+    (click)="selectCategory('gruendung')"
+  >
+    {{ t('finanzhaus.gruendung') }}
+  </div>
+
+  <!-- Pillars -->
+  <div class="finanzhaus__pillars">
+    <div
+      class="finanzhaus__pillar finanzhaus__pillar--absicherung"
+      [class.finanzhaus__pillar--active]="activeCategory() === 'absicherung'"
+      [class.finanzhaus__pillar--hovered]="isHovered('absicherung')"
+      (click)="selectCategory('absicherung')"
+    >
+      {{ t('finanzhaus.absicherung') }}
+    </div>
+    <div
+      class="finanzhaus__pillar finanzhaus__pillar--vorsorge"
+      [class.finanzhaus__pillar--active]="activeCategory() === 'vorsorge'"
+      [class.finanzhaus__pillar--hovered]="isHovered('vorsorge')"
+      (click)="selectCategory('vorsorge')"
+      [innerHTML]="t('finanzhaus.vorsorge')"
+    >
+    </div>
+    <div
+      class="finanzhaus__pillar finanzhaus__pillar--vermoegen"
+      [class.finanzhaus__pillar--active]="activeCategory() === 'vermoegen'"
+      [class.finanzhaus__pillar--hovered]="isHovered('vermoegen')"
+      (click)="selectCategory('vermoegen')"
+      [innerHTML]="t('finanzhaus.vermoegen')"
+    >
+    </div>
+    <div
+      class="finanzhaus__pillar finanzhaus__pillar--ausland"
+      [class.finanzhaus__pillar--active]="activeCategory() === 'ausland'"
+      [class.finanzhaus__pillar--hovered]="isHovered('ausland')"
+      (click)="selectCategory('ausland')"
+    >
+      {{ t('finanzhaus.ausland') }}
+    </div>
+  </div>
+
+  <!-- Finanzierung -->
+  <div
+    class="finanzhaus__section finanzhaus__section--finanzierung"
+    [class.finanzhaus__section--active]="activeCategory() === 'finanzierung'"
+    [class.finanzhaus__section--hovered]="isHovered('finanzierung')"
+    (click)="selectCategory('finanzierung')"
+  >
+    {{ t('finanzhaus.finanzierung') }}
+  </div>
+
+  <!-- Zahlungsverkehr -->
+  <div
+    class="finanzhaus__section finanzhaus__section--zahlungsverkehr"
+    [class.finanzhaus__section--active]="activeCategory() === 'zahlungsverkehr'"
+    [class.finanzhaus__section--hovered]="isHovered('zahlungsverkehr')"
+    (click)="selectCategory('zahlungsverkehr')"
+  >
+    {{ t('finanzhaus.zahlungsverkehr') }}
+  </div>
+</div>

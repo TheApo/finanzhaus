@@ -1,0 +1,21 @@
+{
+  "app": {
+    "title": "Finanzhaus",
+    "subtitle": "Navigator"
+  },
+  "filter": {
+    "label": "Filter",
+    "remove": "Remove filter"
+  },
+  "finanzhaus": {
+    "strategie": "Cooperative Idea",
+    "privat_finanz": "Private Financial Planning",
+    "gruendung": "Founding and Succession",
+    "absicherung": "Insurance",
+    "vorsorge": "Retirement &<br>Employees",
+    "vermoegen": "Assets &<br>Equity",
+    "ausland": "International Business",
+    "finanzierung": "Financing",
+    "zahlungsverkehr": "Payment Transactions"
+  }
+}

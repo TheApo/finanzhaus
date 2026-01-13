@@ -1,0 +1,21 @@
+{
+  "app": {
+    "title": "Finanzhaus",
+    "subtitle": "Navigator"
+  },
+  "filter": {
+    "label": "Filter",
+    "remove": "Filter entfernen"
+  },
+  "finanzhaus": {
+    "strategie": "Genossenschaftliche Idee",
+    "privat_finanz": "Private FinanzPlanung",
+    "gruendung": "Gründung und Nachfolge",
+    "absicherung": "Versicherung",
+    "vorsorge": "Vorsorge &<br>Mitarbeiter",
+    "vermoegen": "Vermögen &<br>EigenKapital",
+    "ausland": "Auslandsgeschäft",
+    "finanzierung": "Finanzierung",
+    "zahlungsverkehr": "Zahlungsverkehr"
+  }
+}

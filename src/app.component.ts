@@ -1,6 +1,7 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService, Node, CategoryId, Category } from './services/data.service';
+import { I18nService } from './services/i18n.service';
 import { FinanzhausComponent } from './components/finanzhaus.component';
 
 @Component({
@@ -11,10 +12,11 @@ import { FinanzhausComponent } from './components/finanzhaus.component';
 })
 export class AppComponent {
   private dataService = inject(DataService);
+  i18n = inject(I18nService);
 
-  // Data
-  mainNodes = signal<Node[]>(this.dataService.getTreeData());
-  categories = signal<Category[]>(this.dataService.getCategories());
+  // Data - computed to react to language changes
+  mainNodes = computed(() => this.dataService.getTreeData());
+  categories = computed(() => this.dataService.getCategories());
 
   // State
   activeCategory = signal<CategoryId | null>(null);
@@ -23,10 +25,12 @@ export class AppComponent {
   tooltipPosition = signal<{ x: number; y: number; showBelow: boolean } | null>(null);
 
   // Expanded Nodes IDs (Manual interaction)
-  // Set für L1 - mehrere können gleichzeitig offen sein (initial geschlossen)
   expandedL1Set = signal<Set<string>>(new Set());
-  // Map für L2 - pro L1 kann ein L2 offen sein
-  expandedL2Map = signal<Map<string, string>>(new Map()); 
+  expandedL2Map = signal<Map<string, string>>(new Map());
+
+  t(key: string): string {
+    return this.i18n.t(key);
+  }
 
   getCategoryLabel(catId: CategoryId): string {
     const cat = this.categories().find(c => c.id === catId);
@@ -42,13 +46,11 @@ export class AppComponent {
     }
   }
 
-  // Gibt die "Hauptkategorie" eines Nodes zurück (erste die nicht strategie ist, sonst strategie)
   getPrimaryCategory(node: Node): CategoryId {
     const nonStrategie = node.categoryIds.find(id => id !== 'strategie');
     return nonStrategie || node.categoryIds[0] || 'strategie';
   }
 
-  // Prüft ob Node eine bestimmte Kategorie hat
   hasCategory(node: Node, catId: CategoryId): boolean {
     return node.categoryIds.includes(catId);
   }
@@ -64,7 +66,6 @@ export class AppComponent {
   }
 
   handleNodeClick(node: Node, level: number, parent?: Node) {
-    // Wenn Filter aktiv: aktuellen sichtbaren Zustand übernehmen und Filter entfernen
     if (this.activeCategory()) {
       this.freezeCurrentState();
       this.activeCategory.set(null);
@@ -73,30 +74,25 @@ export class AppComponent {
     if (level === 1) {
       const currentSet = new Set(this.expandedL1Set());
       if (currentSet.has(node.id)) {
-        // Schließen: L1 aus Set entfernen und zugehörige L2 entfernen
         currentSet.delete(node.id);
         const currentMap = new Map(this.expandedL2Map());
         currentMap.delete(node.id);
         this.expandedL2Map.set(currentMap);
       } else {
-        // Öffnen: L1 zum Set hinzufügen
         currentSet.add(node.id);
       }
       this.expandedL1Set.set(currentSet);
     } else if (level === 2 && parent) {
       const currentMap = new Map(this.expandedL2Map());
       if (currentMap.get(parent.id) === node.id) {
-        // Schließen: L2 für diesen L1 entfernen
         currentMap.delete(parent.id);
       } else {
-        // Öffnen: L2 für diesen L1 setzen
         currentMap.set(parent.id, node.id);
       }
       this.expandedL2Map.set(currentMap);
     }
   }
 
-  // Aktuellen sichtbaren Zustand (durch Filter + manuell) in manuelle Sets übernehmen
   private freezeCurrentState() {
     const activeCat = this.activeCategory();
     if (!activeCat) return;
@@ -104,17 +100,13 @@ export class AppComponent {
     const newL1Set = new Set(this.expandedL1Set());
     const newL2Map = new Map(this.expandedL2Map());
 
-    // Alle L1 durchgehen und prüfen ob sie aktuell expanded sind
     for (const l1 of this.mainNodes()) {
       if (this.isL1Expanded(l1)) {
         newL1Set.add(l1.id);
 
-        // Alle L2 dieses L1 durchgehen
         if (l1.children) {
           for (const l2 of l1.children) {
             if (this.isL2Expanded(l2, l1) && !newL2Map.has(l1.id)) {
-              // Nur setzen wenn nicht bereits manuell gesetzt
-              // Prüfen ob L2 durch Filter expanded ist
               const childrenMatch = l2.children?.some(child => this.hasCategoryMatch(child, activeCat)) ?? false;
               if (childrenMatch) {
                 newL2Map.set(l1.id, l2.id);
@@ -131,7 +123,7 @@ export class AppComponent {
 
   handleBackgroundClick(event: MouseEvent) {
     if ((event.target as HTMLElement).classList.contains('mindmap-container')) {
-       // Optional behavior
+      // Optional behavior
     }
   }
 
@@ -157,7 +149,6 @@ export class AppComponent {
     const manuallyOpen = this.expandedL1Set().has(node.id);
     const activeCat = this.activeCategory();
 
-    // Offen wenn: manuell geöffnet ODER Kategorie passt
     if (activeCat) {
       return manuallyOpen || this.hasCategoryMatch(node, activeCat);
     }
@@ -168,9 +159,7 @@ export class AppComponent {
     const manuallyOpen = parentL1 ? this.expandedL2Map().get(parentL1.id) === node.id : false;
     const activeCat = this.activeCategory();
 
-    // Offen wenn: manuell geöffnet ODER L3-Kinder haben die Kategorie
     if (activeCat) {
-      // L3 nur zeigen wenn mindestens ein L3-Kind die Kategorie hat (nicht wenn nur L2 sie hat)
       const childrenMatch = node.children?.some(child => this.hasCategoryMatch(child, activeCat)) ?? false;
       return manuallyOpen || childrenMatch;
     }
@@ -180,9 +169,7 @@ export class AppComponent {
   isNodeDimmed(node: Node, level: number, parentId: string | null): boolean {
     const activeCat = this.activeCategory();
 
-    // Dimming nur bei aktivem Kategoriefilter
     if (activeCat) {
-      // Level 1 wird NIE gedimmt bei Kategoriefilter
       if (level === 1) return false;
 
       const isMatch = node.categoryIds.includes(activeCat);
@@ -191,7 +178,6 @@ export class AppComponent {
       return true;
     }
 
-    // Ohne Kategoriefilter: kein Dimming
     return false;
   }
 
@@ -200,16 +186,13 @@ export class AppComponent {
   private getAngle(index: number, total: number): number {
     if (total === 0) return 0;
     const step = 360 / total;
-    return (index * step) - 90; 
+    return (index * step) - 90;
   }
 
-  /**
-   * L2 Radius: Reduced to 110px for tighter fit
-   */
   getL2Position(index: number, total: number) {
-    const radius = 110; 
+    const radius = 110;
     const angle = this.getAngle(index, total);
-    
+
     const rad = angle * (Math.PI / 180);
     const x = Math.round(radius * Math.cos(rad));
     const y = Math.round(radius * Math.sin(rad));
@@ -225,17 +208,14 @@ export class AppComponent {
     };
   }
 
-  /**
-   * L3 Radius: Reduced to 85px for tighter fit
-   */
   getL3Position(index: number, total: number, parentAngle: number) {
-    const radius = 85; 
-    
-    const sector = 110; 
+    const radius = 85;
+
+    const sector = 110;
     const startAngle = parentAngle - (sector / 2);
-    
+
     let effectiveAngle = parentAngle;
-    
+
     if (total > 1) {
        const step = sector / (total - 1);
        effectiveAngle = startAngle + (index * step);
@@ -258,7 +238,6 @@ export class AppComponent {
 
   // Tooltip Event Handler
   onNodeMouseEnter(event: MouseEvent, node: Node) {
-    // Hover-Kategorien nur setzen wenn kein Filter aktiv
     if (!this.activeCategory()) {
       this.hoveredCategories.set(node.categoryIds);
     }
@@ -268,13 +247,11 @@ export class AppComponent {
     this.hoveredNode.set(node);
 
     const rect = (event.target as HTMLElement).getBoundingClientRect();
-    const tooltipHeight = 200; // Geschätzte Höhe
+    const tooltipHeight = 200;
     const tooltipWidth = 320;
 
-    // Prüfen ob Tooltip oben oder unten angezeigt werden soll
     const showBelow = rect.top < tooltipHeight + 20;
 
-    // X-Position: Zentriert über dem Element, aber im Viewport bleiben
     let x = rect.left + rect.width / 2;
     if (x - tooltipWidth / 2 < 10) {
       x = tooltipWidth / 2 + 10;
@@ -282,7 +259,6 @@ export class AppComponent {
       x = window.innerWidth - tooltipWidth / 2 - 10;
     }
 
-    // Y-Position
     const y = showBelow ? rect.bottom + 16 : rect.top - 16;
 
     this.tooltipPosition.set({ x, y, showBelow });

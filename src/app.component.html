@@ -3,7 +3,7 @@
   <!-- Header Title -->
   <header class="header no-select">
     <h1 class="header__title">
-      <span class="header__title-bold">Finanzhaus</span> Navigator
+      <span class="header__title-bold">{{ t('app.title') }}</span> {{ t('app.subtitle') }}
     </h1>
   </header>
 
@@ -11,7 +11,7 @@
   @if (activeCategory()) {
     <div class="filter-container no-select">
       <div class="filter-indicator">
-        <span class="filter-indicator__label">Filter</span>
+        <span class="filter-indicator__label">{{ t('filter.label') }}</span>
         <span
           class="filter-indicator__value"
           [ngClass]="'category-' + activeCategory()"
@@ -21,7 +21,7 @@
         <button
           class="filter-indicator__close"
           (click)="activeCategory.set(null)"
-          title="Filter entfernen"
+          [title]="t('filter.remove')"
         >
           <svg class="filter-indicator__close-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -121,7 +121,7 @@
                     (mouseenter)="onNodeMouseEnter($event, l2)"
                     (mouseleave)="onNodeMouseLeave()"
                   >
-                    <span class="node__label no-select hyphens-auto" lang="de">{{ l2.label }}</span>
+                    <span class="node__label no-select hyphens-auto">{{ l2.label }}</span>
                   </div>
 
                   <!-- L3 Children -->
@@ -145,7 +145,7 @@
                             (mouseenter)="onNodeMouseEnter($event, l3)"
                             (mouseleave)="onNodeMouseLeave()"
                           >
-                            <span class="node__label no-select hyphens-auto" lang="de">{{ l3.label }}</span>
+                            <span class="node__label no-select hyphens-auto">{{ l3.label }}</span>
                           </div>
                         </div>
                       }
