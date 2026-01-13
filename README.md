@@ -33,8 +33,10 @@ finanzhaus/
     ├── app.component.html  # App-Template mit MindMap
     ├── components/
     │   └── finanzhaus.component.ts  # Finanzhaus-Legende
+    ├── data/
+    │   └── finanzhaus-data.json     # Datenquelle (Kategorien & Topics)
     └── services/
-        └── data.service.ts # Datenservice mit Baumstruktur
+        └── data.service.ts          # Datenservice mit Baumstruktur
 ```
 
 ## Installation
@@ -54,19 +56,53 @@ npm run build
 
 Die Anwendung läuft unter `http://localhost:3000`
 
+## Daten anpassen
+
+Die MindMap-Daten werden in `src/data/finanzhaus-data.json` verwaltet. Diese Datei enthält:
+
+- **categories**: Liste aller Finanzhaus-Kategorien mit ID und Label
+- **topics**: Hierarchische Struktur der MindMap-Knoten
+
+### Struktur eines Topics
+
+```json
+{
+  "id": "eindeutige_id",
+  "name": "Anzeigename",
+  "finanzhaus": "kategorie_id",
+  "icon": "icon_name",
+  "blaetter": [
+    {
+      "name": "Unterthema",
+      "finanzhaus": ["kategorie1", "kategorie2"],
+      "tooltip": "<b>HTML</b> Tooltip-Inhalt"
+    }
+  ]
+}
+```
+
+| Feld | Beschreibung |
+|------|--------------|
+| `id` | Eindeutige Kennung (nur bei L1-Knoten erforderlich) |
+| `name` | Anzeigename des Knotens |
+| `finanzhaus` | Kategorie-ID als String oder Array von IDs |
+| `icon` | Icon-Name für L1-Knoten (`person`, `truck`, `users`, `building`) |
+| `blaetter` | Array von Unterknoten (optional) |
+| `tooltip` | HTML-Tooltip für L3-Knoten (optional) |
+
 ## Finanzhaus-Kategorien
 
-| Kategorie | Farbe | Beschreibung |
-|-----------|-------|--------------|
-| Genossenschaftliche Idee | Grau | Strategische Ausrichtung |
-| Private FinanzPlanung | Dunkelblau | Privatkundenberatung |
-| Gründung und Nachfolge | Blau | Unternehmensgründung |
-| Versicherung | Orange | Absicherung |
-| Vorsorge & Mitarbeiter | Rot | Altersvorsorge, bAV |
-| Vermögen & EigenKapital | Grün | Vermögensaufbau |
-| Auslandsgeschäft | Gelb | Internationale Geschäfte |
-| Finanzierung | Violett | Kredite, Darlehen |
-| Zahlungsverkehr | Hellblau | Konten, Transaktionen |
+| ID | Label | Farbe |
+|----|-------|-------|
+| `strategie` | Genossenschaftliche Idee | Grau |
+| `privat_finanz` | Private FinanzPlanung | Dunkelblau |
+| `gruendung` | Gründung und Nachfolge | Blau |
+| `absicherung` | Versicherung | Orange |
+| `vorsorge` | Vorsorge & Mitarbeiter | Rot |
+| `vermoegen` | Vermögen & Eigenkapital | Grün |
+| `ausland` | Auslandsgeschäft | Gelb |
+| `finanzierung` | Finanzierung | Violett |
+| `zahlungsverkehr` | Zahlungsverkehr | Hellblau |
 
 ## Bedienung
 
@@ -79,9 +115,8 @@ Die Anwendung läuft unter `http://localhost:3000`
 
 | Befehl | Beschreibung |
 |--------|--------------|
-| `npm run dev` | Startet Entwicklungsserver |
-| `npm run build` | Erstellt Produktions-Build |
-| `npm run preview` | Startet Produktions-Preview |
+| `npm run dev` | Startet Entwicklungsserver (Port 3000) |
+| `npm run build` | Erstellt Produktions-Build in `/dist` |
 
 ## Lizenz
 
