@@ -21,8 +21,8 @@ export class AppComponent {
   hoveredNode = signal<Node | null>(null);
 
   // Expanded Nodes IDs (Manual interaction)
-  // Set für L1 - mehrere können gleichzeitig offen sein
-  expandedL1Set = signal<Set<string>>(new Set());
+  // Set für L1 - mehrere können gleichzeitig offen sein (alle L1 initial offen)
+  expandedL1Set = signal<Set<string>>(new Set(['unternehmer_privat', 'lieferanten', 'kunden', 'muster_gmbh']));
   // Map für L2 - pro L1 kann ein L2 offen sein
   expandedL2Map = signal<Map<string, string>>(new Map()); 
 
@@ -63,6 +63,12 @@ export class AppComponent {
   }
 
   handleNodeClick(node: Node, level: number, parent?: Node) {
+    // Wenn Filter aktiv: aktuellen sichtbaren Zustand übernehmen und Filter entfernen
+    if (this.activeCategory()) {
+      this.freezeCurrentState();
+      this.activeCategory.set(null);
+    }
+
     if (level === 1) {
       const currentSet = new Set(this.expandedL1Set());
       if (currentSet.has(node.id)) {
@@ -87,6 +93,39 @@ export class AppComponent {
       }
       this.expandedL2Map.set(currentMap);
     }
+  }
+
+  // Aktuellen sichtbaren Zustand (durch Filter + manuell) in manuelle Sets übernehmen
+  private freezeCurrentState() {
+    const activeCat = this.activeCategory();
+    if (!activeCat) return;
+
+    const newL1Set = new Set(this.expandedL1Set());
+    const newL2Map = new Map(this.expandedL2Map());
+
+    // Alle L1 durchgehen und prüfen ob sie aktuell expanded sind
+    for (const l1 of this.mainNodes()) {
+      if (this.isL1Expanded(l1)) {
+        newL1Set.add(l1.id);
+
+        // Alle L2 dieses L1 durchgehen
+        if (l1.children) {
+          for (const l2 of l1.children) {
+            if (this.isL2Expanded(l2, l1) && !newL2Map.has(l1.id)) {
+              // Nur setzen wenn nicht bereits manuell gesetzt
+              // Prüfen ob L2 durch Filter expanded ist
+              const childrenMatch = l2.children?.some(child => this.hasCategoryMatch(child, activeCat)) ?? false;
+              if (childrenMatch) {
+                newL2Map.set(l1.id, l2.id);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    this.expandedL1Set.set(newL1Set);
+    this.expandedL2Map.set(newL2Map);
   }
 
   handleBackgroundClick(event: MouseEvent) {

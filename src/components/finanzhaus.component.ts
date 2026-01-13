@@ -8,14 +8,16 @@ import { CategoryId } from '../services/data.service';
   imports: [CommonModule],
   template: `
     <div class="bg-transparent filter drop-shadow-xl p-2 max-w-[340px] text-xs select-none">
-      
+
       <!-- Roof (Triangle) -->
       <div class="relative w-full h-16 mb-1 flex justify-center drop-shadow-sm filter">
-         <div 
-          class="absolute bottom-0 w-full h-full cursor-pointer hover:brightness-95 transition-[filter]"
-          style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background-color: #e2e8f0;"
+         <div
+          class="absolute bottom-0 w-full h-full cursor-pointer hover:brightness-95 transition-all"
+          [style.clip-path]="'polygon(50% 0%, 0% 100%, 100% 100%)'"
+          [style.background-color]="'#e2e8f0'"
+          [style.outline]="activeCategory() === 'strategie' ? '3px solid #dc2626' : 'none'"
+          [style.outline-offset]="'-3px'"
           (click)="selectCategory('strategie')"
-          [class.brightness-90]="activeCategory() === 'strategie'"
         ></div>
         <div class="absolute bottom-1 text-slate-700 font-bold pointer-events-none">
           Genossenschaftliche Idee
@@ -23,55 +25,67 @@ import { CategoryId } from '../services/data.service';
       </div>
 
       <!-- Private Finanz -->
-      <div 
-        class="bg-[#0f172a] text-white p-2 text-center mb-0.5 cursor-pointer hover:opacity-90 transition-opacity"
+      <div
+        class="bg-[#0f172a] text-white p-2 text-center mb-0.5 cursor-pointer hover:opacity-90 transition-all"
+        [style.box-shadow]="activeCategory() === 'privat_finanz' ? 'inset 0 0 0 3px #dc2626' : 'none'"
         (click)="selectCategory('privat_finanz')"
-        [class.ring-2]="activeCategory() === 'privat_finanz'"
-        [class.ring-white]="activeCategory() === 'privat_finanz'"
       >
         Private FinanzPlanung
       </div>
 
       <!-- Gründung -->
-      <div 
-        class="bg-[#1e40af] text-white p-2 text-center mb-0.5 cursor-pointer hover:opacity-90 transition-opacity"
+      <div
+        class="bg-[#1e40af] text-white p-2 text-center mb-0.5 cursor-pointer hover:opacity-90 transition-all"
+        [style.box-shadow]="activeCategory() === 'gruendung' ? 'inset 0 0 0 3px #dc2626' : 'none'"
         (click)="selectCategory('gruendung')"
-         [class.ring-2]="activeCategory() === 'gruendung'"
-        [class.ring-white]="activeCategory() === 'gruendung'"
       >
         Gründung und Nachfolge
       </div>
 
       <!-- Pillars -->
       <div class="grid grid-cols-4 gap-0.5 mb-0.5 text-center h-20 items-stretch">
-        <div class="bg-[#ea580c] text-white p-1 flex items-center justify-center cursor-pointer hover:opacity-90 leading-tight" (click)="selectCategory('absicherung')" [class.ring-2]="activeCategory() === 'absicherung'" [class.ring-white]="activeCategory() === 'absicherung'">
+        <div
+          class="bg-[#ea580c] text-white p-1 flex items-center justify-center cursor-pointer hover:opacity-90 leading-tight transition-all"
+          [style.box-shadow]="activeCategory() === 'absicherung' ? 'inset 0 0 0 3px #dc2626' : 'none'"
+          (click)="selectCategory('absicherung')"
+        >
           Versicher-ung
         </div>
-        <div class="bg-[#be123c] text-white p-1 flex items-center justify-center cursor-pointer hover:opacity-90 leading-tight break-words hyphens-auto" (click)="selectCategory('vorsorge')" [class.ring-2]="activeCategory() === 'vorsorge'" [class.ring-white]="activeCategory() === 'vorsorge'">
+        <div
+          class="bg-[#be123c] text-white p-1 flex items-center justify-center cursor-pointer hover:opacity-90 leading-tight break-words hyphens-auto transition-all"
+          [style.box-shadow]="activeCategory() === 'vorsorge' ? 'inset 0 0 0 3px #dc2626' : 'none'"
+          (click)="selectCategory('vorsorge')"
+        >
           Vorsorge &<br>Mitarbeiter
         </div>
-        <div class="bg-[#4d7c0f] text-white p-1 flex items-center justify-center cursor-pointer hover:opacity-90 leading-tight" (click)="selectCategory('vermoegen')" [class.ring-2]="activeCategory() === 'vermoegen'" [class.ring-white]="activeCategory() === 'vermoegen'">
+        <div
+          class="bg-[#4d7c0f] text-white p-1 flex items-center justify-center cursor-pointer hover:opacity-90 leading-tight transition-all"
+          [style.box-shadow]="activeCategory() === 'vermoegen' ? 'inset 0 0 0 3px #dc2626' : 'none'"
+          (click)="selectCategory('vermoegen')"
+        >
           Vermögen &<br>EigenKapital
         </div>
-        <div class="bg-[#eab308] text-slate-900 p-1 flex items-center justify-center cursor-pointer hover:opacity-90 leading-tight font-medium" (click)="selectCategory('ausland')" [class.ring-2]="activeCategory() === 'ausland'" [class.ring-white]="activeCategory() === 'ausland'">
-          Auslands- geschäft
+        <div
+          class="bg-[#eab308] text-slate-900 p-1 flex items-center justify-center cursor-pointer hover:opacity-90 leading-tight font-medium transition-all"
+          [style.box-shadow]="activeCategory() === 'ausland' ? 'inset 0 0 0 3px #dc2626' : 'none'"
+          (click)="selectCategory('ausland')"
+        >
+          Auslands-geschäft
         </div>
       </div>
 
       <!-- Foundation -->
-      <div 
-        class="bg-[#4c1d95] text-white p-2 text-center mb-0.5 cursor-pointer hover:opacity-90 transition-opacity"
+      <div
+        class="bg-[#4c1d95] text-white p-2 text-center mb-0.5 cursor-pointer hover:opacity-90 transition-all"
+        [style.box-shadow]="activeCategory() === 'finanzierung' ? 'inset 0 0 0 3px #dc2626' : 'none'"
         (click)="selectCategory('finanzierung')"
-        [class.ring-2]="activeCategory() === 'finanzierung'"
-        [class.ring-white]="activeCategory() === 'finanzierung'"
       >
         Finanzierung
       </div>
-      <div 
-        class="bg-[#0ea5e9] text-white p-2 text-center rounded-b-sm border-2 border-slate-700 cursor-pointer hover:opacity-90 transition-opacity"
+      <div
+        class="bg-[#0ea5e9] text-white p-2 text-center rounded-b-sm border-2 border-slate-700 cursor-pointer hover:opacity-90 transition-all"
+        [style.box-shadow]="activeCategory() === 'zahlungsverkehr' ? 'inset 0 0 0 3px #dc2626' : 'none'"
         (click)="selectCategory('zahlungsverkehr')"
-        [class.ring-2]="activeCategory() === 'zahlungsverkehr'"
-        [class.ring-white]="activeCategory() === 'zahlungsverkehr'"
       >
         Zahlungsverkehr
       </div>

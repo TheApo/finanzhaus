@@ -40,6 +40,106 @@
       background-color: #f8fafc;
     }
 
+    /* Automatische Silbentrennung */
+    .hyphens-auto {
+      hyphens: auto;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+    }
+
+    /* Responsive Scaling für die MindMap */
+    .mindmap-scale {
+      --scale: 1;
+      transform: scale(var(--scale));
+      transform-origin: center center;
+    }
+
+    @media (max-width: 1400px) {
+      .mindmap-scale { --scale: 0.9; }
+    }
+
+    @media (max-width: 1200px) {
+      .mindmap-scale { --scale: 0.8; }
+    }
+
+    @media (max-width: 1000px) {
+      .mindmap-scale { --scale: 0.7; }
+    }
+
+    @media (max-width: 800px) {
+      .mindmap-scale { --scale: 0.6; }
+    }
+
+    @media (max-width: 600px) {
+      .mindmap-scale { --scale: 0.5; }
+    }
+
+    /* Responsive Header */
+    .header-title {
+      display: block;
+    }
+
+    .filter-container {
+      top: 4.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    @media (max-width: 1500px) {
+      .header-title {
+        display: none !important;
+      }
+
+      .filter-container {
+        top: 1rem;
+        left: 1rem;
+        transform: none;
+      }
+    }
+
+    /* Responsive Finanzhaus */
+    .finanzhaus-container {
+      transform-origin: bottom left;
+    }
+
+    @media (max-width: 1600px) {
+      .finanzhaus-container {
+        transform: scale(0.9);
+      }
+    }
+
+    @media (max-width: 1400px) {
+      .finanzhaus-container {
+        transform: scale(0.8);
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .finanzhaus-container {
+        transform: scale(0.7);
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .finanzhaus-container {
+        transform: scale(0.6);
+      }
+    }
+
+    @media (max-width: 800px) {
+      .finanzhaus-container {
+        transform: scale(0.5);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .finanzhaus-container {
+        transform: scale(0.4);
+      }
+    }
+
     /* Tooltip Cloud Styling */
     .tooltip-cloud {
       position: absolute;
@@ -104,7 +204,6 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body>
   <app-root></app-root>
