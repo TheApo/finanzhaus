@@ -8,6 +8,8 @@
     "remove": "Filter entfernen"
   },
   "finanzhaus": {
+    "show": "Finanzhaus anzeigen",
+    "hide": "Finanzhaus ausblenden",
     "strategie": "Genossenschaftliche Idee",
     "privat_finanz": "Private FinanzPlanung",
     "gruendung": "Gründung und Nachfolge",

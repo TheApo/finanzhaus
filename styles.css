@@ -240,6 +240,43 @@ app-root {
 }
 
 /* --------------------------------------------------------------------------
+   Finanzhaus Toggle Button
+   -------------------------------------------------------------------------- */
+.finanzhaus-toggle {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  z-index: 60;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--color-white);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--color-shadow);
+  transition: all var(--transition-fast);
+}
+
+.finanzhaus-toggle:hover {
+  background-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.finanzhaus-toggle--active {
+  color: var(--color-text-primary);
+  background-color: var(--color-border);
+}
+
+.finanzhaus-toggle__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
    Header
    -------------------------------------------------------------------------- */
 .header {
@@ -335,7 +372,7 @@ app-root {
 @container app (max-width: 1500px) {
   .filter-container {
     top: var(--spacing-md);
-    left: var(--spacing-md);
+    left: calc(var(--spacing-md) + 3rem);
     transform: none;
   }
 }

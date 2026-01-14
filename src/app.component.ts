@@ -23,6 +23,7 @@ export class AppComponent {
   hoveredNode = signal<Node | null>(null);
   hoveredCategories = signal<CategoryId[]>([]);
   tooltipPosition = signal<{ x: number; y: number; showBelow: boolean } | null>(null);
+  finanzhausVisible = signal<boolean>(true);
 
   // Expanded Nodes IDs (Manual interaction)
   expandedL1Set = signal<Set<string>>(new Set());

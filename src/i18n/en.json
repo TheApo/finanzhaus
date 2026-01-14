@@ -8,6 +8,8 @@
     "remove": "Remove filter"
   },
   "finanzhaus": {
+    "show": "Show Finanzhaus",
+    "hide": "Hide Finanzhaus",
     "strategie": "Cooperative Idea",
     "privat_finanz": "Private Financial Planning",
     "gruendung": "Founding and Succession",
