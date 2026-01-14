@@ -12,6 +12,20 @@
     </svg>
   </button>
 
+  <!-- Zoom Controls -->
+  <div class="zoom-controls no-select">
+    <button class="zoom-btn" (click)="zoomIn()" title="Vergrößern">
+      <svg class="zoom-btn__icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+    </button>
+    <button class="zoom-btn" (click)="zoomOut()" title="Verkleinern">
+      <svg class="zoom-btn__icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+      </svg>
+    </button>
+  </div>
+
   <!-- Header Title -->
   <header class="header no-select">
     <h1 class="header__title">
@@ -55,121 +69,36 @@
   }
 
   <!-- MindMap Visualization -->
-  <div class="mindmap">
-    <div class="mindmap__center mindmap-scale">
-
-      @for (l1 of mainNodes(); track l1.id) {
-        <!-- L1 Cluster -->
-        <div
-          class="l1-cluster"
-          [class.l1-cluster--dimmed]="isNodeDimmed(l1, 1, null)"
-          [style.transform]="getL1Transform(l1.id)"
-        >
-          <!-- L1 Node -->
-          <div
-            class="node node--l1"
-            (click)="handleNodeClick(l1, 1)"
-            (mouseenter)="onNodeMouseEnter($event, l1)"
-            (mouseleave)="onNodeMouseLeave()"
-          >
-            <svg class="node__icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-              @switch (l1.icon) {
-                @case ('person') {
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                }
-                @case ('truck') {
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-                }
-                @case ('users') {
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                }
-                @case ('building') {
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
-                }
-              }
-            </svg>
-            <span class="node__label no-select">{{ l1.label }}</span>
-          </div>
-
-          <!-- L2 Container -->
-          @if (isL1Expanded(l1)) {
-            <div class="l2-container">
-              @for (l2 of l1.children || []; track l2.id; let i = $index) {
-                @let l2Pos = getL2Position(i, l1.children?.length || 0);
-                @let l2Open = isL2Expanded(l2, l1);
-
-                <!-- L2 Wrapper -->
-                <div
-                  class="l2-wrapper"
-                  [style.--translate-x]="l2Pos.x + 'px'"
-                  [style.--translate-y]="l2Pos.y + 'px'"
-                  [style.transform]="'translate(' + l2Pos.x + 'px, ' + l2Pos.y + 'px)'"
-                  [class.node--dimmed]="isNodeDimmed(l2, 2, l1.id)"
-                >
-                  <!-- Connection Lines to L3 -->
-                  @if (l2Open && l2.children?.length) {
-                    <svg class="connections">
-                      @for (l3 of l2.children || []; track l3.id; let j = $index) {
-                        @let l3Pos = getL3Position(j, l2.children?.length || 0, l2Pos.angle);
-                        <line
-                          class="connections__line"
-                          x1="0" y1="0"
-                          [attr.x2]="l3Pos.x"
-                          [attr.y2]="l3Pos.y"
-                          marker-end="url(#arrowhead)"
-                        />
-                      }
-                      <defs>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="36" refY="3.5" orient="auto">
-                          <polygon class="connections__arrowhead" points="0 0, 10 3.5, 0 7" />
-                        </marker>
-                      </defs>
-                    </svg>
-                  }
-
-                  <!-- L2 Node -->
-                  <div
-                    class="node node--l2"
-                    [ngClass]="'category-' + getPrimaryCategory(l2)"
-                    (click)="handleNodeClick(l2, 2, l1)"
-                    (mouseenter)="onNodeMouseEnter($event, l2)"
-                    (mouseleave)="onNodeMouseLeave()"
-                  >
-                    <span class="node__label no-select hyphens-auto">{{ l2.label }}</span>
-                  </div>
-
-                  <!-- L3 Children -->
-                  @if (l2Open) {
-                    <div class="l3-container">
-                      @for (l3 of l2.children || []; track l3.id; let j = $index) {
-                        @let l3Pos = getL3Position(j, l2.children?.length || 0, l2Pos.angle);
-
-                        <!-- L3 Wrapper -->
-                        <div
-                          class="l3-wrapper"
-                          [style.--translate-x]="l3Pos.x + 'px'"
-                          [style.--translate-y]="l3Pos.y + 'px'"
-                          [style.transform]="'translate(' + l3Pos.x + 'px, ' + l3Pos.y + 'px)'"
-                        >
-                          <!-- L3 Node -->
-                          <div
-                            class="node node--l3"
-                            [ngClass]="'category-' + getPrimaryCategory(l3)"
-                            [class.node--dimmed]="isNodeDimmed(l3, 3, l2.id)"
-                            (mouseenter)="onNodeMouseEnter($event, l3)"
-                            (mouseleave)="onNodeMouseLeave()"
-                          >
-                            <span class="node__label no-select hyphens-auto">{{ l3.label }}</span>
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  }
-                </div>
-              }
-            </div>
-          }
-        </div>
+  <div
+    class="mindmap"
+    [class.mindmap--panning]="isPanning()"
+    (mousedown)="onPanStart($event)"
+    (mousemove)="onPanMove($event)"
+    (mouseup)="onPanEnd()"
+    (mouseleave)="onPanEnd()"
+    (wheel)="onWheel($event)"
+  >
+    <div
+      class="mindmap__center"
+      [class.mindmap__center--focus-mode]="isInFocusMode()"
+      [style.margin-left.px]="panOffset().x"
+      [style.margin-top.px]="panOffset().y"
+      [style.transform]="'scale(' + zoomLevel() + ')'"
+    >
+      <!-- Rekursiver Einstieg: Level 1 Nodes -->
+      @for (node of mainNodes(); track node.id) {
+        <ng-container
+          *ngTemplateOutlet="nodeTemplate; context: {
+            $implicit: node,
+            level: 1,
+            parentNode: null,
+            rootNode: node,
+            parentAngle: 0,
+            parentIsFocused: false,
+            parentIsParent: false,
+            parentInBranch: false
+          }"
+        ></ng-container>
       }
     </div>
   </div>
@@ -186,3 +115,103 @@
     </div>
   }
 </div>
+
+<!-- Rekursives Node Template für alle Level -->
+<ng-template #nodeTemplate
+  let-node
+  let-level="level"
+  let-parentNode="parentNode"
+  let-rootNode="rootNode"
+  let-parentAngle="parentAngle"
+  let-parentIsFocused="parentIsFocused"
+  let-parentIsParent="parentIsParent"
+  let-parentInBranch="parentInBranch"
+>
+  @let nodePos = getNodePosition(node, level, parentNode, parentAngle, parentIsFocused || parentIsParent || parentInBranch);
+  @let isExpanded = isNodeExpandedAtLevel(node, level);
+  @let isThisFocused = isFocusedNode(node);
+  @let isThisParent = isFocusedParent(node);
+  @let isThisInBranch = isInFocusedBranch(node);
+  @let shouldHide = shouldHideNode(node, level, parentIsParent, parentInBranch, isThisFocused, isThisParent, isThisInBranch);
+  @let isRootVisible = isRootVisibleInFocusMode(rootNode);
+
+  @if (!shouldHide && ((+level) === 1 ? isRootVisible : true)) {
+    <div
+      [class]="getNodeWrapperClass(level)"
+      [class.node-wrapper--hidden]="!isRootVisible && (+level) === 1"
+      [class.node-wrapper--focused]="isThisFocused"
+      [class.node-wrapper--parent]="isThisParent"
+      [class.node-wrapper--ancestor]="isThisInBranch"
+      [style.transform]="getNodeTransformForLevel(node, level, nodePos, isThisFocused, isThisParent, parentIsParent || parentInBranch, parentNode)"
+    >
+      <!-- Verbindungslinien zu Kindern (nur wenn erlaubt) -->
+      @if ((isExpanded || isThisFocused || isThisParent || isThisInBranch) && node.children?.length && shouldDrawChildConnections(node)) {
+        <svg class="connections" [class.connections--level-1]="(+level) === 1">
+          @for (child of node.children; track child.id; let idx = $index) {
+            @let childPos = getNodePosition(child, (+level) + 1, node, nodePos.angle, isThisFocused || isThisParent || isThisInBranch);
+            @let zoomRelPos = getZoomChildRelativePosition(node, child);
+            <line
+              class="connections__line"
+              x1="0" y1="0"
+              [attr.x2]="zoomRelPos ? zoomRelPos.x : childPos.x"
+              [attr.y2]="zoomRelPos ? zoomRelPos.y : childPos.y"
+            />
+          }
+        </svg>
+      }
+
+      <!-- Ahnen-Verbindungslinie (horizontal zum nächsten Node) -->
+      @if (getAncestorConnectionTarget(node); as ancestorTarget) {
+        <svg class="connections connections--ancestor">
+          <line
+            class="connections__line"
+            x1="0" y1="0"
+            [attr.x2]="ancestorTarget.x"
+            [attr.y2]="ancestorTarget.y"
+          />
+        </svg>
+      }
+
+      <!-- Der Node selbst -->
+      <div
+        class="node"
+        [ngClass]="[
+          isInFocusMode() && getZoomRole(node) ? 'node--zoom-' + getZoomRole(node) : getNodeLevelClass(level),
+          (+level) >= 2 ? 'category-' + getPrimaryCategory(node) : '',
+          isNodeDimmed(node, (+level), parentNode?.id) ? 'node--dimmed' : '',
+          shouldBlurNode(node, (+level)) ? 'node--blurred' : ''
+        ]"
+        (click)="handleNodeClick(node, (+level), parentNode, rootNode)"
+        (mouseenter)="onNodeMouseEnter($event, node)"
+        (mouseleave)="onNodeMouseLeave()"
+      >
+        <div class="node__circle">
+          <svg class="node__icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getNodeIconPath(node, level)" />
+          </svg>
+        </div>
+        <span class="node__label no-select">{{ node.label }}</span>
+      </div>
+
+      <!-- Rekursive Kinder -->
+      @if ((isExpanded || isThisFocused || isThisParent || isThisInBranch) && node.children?.length) {
+        <div [class]="'children-container children-container--level-' + (+level)">
+          @for (child of node.children; track child.id) {
+            <ng-container
+              *ngTemplateOutlet="nodeTemplate; context: {
+                $implicit: child,
+                level: (+level) + 1,
+                parentNode: node,
+                rootNode: rootNode,
+                parentAngle: nodePos.angle,
+                parentIsFocused: isThisFocused,
+                parentIsParent: isThisParent,
+                parentInBranch: isThisInBranch
+              }"
+            ></ng-container>
+          }
+        </div>
+      }
+    </div>
+  }
+</ng-template>

@@ -7,24 +7,24 @@
    CSS Variables
    -------------------------------------------------------------------------- */
 :root {
-  /* Colors - Categories */
-  --color-strategie: #e2e8f0;
-  --color-strategie-text: #1e293b;
-  --color-privat-finanz: #0f172a;
+  /* Colors - Categories (exact Finanzhaus colors) */
+  --color-strategie: #DFDFDF;
+  --color-strategie-text: #4a5568;
+  --color-privat-finanz: #173361;
   --color-privat-finanz-text: #ffffff;
-  --color-gruendung: #1e40af;
+  --color-gruendung: #1C61A5;
   --color-gruendung-text: #ffffff;
-  --color-absicherung: #ea580c;
+  --color-absicherung: #E4611B;
   --color-absicherung-text: #ffffff;
-  --color-vorsorge: #be123c;
+  --color-vorsorge: #A1315F;
   --color-vorsorge-text: #ffffff;
-  --color-vermoegen: #4d7c0f;
+  --color-vermoegen: #5F883C;
   --color-vermoegen-text: #ffffff;
-  --color-ausland: #eab308;
-  --color-ausland-text: #1e293b;
-  --color-finanzierung: #4c1d95;
+  --color-ausland: #E5A91C;
+  --color-ausland-text: #ffffff;
+  --color-finanzierung: #574788;
   --color-finanzierung-text: #ffffff;
-  --color-zahlungsverkehr: #0ea5e9;
+  --color-zahlungsverkehr: #1894C8;
   --color-zahlungsverkehr-text: #ffffff;
 
   /* Colors - UI */
@@ -57,9 +57,9 @@
 
   /* Font */
   --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-size-xs: 0.5rem;
-  --font-size-sm: 0.5625rem;
-  --font-size-base: 0.75rem;
+  --font-size-xs: 0.625rem;
+  --font-size-sm: 0.75rem;
+  --font-size-base: 0.875rem;
   --font-size-lg: 1.5rem;
 }
 
@@ -124,11 +124,11 @@ app-root {
 @keyframes bloom-in {
   from {
     opacity: 0;
-    transform: scale(0.1) translate(0, 0);
+    scale: 0.1;
   }
   to {
     opacity: 1;
-    transform: scale(1) translate(var(--translate-x), var(--translate-y));
+    scale: 1;
   }
 }
 
@@ -144,7 +144,7 @@ app-root {
 }
 
 /* --------------------------------------------------------------------------
-   Category Color Classes
+   Category Color Classes (for filter indicator and finanzhaus)
    -------------------------------------------------------------------------- */
 .category-strategie {
   background-color: var(--color-strategie);
@@ -272,6 +272,48 @@ app-root {
 }
 
 .finanzhaus-toggle__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   Zoom Controls
+   -------------------------------------------------------------------------- */
+.zoom-controls {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.zoom-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--color-white);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--color-shadow);
+  transition: all var(--transition-fast);
+}
+
+.zoom-btn:hover {
+  background-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.zoom-btn:active {
+  transform: scale(0.95);
+}
+
+.zoom-btn__icon {
   width: 1.25rem;
   height: 1.25rem;
 }
@@ -414,7 +456,12 @@ app-root {
 .mindmap {
   position: absolute;
   inset: 0;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.mindmap--panning {
+  cursor: grabbing;
 }
 
 .mindmap__center {
@@ -423,6 +470,11 @@ app-root {
   left: 50%;
   width: 0;
   height: 0;
+  transition: transform 0.5s ease-in-out;
+}
+
+.mindmap__center--focus-mode {
+  /* Optional: Anpassungen für den Fokus-Modus */
 }
 
 /* --------------------------------------------------------------------------
@@ -432,163 +484,513 @@ app-root {
   position: absolute;
   width: 0;
   height: 0;
-  transition: all 0.7s ease-in-out;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 
 .l1-cluster--dimmed {
   opacity: 0.1;
 }
 
+.l1-cluster--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.l1-cluster--focused {
+  z-index: 100;
+  opacity: 1;
+}
+
 /* --------------------------------------------------------------------------
-   Node Base Styles
+   Node Base Styles - Modern Design
    -------------------------------------------------------------------------- */
 .node {
   position: absolute;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.3s ease-out, filter 0.3s ease-out;
+  /* Die Node wird auf die Kugel zentriert, Label ist absolut positioniert */
+}
+
+.node__circle {
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  cursor: pointer;
-  pointer-events: auto;
-  transition: transform var(--transition-normal);
+  background-color: var(--color-white);
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
 }
 
-.node:hover {
-  transform: translate(-50%, -50%) scale(1.1);
+.node:hover .node__circle {
+  transform: scale(1.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.node__icon {
+  transition: transform 0.3s ease-out;
 }
 
 .node__label {
-  font-weight: 600;
-  line-height: 1.2;
-  hyphens: auto;
-  -webkit-hyphens: auto;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color-text-primary);
+  text-align: center;
+  hyphens: none;
+  white-space: nowrap;
+  padding-top: var(--spacing-xs);
 }
 
 /* --------------------------------------------------------------------------
-   L1 Node
+   Level 1 Node - Central Node (Large)
    -------------------------------------------------------------------------- */
-.node--l1 {
+.node--level-1 {
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  transition: transform 0.5s ease-in-out;
+}
+
+.node--level-1 .node__circle {
   width: 7rem;
   height: 7rem;
-  transform: translate(-50%, -50%);
-  flex-direction: column;
-  padding: var(--spacing-sm);
-  background-color: var(--color-white);
-  border: 4px solid var(--color-border);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  z-index: 30;
+  border: 3px solid var(--color-text-secondary);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
 }
 
-.node--l1:hover {
-  transform: translate(-50%, -50%) scale(1.05);
-}
-
-.node--l1 .node__icon {
-  width: 2rem;
-  height: 2rem;
-  margin-bottom: var(--spacing-xs);
+.node--level-1 .node__icon {
+  width: 2.5rem;
+  height: 2.5rem;
   color: var(--color-text-secondary);
 }
 
-.node--l1 .node__label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+.node--level-1 .node__label {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  padding-top: var(--spacing-sm);
+}
+
+.node--level-1.node--focus-mode {
+  /* Level 1 wird nach links verschoben, während Level 2 im Zentrum bleibt */
+  transform: translate(calc(-50% - 220px), -50%) scale(0.85);
+}
+
+.node--level-1.node--focus-mode:hover {
+  transform: translate(calc(-50% - 220px), -50%) scale(0.9);
 }
 
 /* --------------------------------------------------------------------------
-   L2 Node
+   Level 2 Node - Category Nodes (Medium)
    -------------------------------------------------------------------------- */
-.node--l2 {
-  width: 5rem;
-  height: 5rem;
+.node--level-2 {
   transform: translate(-50%, -50%);
-  padding: 0.375rem;
-  border: 3px solid var(--color-white);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  z-index: 20;
 }
 
-.node--l2:hover {
+.node--level-2 .node__circle {
+  width: 5rem;
+  height: 5rem;
+  border: 2.5px solid currentColor;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.node--level-2 .node__icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.node--level-2 .node__label {
+  font-size: var(--font-size-sm);
+  padding-top: var(--spacing-xs);
+}
+
+.node--level-2:hover {
   z-index: 40;
 }
 
-.node--l2 .node__label {
-  font-size: var(--font-size-sm);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
+/* Level 2 Category Border Colors - Override background */
+.node--level-2.category-strategie { color: var(--color-text-secondary); background: transparent; }
+.node--level-2.category-privat_finanz { color: var(--color-privat-finanz); background: transparent; }
+.node--level-2.category-gruendung { color: var(--color-gruendung); background: transparent; }
+.node--level-2.category-absicherung { color: var(--color-absicherung); background: transparent; }
+.node--level-2.category-vorsorge { color: var(--color-vorsorge); background: transparent; }
+.node--level-2.category-vermoegen { color: var(--color-vermoegen); background: transparent; }
+.node--level-2.category-ausland { color: var(--color-ausland); background: transparent; }
+.node--level-2.category-finanzierung { color: var(--color-finanzierung); background: transparent; }
+.node--level-2.category-zahlungsverkehr { color: var(--color-zahlungsverkehr); background: transparent; }
 
 /* --------------------------------------------------------------------------
-   L3 Node
+   Level 3 Node - Detail Nodes (Small) with Blur Effect
    -------------------------------------------------------------------------- */
-.node--l3 {
-  width: 3.5rem;
-  height: 3.5rem;
+.node--level-3 {
   transform: translate(-50%, -50%);
-  padding: var(--spacing-xs);
-  border: 2px solid var(--color-white);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  filter: blur(1px);
+  opacity: 0.7;
+  transition: filter 0.4s ease-out, opacity 0.4s ease-out, transform 0.3s ease-out;
 }
 
-.node--l3 .node__label {
+.node--level-3 .node__circle {
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid currentColor;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.node--level-3 .node__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.node--level-3 .node__label {
   font-size: var(--font-size-xs);
   font-weight: 500;
+  padding-top: 0.25rem;
+}
+
+/* Level 3 becomes sharp on hover, in focus mode, or when matching filter */
+.node--level-3:hover,
+.node-wrapper--focused .node--level-3,
+.node-wrapper--parent .node--level-3,
+.node--level-3:not(.node--dimmed):not(.node--blurred) {
+  filter: blur(0);
+  opacity: 1;
+}
+
+/* Level 3 Category Border Colors - Override background */
+.node--level-3.category-strategie { color: var(--color-text-secondary); background: transparent; }
+.node--level-3.category-privat_finanz { color: var(--color-privat-finanz); background: transparent; }
+.node--level-3.category-gruendung { color: var(--color-gruendung); background: transparent; }
+.node--level-3.category-absicherung { color: var(--color-absicherung); background: transparent; }
+.node--level-3.category-vorsorge { color: var(--color-vorsorge); background: transparent; }
+.node--level-3.category-vermoegen { color: var(--color-vermoegen); background: transparent; }
+.node--level-3.category-ausland { color: var(--color-ausland); background: transparent; }
+.node--level-3.category-finanzierung { color: var(--color-finanzierung); background: transparent; }
+.node--level-3.category-zahlungsverkehr { color: var(--color-zahlungsverkehr); background: transparent; }
+
+/* --------------------------------------------------------------------------
+   Dynamic Level Nodes (Level 4+) - Rekursiv
+   Verwendet spezifische Klassen statt Attribute-Selektoren um Level 1-3 nicht zu überschreiben
+   -------------------------------------------------------------------------- */
+.node--level-4,
+.node--level-5,
+.node--level-6,
+.node--level-7,
+.node--level-8,
+.node--level-9,
+.node--level-10 {
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  filter: blur(1.5px);
+  opacity: 0.6;
+  transition: filter 0.4s ease-out, opacity 0.4s ease-out, transform 0.3s ease-out;
+}
+
+.node--level-4 .node__circle,
+.node--level-5 .node__circle,
+.node--level-6 .node__circle,
+.node--level-7 .node__circle,
+.node--level-8 .node__circle,
+.node--level-9 .node__circle,
+.node--level-10 .node__circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1.5px solid currentColor;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.node--level-4 .node__icon,
+.node--level-5 .node__icon,
+.node--level-6 .node__icon,
+.node--level-7 .node__icon,
+.node--level-8 .node__icon,
+.node--level-9 .node__icon,
+.node--level-10 .node__icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.node--level-4 .node__label,
+.node--level-5 .node__label,
+.node--level-6 .node__label,
+.node--level-7 .node__label,
+.node--level-8 .node__label,
+.node--level-9 .node__label,
+.node--level-10 .node__label {
+  font-size: 0.5rem;
+  font-weight: 500;
+  padding-top: 0.125rem;
+}
+
+/* Dynamic level nodes become sharp on hover, in focus mode, or when matching filter */
+.node--level-4:hover,
+.node--level-5:hover,
+.node--level-6:hover,
+.node--level-7:hover,
+.node--level-8:hover,
+.node--level-9:hover,
+.node--level-10:hover,
+.node-wrapper--focused .node--level-4,
+.node-wrapper--focused .node--level-5,
+.node-wrapper--focused .node--level-6,
+.node-wrapper--parent .node--level-4,
+.node-wrapper--parent .node--level-5,
+.node-wrapper--parent .node--level-6,
+.node--level-4:not(.node--dimmed):not(.node--blurred),
+.node--level-5:not(.node--dimmed):not(.node--blurred),
+.node--level-6:not(.node--dimmed):not(.node--blurred),
+.node--level-7:not(.node--dimmed):not(.node--blurred),
+.node--level-8:not(.node--dimmed):not(.node--blurred),
+.node--level-9:not(.node--dimmed):not(.node--blurred),
+.node--level-10:not(.node--dimmed):not(.node--blurred) {
+  filter: blur(0);
+  opacity: 1;
+}
+
+/* Dynamic level Category Border Colors (Level 4+) */
+.node--level-4.category-strategie,
+.node--level-5.category-strategie,
+.node--level-6.category-strategie { color: var(--color-text-secondary); background: transparent; }
+.node--level-4.category-privat_finanz,
+.node--level-5.category-privat_finanz,
+.node--level-6.category-privat_finanz { color: var(--color-privat-finanz); background: transparent; }
+.node--level-4.category-gruendung,
+.node--level-5.category-gruendung,
+.node--level-6.category-gruendung { color: var(--color-gruendung); background: transparent; }
+.node--level-4.category-absicherung,
+.node--level-5.category-absicherung,
+.node--level-6.category-absicherung { color: var(--color-absicherung); background: transparent; }
+.node--level-4.category-vorsorge,
+.node--level-5.category-vorsorge,
+.node--level-6.category-vorsorge { color: var(--color-vorsorge); background: transparent; }
+.node--level-4.category-vermoegen,
+.node--level-5.category-vermoegen,
+.node--level-6.category-vermoegen { color: var(--color-vermoegen); background: transparent; }
+.node--level-4.category-ausland,
+.node--level-5.category-ausland,
+.node--level-6.category-ausland { color: var(--color-ausland); background: transparent; }
+.node--level-4.category-finanzierung,
+.node--level-5.category-finanzierung,
+.node--level-6.category-finanzierung { color: var(--color-finanzierung); background: transparent; }
+.node--level-4.category-zahlungsverkehr,
+.node--level-5.category-zahlungsverkehr,
+.node--level-6.category-zahlungsverkehr { color: var(--color-zahlungsverkehr); background: transparent; }
+
+.node-wrapper--focused {
+  z-index: 50;
+}
+
+.node-wrapper--parent {
+  z-index: 40;
+}
+
+.node-wrapper--ancestor {
+  z-index: 35;
+}
+
+/* Ancestor nodes should also be clear */
+.node-wrapper--ancestor .node--level-3,
+.node-wrapper--ancestor [class^="node--level-"],
+.node-wrapper--ancestor [class*=" node--level-"] {
+  filter: blur(0);
+  opacity: 1;
 }
 
 /* --------------------------------------------------------------------------
    Node States
    -------------------------------------------------------------------------- */
 .node--dimmed {
-  filter: opacity(0.25) grayscale(0.8);
+  filter: opacity(0.4) grayscale(0.9);
+}
+
+/* Kombiniert: Dimmed + Blurred */
+.node--dimmed.node--blurred {
+  filter: opacity(0.35) grayscale(0.9) blur(1.5px);
 }
 
 /* --------------------------------------------------------------------------
-   L2 Container & Wrapper
+   Zoom-Modus: Feste Größen unabhängig vom Level
    -------------------------------------------------------------------------- */
-.l2-container {
+/* Ahnen-Klassen: Je weiter vom Fokus entfernt, desto größer */
+.node--zoom-ancestor-1 {
+  transform: translate(-50%, -50%);
+  z-index: 20;
+}
+.node--zoom-ancestor-1 .node__circle {
+  width: 6rem;
+  height: 6rem;
+  border: 3px solid currentColor;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+.node--zoom-ancestor-1 .node__icon {
+  width: 2rem;
+  height: 2rem;
+}
+.node--zoom-ancestor-1 .node__label {
+  font-size: var(--font-size-base);
+}
+
+.node--zoom-ancestor-2 {
+  transform: translate(-50%, -50%);
+  z-index: 19;
+}
+.node--zoom-ancestor-2 .node__circle {
+  width: 7rem;
+  height: 7rem;
+  border: 3.5px solid currentColor;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+.node--zoom-ancestor-2 .node__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+.node--zoom-ancestor-2 .node__label {
+  font-size: var(--font-size-base);
+}
+
+.node--zoom-ancestor-3 {
+  transform: translate(-50%, -50%);
+  z-index: 18;
+}
+.node--zoom-ancestor-3 .node__circle {
+  width: 8rem;
+  height: 8rem;
+  border: 4px solid currentColor;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+}
+.node--zoom-ancestor-3 .node__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.node--zoom-ancestor-3 .node__label {
+  font-size: var(--font-size-lg);
+}
+
+.node--zoom-focused {
+  transform: translate(-50%, -50%);
+  z-index: 30;
+}
+.node--zoom-focused .node__circle {
+  width: 5rem;
+  height: 5rem;
+  border: 2.5px solid currentColor;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+.node--zoom-focused .node__icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+.node--zoom-focused .node__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.node--zoom-child {
+  transform: translate(-50%, -50%);
+  z-index: 15;
+}
+.node--zoom-child .node__circle {
+  width: 4rem;
+  height: 4rem;
+  border: 2px solid currentColor;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+.node--zoom-child .node__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.node--zoom-child .node__label {
+  font-size: var(--font-size-xs);
+}
+
+.node--zoom-grandchild {
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+.node--zoom-grandchild .node__circle {
+  width: 3rem;
+  height: 3rem;
+  border: 1.5px solid currentColor;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.node--zoom-grandchild .node__icon {
+  width: 1rem;
+  height: 1rem;
+}
+.node--zoom-grandchild .node__label {
+  font-size: 0.5rem;
+}
+
+/* Zoom-Modus Category Colors */
+[class*="node--zoom-"].category-strategie { color: var(--color-text-secondary); background: transparent; }
+[class*="node--zoom-"].category-privat_finanz { color: var(--color-privat-finanz); background: transparent; }
+[class*="node--zoom-"].category-gruendung { color: var(--color-gruendung); background: transparent; }
+[class*="node--zoom-"].category-absicherung { color: var(--color-absicherung); background: transparent; }
+[class*="node--zoom-"].category-vorsorge { color: var(--color-vorsorge); background: transparent; }
+[class*="node--zoom-"].category-vermoegen { color: var(--color-vermoegen); background: transparent; }
+[class*="node--zoom-"].category-ausland { color: var(--color-ausland); background: transparent; }
+[class*="node--zoom-"].category-finanzierung { color: var(--color-finanzierung); background: transparent; }
+[class*="node--zoom-"].category-zahlungsverkehr { color: var(--color-zahlungsverkehr); background: transparent; }
+
+/* Blur-Effekt für nicht-passende Filter-Items oder Enkel im Zoom */
+.node--blurred {
+  filter: blur(1.5px);
+  opacity: 0.6;
+}
+
+/* --------------------------------------------------------------------------
+   Node Wrapper - Generisch für alle Level
+   -------------------------------------------------------------------------- */
+.node-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.node-wrapper--level-1 {
+  /* Level 1 Wrapper - feste Position */
+}
+
+.node-wrapper--level-2,
+.node-wrapper--level-3 {
+  animation: bloom-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+[class^="node-wrapper--level-"]:not(.node-wrapper--level-1):not(.node-wrapper--level-2):not(.node-wrapper--level-3) {
+  animation: bloom-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.node-wrapper--hidden {
+  opacity: 0 !important;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Children Container - Generisch für alle Level
+   -------------------------------------------------------------------------- */
+.children-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 0;
   height: 0;
   overflow: visible;
+}
+
+.children-container--level-1 {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.l2-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  animation: bloom-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  transition: all var(--transition-slow);
-}
-
 /* --------------------------------------------------------------------------
-   L3 Container & Wrapper
-   -------------------------------------------------------------------------- */
-.l3-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  overflow: visible;
-}
-
-.l3-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  animation: bloom-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* --------------------------------------------------------------------------
-   Connection Lines (SVG)
+   Connection Lines (SVG) - Elegant Design
    -------------------------------------------------------------------------- */
 .connections {
   position: absolute;
@@ -600,12 +1002,37 @@ app-root {
 }
 
 .connections__line {
-  stroke: var(--color-text-muted);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  opacity: 0.4;
+  transition: opacity 0.3s ease-out, stroke-width 0.3s ease-out;
+}
+
+.node-wrapper:hover .connections__line,
+.node-wrapper--focused .connections__line {
+  opacity: 0.7;
   stroke-width: 2;
 }
 
 .connections__arrowhead {
-  fill: var(--color-text-muted);
+  fill: currentColor;
+  opacity: 0.4;
+}
+
+.node-wrapper:hover .connections__arrowhead,
+.node-wrapper--focused .connections__arrowhead {
+  opacity: 0.7;
+}
+
+/* Level 1 to Level 2 Connection Lines */
+.connections--level-1 {
+  color: var(--color-text-muted);
+}
+
+.connections--level-1 .connections__line {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.3;
 }
 
 /* --------------------------------------------------------------------------
