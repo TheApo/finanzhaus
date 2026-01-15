@@ -5,7 +5,8 @@
   },
   "filter": {
     "label": "Filter",
-    "remove": "Filter entfernen"
+    "remove": "Filter entfernen",
+    "removeAll": "Alle Filter entfernen"
   },
   "finanzhaus": {
     "show": "Finanzhaus anzeigen",

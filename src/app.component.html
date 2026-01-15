@@ -26,28 +26,25 @@
     </button>
   </div>
 
-  <!-- Header Title -->
-  <header class="header no-select">
-    <h1 class="header__title">
-      <span class="header__title-bold">{{ t('app.title') }}</span> {{ t('app.subtitle') }}
-    </h1>
-  </header>
-
-  <!-- Filter Indicator -->
-  @if (activeCategory()) {
+  <!-- Filter Indicator (Multi-Select) -->
+  @if (activeCategories().size > 0) {
     <div class="filter-container no-select">
       <div class="filter-indicator">
         <span class="filter-indicator__label">{{ t('filter.label') }}</span>
-        <span
-          class="filter-indicator__value"
-          [ngClass]="'category-' + activeCategory()"
-        >
-          {{ getCategoryLabel(activeCategory()!) }}
-        </span>
+        @for (catId of activeCategories(); track catId) {
+          <span
+            class="filter-indicator__value filter-indicator__value--clickable"
+            [ngClass]="'category-' + catId"
+            (click)="toggleCategory(catId)"
+            [title]="t('filter.remove')"
+          >
+            {{ getCategoryLabel(catId) }}
+          </span>
+        }
         <button
           class="filter-indicator__close"
-          (click)="activeCategory.set(null)"
-          [title]="t('filter.remove')"
+          (click)="clearAllFilters()"
+          [title]="t('filter.removeAll')"
         >
           <svg class="filter-indicator__close-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -61,7 +58,7 @@
   @if (finanzhausVisible()) {
     <div class="finanzhaus-wrapper">
       <app-finanzhaus
-        [activeCategory]="activeCategory()"
+        [activeCategories]="activeCategories()"
         [hoveredCategories]="hoveredCategories()"
         (categorySelected)="toggleCategory($event)"
       />
@@ -81,25 +78,25 @@
     <div
       class="mindmap__center"
       [class.mindmap__center--focus-mode]="isInFocusMode()"
+      [class.mindmap__center--filtering]="activeCategories().size > 0"
+      [class.mindmap__center--settling]="isSimulating()"
       [style.margin-left.px]="panOffset().x"
       [style.margin-top.px]="panOffset().y"
       [style.transform]="'scale(' + zoomLevel() + ')'"
     >
-      <!-- Rekursiver Einstieg: Level 1 Nodes -->
-      @for (node of mainNodes(); track node.id) {
-        <ng-container
-          *ngTemplateOutlet="nodeTemplate; context: {
-            $implicit: node,
-            level: 1,
-            parentNode: null,
-            rootNode: node,
-            parentAngle: 0,
-            parentIsFocused: false,
-            parentIsParent: false,
-            parentInBranch: false
-          }"
-        ></ng-container>
-      }
+      <!-- Rekursiver Einstieg: Level 0 (Root Node) -->
+      <ng-container
+        *ngTemplateOutlet="nodeTemplate; context: {
+          $implicit: rootNode(),
+          level: 0,
+          parentNode: null,
+          rootNode: rootNode(),
+          parentAngle: 0,
+          parentIsFocused: false,
+          parentIsParent: false,
+          parentInBranch: false
+        }"
+      ></ng-container>
     </div>
   </div>
 
@@ -135,7 +132,7 @@
   @let shouldHide = shouldHideNode(node, level, parentIsParent, parentInBranch, isThisFocused, isThisParent, isThisInBranch);
   @let isRootVisible = isRootVisibleInFocusMode(rootNode);
 
-  @if (!shouldHide && ((+level) === 1 ? isRootVisible : true)) {
+  @if (!shouldHide && ((+level) <= 1 ? isRootVisible : true)) {
     <div
       [class]="getNodeWrapperClass(level)"
       [class.node-wrapper--hidden]="!isRootVisible && (+level) === 1"
@@ -144,31 +141,20 @@
       [class.node-wrapper--ancestor]="isThisInBranch"
       [style.transform]="getNodeTransformForLevel(node, level, nodePos, isThisFocused, isThisParent, parentIsParent || parentInBranch, parentNode)"
     >
-      <!-- Verbindungslinien zu Kindern (nur wenn erlaubt) -->
-      @if ((isExpanded || isThisFocused || isThisParent || isThisInBranch) && node.children?.length && shouldDrawChildConnections(node)) {
-        <svg class="connections" [class.connections--level-1]="(+level) === 1">
-          @for (child of node.children; track child.id; let idx = $index) {
-            @let childPos = getNodePosition(child, (+level) + 1, node, nodePos.angle, isThisFocused || isThisParent || isThisInBranch);
-            @let zoomRelPos = getZoomChildRelativePosition(node, child);
+      <!-- Verbindungslinien zu Kindern -->
+      @if (((+level) === 0 || isExpanded || isThisFocused || isThisParent || isThisInBranch || isInFocusMode()) && node.children?.length) {
+        <svg class="connections" [class.connections--level-0]="(+level) === 0" [class.connections--level-1]="(+level) === 1">
+          @for (child of node.children; track child.id) {
+            @let forceChildPos = getForcePosition(child);
+            @let forceNodePos = getForcePosition(node);
             <line
               class="connections__line"
+              [class.connections__line--blurred]="shouldBlurNode(child, (+level) + 1, node)"
               x1="0" y1="0"
-              [attr.x2]="zoomRelPos ? zoomRelPos.x : childPos.x"
-              [attr.y2]="zoomRelPos ? zoomRelPos.y : childPos.y"
+              [attr.x2]="forceChildPos.x - forceNodePos.x"
+              [attr.y2]="forceChildPos.y - forceNodePos.y"
             />
           }
-        </svg>
-      }
-
-      <!-- Ahnen-Verbindungslinie (horizontal zum nächsten Node) -->
-      @if (getAncestorConnectionTarget(node); as ancestorTarget) {
-        <svg class="connections connections--ancestor">
-          <line
-            class="connections__line"
-            x1="0" y1="0"
-            [attr.x2]="ancestorTarget.x"
-            [attr.y2]="ancestorTarget.y"
-          />
         </svg>
       }
 
@@ -176,10 +162,10 @@
       <div
         class="node"
         [ngClass]="[
-          isInFocusMode() && getZoomRole(node) ? 'node--zoom-' + getZoomRole(node) : getNodeLevelClass(level),
+          getNodeLevelClass(level),
           (+level) >= 2 ? 'category-' + getPrimaryCategory(node) : '',
           isNodeDimmed(node, (+level), parentNode?.id) ? 'node--dimmed' : '',
-          shouldBlurNode(node, (+level)) ? 'node--blurred' : ''
+          shouldBlurNode(node, (+level), parentNode) ? 'node--blurred' : ''
         ]"
         (click)="handleNodeClick(node, (+level), parentNode, rootNode)"
         (mouseenter)="onNodeMouseEnter($event, node)"
@@ -193,8 +179,8 @@
         <span class="node__label no-select">{{ node.label }}</span>
       </div>
 
-      <!-- Rekursive Kinder -->
-      @if ((isExpanded || isThisFocused || isThisParent || isThisInBranch) && node.children?.length) {
+      <!-- Rekursive Kinder (Level 0 zeigt immer Kinder, im Fokus-Modus alle sichtbar) -->
+      @if (((+level) === 0 || isExpanded || isThisFocused || isThisParent || isThisInBranch || isInFocusMode()) && node.children?.length) {
         <div [class]="'children-container children-container--level-' + (+level)">
           @for (child of node.children; track child.id) {
             <ng-container
@@ -202,7 +188,7 @@
                 $implicit: child,
                 level: (+level) + 1,
                 parentNode: node,
-                rootNode: rootNode,
+                rootNode: (+level) === 0 ? child : rootNode,
                 parentAngle: nodePos.angle,
                 parentIsFocused: isThisFocused,
                 parentIsParent: isThisParent,

@@ -1,4 +1,10 @@
 {
+  "root": {
+    "id": "mein_unternehmen",
+    "name": "My Company",
+    "finanzhaus": "strategie",
+    "icon": "network"
+  },
   "categories": [
     { "id": "strategie", "label": "Cooperative Idea" },
     { "id": "privat_finanz", "label": "Private Financial Planning" },
@@ -63,7 +69,7 @@
     },
     {
       "id": "muster_gmbh",
-      "name": "Sample Ltd.",
+      "name": "Corporate Organization",
       "finanzhaus": "strategie",
       "icon": "building",
       "blaetter": [

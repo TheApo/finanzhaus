@@ -1,7 +1,8 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService, Node, CategoryId, Category } from './services/data.service';
 import { I18nService } from './services/i18n.service';
+import { ForceLayoutService } from './services/force-layout.service';
 import { FinanzhausComponent } from './components/finanzhaus.component';
 
 @Component({
@@ -12,14 +13,20 @@ import { FinanzhausComponent } from './components/finanzhaus.component';
 })
 export class AppComponent {
   private dataService = inject(DataService);
+  private forceLayout = inject(ForceLayoutService);
   i18n = inject(I18nService);
 
   // Data - computed to react to language changes
-  mainNodes = computed(() => this.dataService.getTreeData());
+  rootNode = computed(() => this.dataService.getRootNode());
+  mainNodes = computed(() => this.rootNode().children || []);
   categories = computed(() => this.dataService.getCategories());
 
-  // State
-  activeCategory = signal<CategoryId | null>(null);
+  // Force layout positions
+  forcePositions = this.forceLayout.nodePositions;
+  isSimulating = this.forceLayout.isSettling;
+
+  // State - Multi-Select Filter
+  activeCategories = signal<Set<CategoryId>>(new Set());
   hoveredNode = signal<Node | null>(null);
   hoveredCategories = signal<CategoryId[]>([]);
   tooltipPosition = signal<{ x: number; y: number; showBelow: boolean } | null>(null);
@@ -42,6 +49,35 @@ export class AppComponent {
 
   // Expanded Nodes Set (für alle Level)
   expandedNodes = signal<Set<string>>(new Set());
+
+  // Effect: Initialize and update force layout
+  private forceLayoutEffect = effect(() => {
+    const root = this.rootNode();
+    const expanded = this.expandedNodes();
+    this.forceLayout.updateNodes(root, expanded);
+  });
+
+  // Track last focused node to only pan once on focus change
+  private lastFocusedNodeId: string | null = null;
+
+  // Effect: Pan to focused node ONLY when focus changes (not on position updates)
+  private focusPanEffect = effect(() => {
+    const focused = this.focusedNode();
+    const positions = this.forcePositions();
+
+    if (focused && positions.size > 0) {
+      // Nur pannen wenn sich der fokussierte Node geändert hat
+      if (this.lastFocusedNodeId !== focused.node.id) {
+        this.lastFocusedNodeId = focused.node.id;
+        const pos = positions.get(focused.node.id);
+        if (pos) {
+          this.panOffset.set({ x: -pos.x, y: -pos.y });
+        }
+      }
+    } else if (!focused) {
+      this.lastFocusedNodeId = null;
+    }
+  });
 
   t(key: string): string {
     return this.i18n.t(key);
@@ -70,8 +106,9 @@ export class AppComponent {
     zahlungsverkehr: 'M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z'
   };
 
-  // Level 1 Icon Paths (spezielle Icons für Root-Nodes)
+  // Level 0 and Level 1 Icon Paths (spezielle Icons für Root-Nodes)
   private level1IconPaths: Record<string, string> = {
+    'network': 'M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z',
     'person': 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z',
     'truck': 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12',
     'users': 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z',
@@ -84,8 +121,9 @@ export class AppComponent {
 
   getNodeIconPath(node: Node, level: number | string): string {
     const numLevel = Number(level);
-    if (numLevel === 1 && node.icon) {
-      return this.level1IconPaths[node.icon] || this.level1IconPaths['person'];
+    // Level 0 and Level 1 use special icons
+    if ((numLevel === 0 || numLevel === 1) && node.icon) {
+      return this.level1IconPaths[node.icon] || this.level1IconPaths['network'];
     }
     return this.getIconPath(this.getPrimaryCategory(node));
   }
@@ -97,75 +135,156 @@ export class AppComponent {
   // --- Actions ---
 
   toggleCategory(catId: CategoryId) {
-    if (this.activeCategory() === catId) {
-      this.activeCategory.set(null);
+    const current = new Set(this.activeCategories());
+
+    if (current.has(catId)) {
+      // Kategorie entfernen
+      current.delete(catId);
+      this.activeCategories.set(current);
+
+      if (current.size === 0) {
+        // Keine Filter mehr aktiv → View zurücksetzen
+        this.panOffset.set({ x: 0, y: 0 });
+      } else {
+        // Noch andere Filter aktiv → auf diese zentrieren
+        setTimeout(() => this.centerOnFilteredNodes(), 100);
+      }
     } else {
-      this.activeCategory.set(catId);
+      // Kategorie hinzufügen
+      current.add(catId);
+      this.activeCategories.set(current);
+
+      // Alle Level 1 Nodes expandieren die passende Kinder haben
+      const expanded = new Set(this.expandedNodes());
+      for (const level1Node of this.mainNodes()) {
+        if (this.hasAnyCategoryMatch(level1Node, current)) {
+          this.expandNodeAndChildren(level1Node, expanded);
+        }
+      }
+      this.expandedNodes.set(expanded);
+
+      // View auf passende Nodes zentrieren
+      setTimeout(() => this.centerOnFilteredNodes(), 100);
     }
+  }
+
+  // Zentriert die View auf alle Nodes die zum Filter passen
+  private centerOnFilteredNodes(): void {
+    const positions = this.forcePositions();
+    const categories = this.activeCategories();
+    if (positions.size === 0 || categories.size === 0) return;
+
+    // Alle passenden Node-Positionen sammeln
+    const matchingPositions: { x: number; y: number }[] = [];
+
+    const collectMatching = (node: Node) => {
+      const pos = positions.get(node.id);
+      if (!pos) return;
+
+      // Node passt wenn er eine der Kategorien hat oder passende Kinder
+      const isMatch = node.categoryIds.some(id => categories.has(id));
+      const hasMatchingChildren = this.hasAnyCategoryMatch(node, categories);
+
+      if (isMatch || hasMatchingChildren) {
+        matchingPositions.push(pos);
+      }
+
+      // Rekursiv durch Kinder
+      if (node.children) {
+        for (const child of node.children) {
+          collectMatching(child);
+        }
+      }
+    };
+
+    // Von Root starten
+    collectMatching(this.rootNode());
+
+    if (matchingPositions.length === 0) return;
+
+    // Bounding Box berechnen
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    for (const pos of matchingPositions) {
+      minX = Math.min(minX, pos.x);
+      maxX = Math.max(maxX, pos.x);
+      minY = Math.min(minY, pos.y);
+      maxY = Math.max(maxY, pos.y);
+    }
+
+    // Mittelpunkt berechnen
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+
+    // View zentrieren
+    this.panOffset.set({ x: -centerX, y: -centerY });
   }
 
   handleNodeClick(node: Node, level: number | string, parent: Node | null, root: Node) {
     const numLevel = Number(level);
 
-    if (this.activeCategory()) {
+    if (this.activeCategories().size > 0) {
       this.freezeCurrentState();
-      this.activeCategory.set(null);
+      this.activeCategories.set(new Set());
     }
 
     const focused = this.focusedNode();
 
-    // Im Zoom-Modus: Spezielle Navigation
+    // Im Fokus-Modus
     if (focused) {
       const role = this.getZoomRole(node);
 
-      // Klick auf Level 1 (Root) → Zoom komplett verlassen
-      if (numLevel === 1) {
+      // Klick auf Level 0 oder Level 1 → Fokus verlassen
+      if (numLevel <= 1) {
         this.focusedNode.set(null);
+        this.panOffset.set({ x: 0, y: 0 }); // View zurücksetzen
         return;
       }
 
-      // Klick auf den fokussierten Node → Zoom verlassen
+      // Klick auf den fokussierten Node selbst → Fokus verlassen
       if (role === 'focused') {
         this.focusedNode.set(null);
+        this.panOffset.set({ x: 0, y: 0 });
         return;
       }
 
-      // Klick auf einen Ahnen → Fokus auf diesen Ahnen setzen (rauszoomen)
-      if (role && role.startsWith('ancestor-')) {
-        const newParent = this.findParentOfNode(root, node);
+      // Klick auf einen scharfen Node (Vorfahre oder Nachkomme) → neuer Fokus
+      if (role === 'ancestor' || role === 'descendant') {
+        const newParent = this.findParentOfNode(this.rootNode(), node);
         if (newParent) {
-          const newLevel = numLevel;
-          this.focusedNode.set({ node, parent: newParent, root, level: newLevel });
-        }
-        return;
-      }
+          this.focusedNode.set({ node, parent: newParent, root, level: numLevel });
+          this.panToNode(node);
 
-      // Klick auf ein Kind → Fokus auf dieses Kind setzen (reinzoomen)
-      if (role === 'child') {
-        this.focusedNode.set({ node, parent: focused.node, root, level: numLevel });
-        const expanded = new Set(this.expandedNodes());
-        expanded.add(node.id);
-        this.expandedNodes.set(expanded);
-        return;
-      }
-
-      // Klick auf einen Enkel → Fokus auf diesen Enkel setzen (2 Level reinzoomen)
-      if (role === 'grandchild') {
-        // Finde den Parent des Enkels (ein Kind des fokussierten Nodes)
-        const childParent = focused.node.children?.find(c =>
-          c.children?.some(gc => gc.id === node.id)
-        );
-        if (childParent) {
-          this.focusedNode.set({ node, parent: childParent, root, level: numLevel });
+          // Nodes expandieren damit Kinder sichtbar sind
           const expanded = new Set(this.expandedNodes());
           expanded.add(node.id);
           this.expandedNodes.set(expanded);
         }
         return;
       }
+
+      // Klick auf geblurrten Node → Fokus auf diesen Node setzen
+      if (numLevel >= 2) {
+        const newParent = this.findParentOfNode(this.rootNode(), node);
+        if (newParent) {
+          this.focusedNode.set({ node, parent: newParent, root, level: numLevel });
+
+          const expanded = new Set(this.expandedNodes());
+          expanded.add(node.id);
+          this.expandedNodes.set(expanded);
+        }
+      }
+      return;
     }
 
     // Normal-Modus (kein Fokus aktiv)
+    if (numLevel === 0) {
+      // Level 0: Wobble-Animation auslösen
+      this.forceLayout.wobble();
+      return;
+    }
+
     if (numLevel === 1) {
       // Level 1: Toggle expand
       const currentSet = new Set(this.expandedNodes());
@@ -178,6 +297,7 @@ export class AppComponent {
     } else if (numLevel >= 2 && parent) {
       // Fokus-Modus aktivieren
       this.focusedNode.set({ node, parent, root, level: numLevel });
+      this.panToNode(node);
 
       const expanded = new Set(this.expandedNodes());
       expanded.add(node.id);
@@ -219,13 +339,13 @@ export class AppComponent {
   }
 
   private freezeCurrentState() {
-    const activeCat = this.activeCategory();
-    if (!activeCat) return;
+    const activeCategories = this.activeCategories();
+    if (activeCategories.size === 0) return;
 
     const newSet = new Set(this.expandedNodes());
 
     const freezeNode = (node: Node) => {
-      if (this.hasCategoryMatch(node, activeCat)) {
+      if (this.hasAnyCategoryMatch(node, activeCategories)) {
         newSet.add(node.id);
         if (node.children) {
           for (const child of node.children) {
@@ -248,9 +368,14 @@ export class AppComponent {
     }
   }
 
+  clearAllFilters() {
+    this.activeCategories.set(new Set());
+    this.panOffset.set({ x: 0, y: 0 });
+  }
+
   resetView() {
     this.expandedNodes.set(new Set());
-    this.activeCategory.set(null);
+    this.activeCategories.set(new Set());
     this.focusedNode.set(null);
     this.panOffset.set({ x: 0, y: 0 });
     this.zoomLevel.set(1);
@@ -334,9 +459,7 @@ export class AppComponent {
   }
 
   isRootVisibleInFocusMode(root: Node): boolean {
-    const focused = this.focusedNode();
-    if (!focused) return true;
-    return focused.root.id === root.id;
+    return true;
   }
 
   // Findet den Pfad vom Root zum Ziel-Node (gibt Array von Node-IDs zurück)
@@ -357,37 +480,57 @@ export class AppComponent {
     return null;
   }
 
-  // Bestimmt die Rolle eines Nodes im Zoom-Modus
-  // Gibt zurück: 'focused', 'child', 'grandchild', oder 'ancestor-N' (N = Distanz zum Fokus)
+  // Prüft ob ein Node ein Vorfahre des fokussierten Nodes ist
+  private isAncestorOfFocused(node: Node): boolean {
+    const focused = this.focusedNode();
+    if (!focused) return false;
+
+    // Finde den Pfad vom Level-0 Root zum fokussierten Node
+    const root = this.rootNode();
+    const pathToFocused = this.findPathToNode(root, focused.node.id);
+    if (!pathToFocused) return false;
+
+    return pathToFocused.includes(node.id) && node.id !== focused.node.id;
+  }
+
+  // Prüft ob ein Node ein Nachkomme des fokussierten Nodes ist (Kinder, Enkel, Urenkel, etc.)
+  private isDescendantOfFocused(node: Node): boolean {
+    const focused = this.focusedNode();
+    if (!focused) return false;
+
+    // Rekursiv prüfen ob node im Unterbaum von focused.node liegt
+    const checkDescendant = (parent: Node, targetId: string): boolean => {
+      if (!parent.children) return false;
+      for (const child of parent.children) {
+        if (child.id === targetId) return true;
+        if (checkDescendant(child, targetId)) return true;
+      }
+      return false;
+    };
+
+    return checkDescendant(focused.node, node.id);
+  }
+
+  // Zentriert die View auf einen Node (für Fokus-Modus)
+  private panToNode(node: Node): void {
+    const pos = this.forcePositions().get(node.id);
+    if (pos) {
+      this.panOffset.set({ x: -pos.x, y: -pos.y });
+    }
+  }
+
+  // Legacy-Methode für Template-Kompatibilität
   getZoomRole(node: Node): string | null {
     const focused = this.focusedNode();
     if (!focused) return null;
 
-    // Der fokussierte Node selbst
     if (node.id === focused.node.id) return 'focused';
+    if (this.isAncestorOfFocused(node)) return 'ancestor';
+    if (this.isDescendantOfFocused(node)) return 'descendant';
 
-    // Direktes Kind des fokussierten Nodes
-    if (focused.node.children?.some(c => c.id === node.id)) return 'child';
-
-    // Enkel (Kind eines Kindes des fokussierten Nodes)
-    if (focused.node.children?.some(c => c.children?.some(gc => gc.id === node.id))) return 'grandchild';
-
-    // Prüfe ob Node ein Ahne ist (im Pfad vom Root zum Fokus)
-    const pathToFocused = this.findPathToNode(focused.root, focused.node.id);
-    if (pathToFocused) {
-      const nodeIndex = pathToFocused.indexOf(node.id);
-      if (nodeIndex !== -1) {
-        // Distanz = wie viele Schritte vom Fokus entfernt (rückwärts gezählt)
-        const focusIndex = pathToFocused.length - 1;
-        const distance = focusIndex - nodeIndex;
-        return `ancestor-${distance}`;
-      }
-    }
-
-    return null; // Nicht sichtbar im Zoom-Modus
+    return null;
   }
 
-  // Prüft ob Node im Zoom-Modus sichtbar sein soll
   isVisibleInZoom(node: Node): boolean {
     return this.getZoomRole(node) !== null;
   }
@@ -405,13 +548,13 @@ export class AppComponent {
   ): boolean {
     const numLevel = Number(level);
 
-    // Im Zoom-Modus: Nur Parent, Fokus, Kinder, Enkel sichtbar
+    // NEU: Im Fokus-Modus NIEMALS verstecken - stattdessen werden nicht-relevante Nodes geblurrt
     if (this.isInFocusMode()) {
-      return !this.isVisibleInZoom(node);
+      return false;
     }
 
-    // Normal-Modus: Level 1 wird separat behandelt
-    if (numLevel === 1) return false;
+    // Normal-Modus: Level 0 und Level 1 werden separat behandelt
+    if (numLevel <= 1) return false;
 
     // Wenn Parent der fokussierte Parent ist oder in der Branch liegt,
     // verstecke alle Nodes die nicht fokussiert, Parent oder in der Branch sind
@@ -424,6 +567,11 @@ export class AppComponent {
 
   // --- Node Position Logic ---
 
+  // Hole Position aus dem Force-Layout (für Template-Bindings)
+  getForcePosition(node: Node): { x: number; y: number } {
+    return this.forcePositions().get(node.id) || { x: 0, y: 0 };
+  }
+
   getNodePosition(
     node: Node,
     level: number | string,
@@ -433,7 +581,23 @@ export class AppComponent {
   ): { x: number; y: number; angle: number } {
     const numLevel = Number(level);
 
-    // Level 1: Feste Positionen
+    // Im normalen Modus (kein Fokus): Force-Positionen verwenden
+    if (!this.isInFocusMode()) {
+      const forcePos = this.forcePositions().get(node.id);
+      if (forcePos) {
+        // Berechne Winkel basierend auf Position relativ zum Parent
+        let angle = 0;
+        if (parentNode) {
+          const parentPos = this.forcePositions().get(parentNode.id);
+          if (parentPos) {
+            angle = Math.atan2(forcePos.y - parentPos.y, forcePos.x - parentPos.x) * (180 / Math.PI);
+          }
+        }
+        return { x: forcePos.x, y: forcePos.y, angle };
+      }
+    }
+
+    // Level 1: Feste Positionen (Fallback)
     if (numLevel === 1) {
       return this.getLevel1Position(node);
     }
@@ -499,156 +663,6 @@ export class AppComponent {
     };
   }
 
-  // Berechnet die RELATIVE Position eines Kindes zum Parent im Zoom-Modus
-  getZoomChildRelativePosition(parentNode: Node, childNode: Node): { x: number; y: number } | null {
-    if (!this.isInFocusMode()) return null;
-
-    const parentZoomPos = this.getZoomModePosition(parentNode);
-    const childZoomPos = this.getZoomModePosition(childNode);
-
-    if (!parentZoomPos || !childZoomPos) return null;
-
-    return {
-      x: childZoomPos.x - parentZoomPos.x,
-      y: childZoomPos.y - parentZoomPos.y
-    };
-  }
-
-  // Bestimmt ob Verbindungen zu Kindern im Zoom-Modus gezeichnet werden sollen
-  shouldDrawChildConnections(node: Node): boolean {
-    if (!this.isInFocusMode()) return true; // Normal-Modus: immer zeichnen
-
-    const role = this.getZoomRole(node);
-    // Im Zoom-Modus: Nur vom fokussierten Node und von Kindern zeichnen
-    return role === 'focused' || role === 'child';
-  }
-
-  // Gibt die Position für die Ahnen-Verbindungslinie zurück (zum nächsten Ahnen/Fokus)
-  getAncestorConnectionTarget(node: Node): { x: number; y: number } | null {
-    if (!this.isInFocusMode()) return null;
-
-    const role = this.getZoomRole(node);
-    if (!role || !role.startsWith('ancestor-')) return null;
-
-    const focused = this.focusedNode();
-    if (!focused) return null;
-
-    // Finde den Pfad zum fokussierten Node
-    const pathToFocused = this.findPathToNode(focused.root, focused.node.id);
-    if (!pathToFocused) return null;
-
-    const nodeIndex = pathToFocused.indexOf(node.id);
-    if (nodeIndex === -1 || nodeIndex >= pathToFocused.length - 1) return null;
-
-    // Der nächste Node im Pfad ist das Ziel
-    const nextNodeId = pathToFocused[nodeIndex + 1];
-
-    // Finde den nächsten Node und berechne die relative Position
-    const nodePos = this.getZoomModePosition(node);
-    if (!nodePos) return null;
-
-    // Berechne die Zielposition basierend auf dem nächsten Node
-    const distance = parseInt(role.split('-')[1], 10);
-    const ANCESTOR_SPACING = 180;
-
-    // Nächster Node ist einen Schritt näher am Fokus
-    return { x: ANCESTOR_SPACING, y: 0 };
-  }
-
-  // --- Zoom Mode Position Logic ---
-
-  // Berechnet die Position eines Nodes im Zoom-Modus
-  getZoomModePosition(node: Node): { x: number; y: number } | null {
-    const role = this.getZoomRole(node);
-    if (!role) return null;
-
-    const focused = this.focusedNode();
-    if (!focused) return null;
-
-    // Abstände für horizontale Anordnung
-    const ANCESTOR_SPACING = 180; // Abstand zwischen Ahnen
-    const CHILD_SPACING = 140;    // Abstand zu Kindern
-
-    if (role === 'focused') {
-      return { x: 0, y: 0 };
-    }
-
-    // Ahnen: Links vom Fokus, horizontal aufgereiht
-    if (role.startsWith('ancestor-')) {
-      const distance = parseInt(role.split('-')[1], 10);
-      return { x: -distance * ANCESTOR_SPACING, y: 0 };
-    }
-
-    // Kinder: Rechts vom Fokus, gefächert
-    if (role === 'child') {
-      const children = focused.node.children || [];
-      const index = children.findIndex(c => c.id === node.id);
-      const total = children.length;
-
-      if (total === 1) {
-        return { x: CHILD_SPACING, y: 0 };
-      }
-
-      const sector = 90;
-      const startAngle = -sector / 2;
-      const step = sector / (total - 1);
-      const angle = startAngle + (index * step);
-      const rad = angle * (Math.PI / 180);
-
-      return {
-        x: Math.round(CHILD_SPACING * Math.cos(rad)),
-        y: Math.round(CHILD_SPACING * Math.sin(rad))
-      };
-    }
-
-    // Enkel: Rechts von ihrem Parent (Kind), gefächert
-    if (role === 'grandchild') {
-      // Finde das Eltern-Kind und dessen Position
-      const children = focused.node.children || [];
-      for (const child of children) {
-        const grandchildren = child.children || [];
-        const gcIndex = grandchildren.findIndex(gc => gc.id === node.id);
-        if (gcIndex !== -1) {
-          // Position des Kindes berechnen
-          const childIndex = children.findIndex(c => c.id === child.id);
-          const childTotal = children.length;
-
-          let childAngle = 0;
-          if (childTotal > 1) {
-            const sector = 90;
-            const startAngle = -sector / 2;
-            const step = sector / (childTotal - 1);
-            childAngle = startAngle + (childIndex * step);
-          }
-
-          const childRad = childAngle * (Math.PI / 180);
-          const childX = Math.round(CHILD_SPACING * Math.cos(childRad));
-          const childY = Math.round(CHILD_SPACING * Math.sin(childRad));
-
-          // Enkel relativ zum Kind positionieren
-          const gcTotal = grandchildren.length;
-          let gcAngle = childAngle;
-          if (gcTotal > 1) {
-            const sector = 60;
-            const startAngle = childAngle - sector / 2;
-            const step = sector / (gcTotal - 1);
-            gcAngle = startAngle + (gcIndex * step);
-          }
-
-          const gcRad = gcAngle * (Math.PI / 180);
-          const gcRadius = 100;
-
-          return {
-            x: childX + Math.round(gcRadius * Math.cos(gcRad)),
-            y: childY + Math.round(gcRadius * Math.sin(gcRad))
-          };
-        }
-      }
-    }
-
-    return null;
-  }
-
   // --- Node Transform Logic ---
 
   getNodeTransformForLevel(
@@ -662,29 +676,24 @@ export class AppComponent {
   ): string {
     const numLevel = Number(level);
 
-    // Im Zoom-Modus: RELATIVE Position zum Parent berechnen
-    if (this.isInFocusMode()) {
-      const nodeAbsPos = this.getZoomModePosition(node);
+    // Force-Layout Positionen verwenden (auch im Fokus-Modus - wir pannen nur)
+    const nodeForcePos = this.forcePositions().get(node.id);
+    if (nodeForcePos) {
+      // Level 0 verwendet absolute Position (ist im Zentrum)
+      if (numLevel === 0 || !parentNode) {
+        return `translate(${nodeForcePos.x}px, ${nodeForcePos.y}px)`;
+      }
 
-      if (nodeAbsPos) {
-        // Wenn kein Parent oder Level 1, ist die absolute Position korrekt
-        if (!parentNode || numLevel === 1) {
-          return `translate(${nodeAbsPos.x}px, ${nodeAbsPos.y}px)`;
-        }
-
-        // Ansonsten: Relative Position = Eigene Position - Parent Position
-        const parentAbsPos = this.getZoomModePosition(parentNode);
-        if (parentAbsPos) {
-          const relX = nodeAbsPos.x - parentAbsPos.x;
-          const relY = nodeAbsPos.y - parentAbsPos.y;
-          return `translate(${relX}px, ${relY}px)`;
-        }
-
-        return `translate(${nodeAbsPos.x}px, ${nodeAbsPos.y}px)`;
+      // Alle anderen Level: Relative Position zum Parent
+      const parentForcePos = this.forcePositions().get(parentNode.id);
+      if (parentForcePos) {
+        const relX = nodeForcePos.x - parentForcePos.x;
+        const relY = nodeForcePos.y - parentForcePos.y;
+        return `translate(${relX}px, ${relY}px)`;
       }
     }
 
-    // Normal-Modus: Standard-Positionen
+    // Fallback: Standard-Positionen
     return `translate(${pos.x}px, ${pos.y}px)`;
   }
 
@@ -709,10 +718,10 @@ export class AppComponent {
 
   isNodeExpandedAtLevel(node: Node, level: number | string): boolean {
     const manuallyOpen = this.expandedNodes().has(node.id);
-    const activeCat = this.activeCategory();
+    const activeCategories = this.activeCategories();
 
-    if (activeCat) {
-      return manuallyOpen || this.hasCategoryMatch(node, activeCat);
+    if (activeCategories.size > 0) {
+      return manuallyOpen || this.hasAnyCategoryMatch(node, activeCategories);
     }
     return manuallyOpen;
   }
@@ -727,15 +736,24 @@ export class AppComponent {
     return false;
   }
 
+  // Prüft ob ein Node oder seine Kinder eine der Kategorien haben
+  hasAnyCategoryMatch(node: Node, categories: Set<CategoryId>): boolean {
+    if (node.categoryIds.some(id => categories.has(id))) return true;
+    if (node.children) {
+      return node.children.some(child => this.hasAnyCategoryMatch(child, categories));
+    }
+    return false;
+  }
+
   isNodeDimmed(node: Node, level: number | string, parentId: string | null): boolean {
     const numLevel = Number(level);
-    const activeCat = this.activeCategory();
+    const activeCategories = this.activeCategories();
 
-    if (activeCat) {
-      if (numLevel === 1) return false;
+    if (activeCategories.size > 0) {
+      if (numLevel <= 1) return false;
 
-      const isMatch = node.categoryIds.includes(activeCat);
-      const isPath = this.hasCategoryMatch(node, activeCat);
+      const isMatch = node.categoryIds.some(id => activeCategories.has(id));
+      const isPath = this.hasAnyCategoryMatch(node, activeCategories);
       if (isMatch || isPath) return false;
       return true;
     }
@@ -744,32 +762,55 @@ export class AppComponent {
   }
 
   // Bestimmt ob ein Node geblurrt werden soll
-  shouldBlurNode(node: Node, level: number | string): boolean {
+  shouldBlurNode(node: Node, level: number | string, parentNode?: Node | null): boolean {
     const numLevel = Number(level);
-    const activeCat = this.activeCategory();
+    const activeCategories = this.activeCategories();
 
-    // Mit aktivem Filter: Blur alle die NICHT zum Filter passen
-    if (activeCat) {
-      if (numLevel === 1) return false;
-      const isMatch = node.categoryIds.includes(activeCat);
-      const isPath = this.hasCategoryMatch(node, activeCat);
-      return !isMatch && !isPath; // Blur wenn kein Match
-    }
+    // Level 0 (Root): Nie blurren
+    if (numLevel === 0) return false;
 
-    // Ohne Filter im Zoom-Modus: Nur Enkel blurren
+    // Im Fokus-Modus: Alles außer Fokus-Pfad blurren (auch Level 1 und 2!)
     if (this.isInFocusMode()) {
-      const role = this.getZoomRole(node);
-      return role === 'grandchild';
+      const focused = this.focusedNode();
+      if (!focused) return false;
+
+      // Scharf: Der fokussierte Node selbst
+      if (node.id === focused.node.id) return false;
+
+      // Scharf: Alle Vorfahren des fokussierten Nodes
+      if (this.isAncestorOfFocused(node)) return false;
+
+      // Scharf: Alle Nachkommen des fokussierten Nodes (Kinder, Enkel, etc.)
+      if (this.isDescendantOfFocused(node)) return false;
+
+      // Blur: Alles andere im Fokus-Modus (inkl. Level 1 und 2 Geschwister!)
+      return true;
     }
 
-    // Ohne Filter und ohne Zoom: Kein Blur
-    return false;
+    // Mit aktivem Kategorie-Filter: Blur alle die NICHT zum Filter passen
+    if (activeCategories.size > 0) {
+      // Level 1: Blur wenn KEINE Kinder eine der Kategorien haben
+      if (numLevel === 1) {
+        return !this.hasAnyCategoryMatch(node, activeCategories);
+      }
+      // Level 2+: Blur wenn Node selbst nicht passt UND keine passenden Kinder hat
+      const isMatch = node.categoryIds.some(id => activeCategories.has(id));
+      const isPath = this.hasAnyCategoryMatch(node, activeCategories);
+      return !isMatch && !isPath;
+    }
+
+    // Normal-Modus (kein Filter, kein Fokus):
+    // Level 1, 2: Immer scharf
+    if (numLevel <= 2) return false;
+
+    // Level 3+: Immer geblurrt (Teaser-Zustand) bis Fokus-Modus aktiviert wird
+    return true;
   }
 
   // --- Tooltip Event Handler ---
 
   onNodeMouseEnter(event: MouseEvent, node: Node) {
-    if (!this.activeCategory()) {
+    if (this.activeCategories().size === 0) {
       this.hoveredCategories.set(node.categoryIds);
     }
 

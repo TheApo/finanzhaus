@@ -1,4 +1,10 @@
 {
+  "root": {
+    "id": "mein_unternehmen",
+    "name": "Mein Unternehmen",
+    "finanzhaus": "strategie",
+    "icon": "network"
+  },
   "categories": [
     { "id": "strategie", "label": "Genossenschaftliche Idee" },
     { "id": "privat_finanz", "label": "Private FinanzPlanung" },
@@ -63,7 +69,7 @@
     },
     {
       "id": "muster_gmbh",
-      "name": "Muster GmbH",
+      "name": "Unternehmensorganisation",
       "finanzhaus": "strategie",
       "icon": "building",
       "blaetter": [

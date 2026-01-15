@@ -12,12 +12,16 @@ import { I18nService } from '../services/i18n.service';
 export class FinanzhausComponent {
   i18n = inject(I18nService);
 
-  activeCategory = input<CategoryId | null>(null);
+  activeCategories = input<Set<CategoryId>>(new Set());
   hoveredCategories = input<CategoryId[]>([]);
   categorySelected = output<CategoryId>();
 
   selectCategory(id: CategoryId): void {
     this.categorySelected.emit(id);
+  }
+
+  isActive(id: CategoryId): boolean {
+    return this.activeCategories().has(id);
   }
 
   isHovered(id: CategoryId): boolean {

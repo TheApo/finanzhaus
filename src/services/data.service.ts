@@ -54,6 +54,18 @@ export class DataService {
     return this.getData().topics.map((topic) => this.mapNode(topic));
   }
 
+  getRootNode(): Node {
+    const data = this.getData();
+    const rootData = data.root as { id: string; name: string; finanzhaus: string; icon: string };
+    return {
+      id: rootData.id,
+      label: rootData.name,
+      categoryIds: [rootData.finanzhaus as CategoryId],
+      icon: rootData.icon,
+      children: data.topics.map((topic) => this.mapNode(topic))
+    };
+  }
+
   private mapNode(data: any): Node {
     let categoryIds: CategoryId[];
     if (Array.isArray(data.finanzhaus)) {
