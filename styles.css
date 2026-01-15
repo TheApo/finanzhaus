@@ -652,7 +652,7 @@ app-root {
 .node--level-2 .node__circle {
   width: 5rem;
   height: 5rem;
-  border: 2.5px solid currentColor;
+  border: 7.5px solid currentColor;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
@@ -693,19 +693,19 @@ app-root {
 }
 
 .node--level-3 .node__circle {
-  width: 3rem;
-  height: 3rem;
-  border: 2px solid currentColor;
+  width: 4rem;
+  height: 4rem;
+  border: 5px solid currentColor;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .node--level-3 .node__icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .node--level-3 .node__label {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   font-weight: 500;
   padding-top: 0.25rem;
 }
@@ -755,9 +755,9 @@ app-root {
 .node--level-8 .node__circle,
 .node--level-9 .node__circle,
 .node--level-10 .node__circle {
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 1.5px solid currentColor;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 3.5px solid currentColor;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -768,8 +768,8 @@ app-root {
 .node--level-8 .node__icon,
 .node--level-9 .node__icon,
 .node--level-10 .node__icon {
-  width: 1rem;
-  height: 1rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .node--level-4 .node__label,
@@ -779,9 +779,9 @@ app-root {
 .node--level-8 .node__label,
 .node--level-9 .node__label,
 .node--level-10 .node__label {
-  font-size: 0.5rem;
+  font-size: var(--font-size-xs);
   font-weight: 500;
-  padding-top: 0.125rem;
+  padding-top: 0.25rem;
 }
 
 /* Dynamic level nodes become sharp on hover, in focus mode, or when matching filter */
