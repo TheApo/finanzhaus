@@ -242,10 +242,10 @@ export class AppComponent {
         return;
       }
 
-      // Klick auf den fokussierten Node selbst → Fokus verlassen
+      // Klick auf den fokussierten Node selbst → Fokus verlassen (ohne zu springen)
       if (role === 'focused') {
         this.focusedNode.set(null);
-        this.panOffset.set({ x: 0, y: 0 });
+        // Nicht springen - View bleibt wo sie ist
         return;
       }
 
@@ -295,13 +295,13 @@ export class AppComponent {
       }
       this.expandedNodes.set(currentSet);
     } else if (numLevel >= 2 && parent) {
-      // Fokus-Modus aktivieren
+      // Fokus-Modus aktivieren - Expanded-State bleibt wie vom Nutzer gewählt
       this.focusedNode.set({ node, parent, root, level: numLevel });
       this.panToNode(node);
 
+      // Nur den fokussierten Node selbst expandieren (für seine Kinder)
       const expanded = new Set(this.expandedNodes());
       expanded.add(node.id);
-      expanded.add(root.id);
       this.expandedNodes.set(expanded);
     }
   }
@@ -381,7 +381,7 @@ export class AppComponent {
     this.zoomLevel.set(1);
   }
 
-  // --- Pan Event Handlers ---
+  // --- Pan Event Handlers (Mouse) ---
 
   onPanStart(event: MouseEvent) {
     if (event.button !== 0) return;
@@ -403,6 +403,34 @@ export class AppComponent {
   }
 
   onPanEnd() {
+    this.isPanning.set(false);
+  }
+
+  // --- Touch Event Handlers (iPad/Tablet) ---
+
+  onTouchStart(event: TouchEvent) {
+    if (event.touches.length !== 1) return;
+
+    const touch = event.touches[0];
+    this.isPanning.set(true);
+    this.panStart = {
+      x: touch.clientX - this.panOffset().x,
+      y: touch.clientY - this.panOffset().y
+    };
+  }
+
+  onTouchMove(event: TouchEvent) {
+    if (!this.isPanning() || event.touches.length !== 1) return;
+
+    event.preventDefault(); // Verhindert Scrollen der Seite
+    const touch = event.touches[0];
+    this.panOffset.set({
+      x: touch.clientX - this.panStart.x,
+      y: touch.clientY - this.panStart.y
+    });
+  }
+
+  onTouchEnd() {
     this.isPanning.set(false);
   }
 

@@ -74,6 +74,10 @@
     (mouseup)="onPanEnd()"
     (mouseleave)="onPanEnd()"
     (wheel)="onWheel($event)"
+    (touchstart)="onTouchStart($event)"
+    (touchmove)="onTouchMove($event)"
+    (touchend)="onTouchEnd()"
+    (touchcancel)="onTouchEnd()"
   >
     <div
       class="mindmap__center"
@@ -142,7 +146,7 @@
       [style.transform]="getNodeTransformForLevel(node, level, nodePos, isThisFocused, isThisParent, parentIsParent || parentInBranch, parentNode)"
     >
       <!-- Verbindungslinien zu Kindern -->
-      @if (((+level) === 0 || isExpanded || isThisFocused || isThisParent || isThisInBranch || isInFocusMode()) && node.children?.length) {
+      @if (((+level) === 0 || isExpanded || isThisFocused || isThisParent || isThisInBranch) && node.children?.length) {
         <svg class="connections" [class.connections--level-0]="(+level) === 0" [class.connections--level-1]="(+level) === 1">
           @for (child of node.children; track child.id) {
             @let forceChildPos = getForcePosition(child);
@@ -165,7 +169,8 @@
           getNodeLevelClass(level),
           (+level) >= 2 ? 'category-' + getPrimaryCategory(node) : '',
           isNodeDimmed(node, (+level), parentNode?.id) ? 'node--dimmed' : '',
-          shouldBlurNode(node, (+level), parentNode) ? 'node--blurred' : ''
+          shouldBlurNode(node, (+level), parentNode) ? 'node--blurred' : '',
+          isFocusedNode(node) ? 'node--focused' : ''
         ]"
         (click)="handleNodeClick(node, (+level), parentNode, rootNode)"
         (mouseenter)="onNodeMouseEnter($event, node)"
@@ -179,8 +184,8 @@
         <span class="node__label no-select">{{ node.label }}</span>
       </div>
 
-      <!-- Rekursive Kinder (Level 0 zeigt immer Kinder, im Fokus-Modus alle sichtbar) -->
-      @if (((+level) === 0 || isExpanded || isThisFocused || isThisParent || isThisInBranch || isInFocusMode()) && node.children?.length) {
+      <!-- Rekursive Kinder (Level 0 zeigt immer Kinder) -->
+      @if (((+level) === 0 || isExpanded || isThisFocused || isThisParent || isThisInBranch) && node.children?.length) {
         <div [class]="'children-container children-container--level-' + (+level)">
           @for (child of node.children; track child.id) {
             <ng-container

@@ -459,6 +459,9 @@ app-root {
   inset: 0;
   pointer-events: auto;
   cursor: grab;
+  touch-action: none; /* Ermöglicht eigene Touch-Handling */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .mindmap--panning {
@@ -983,6 +986,13 @@ app-root {
 [class*="node--zoom-"].category-ausland { color: var(--color-ausland); background: transparent; }
 [class*="node--zoom-"].category-finanzierung { color: var(--color-finanzierung); background: transparent; }
 [class*="node--zoom-"].category-zahlungsverkehr { color: var(--color-zahlungsverkehr); background: transparent; }
+
+/* Fokussierter Node - rote Außen-Umrandung (dünn) */
+.node--focused .node__circle {
+  box-shadow:
+    0 0 0 1px var(--color-highlight),  /* Rote Außen-Umrandung */
+    0 8px 30px rgba(0, 0, 0, 0.15);     /* Bestehender Schatten */
+}
 
 /* Blur-Effekt für nicht-relevante Nodes im Fokus-Modus */
 .node--blurred {
