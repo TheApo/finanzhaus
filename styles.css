@@ -481,6 +481,13 @@ app-root {
   /* Optional: Anpassungen für den Fokus-Modus */
 }
 
+/* Sanfte Flug-Animation beim Zentrieren auf gefilterte Nodes */
+.mindmap__center--animating {
+  transition: margin-left 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+              margin-top 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+              transform 0.5s ease-in-out;
+}
+
 /* Settling Animation - schnellere Transitions während die Simulation läuft */
 .mindmap__center--settling .node-wrapper {
   transition: transform 0.05s linear !important;
@@ -1055,6 +1062,21 @@ app-root {
   visibility: hidden;
 }
 
+/* Collapse Animation - einfaches Ausblenden */
+.node-wrapper--collapsing {
+  animation: fade-out 0.35s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 /* --------------------------------------------------------------------------
    Children Container - Generisch für alle Level
    -------------------------------------------------------------------------- */
@@ -1092,10 +1114,16 @@ app-root {
   transition: opacity 0.3s ease-out, stroke-width 0.3s ease-out;
 }
 
-.node-wrapper:hover .connections__line,
+/* Nur fokussierte Wrapper heben ihre Linien hervor */
 .node-wrapper--focused .connections__line {
   opacity: 0.7;
   stroke-width: 2;
+}
+
+/* Hervorgehobene Linien auf dem Hover-Pfad (von gehovertem Node bis Level 0) */
+.connections__line--highlighted {
+  opacity: 0.9 !important;
+  stroke-width: 2.5 !important;
 }
 
 /* Blurred connection lines in focus mode */
@@ -1124,7 +1152,6 @@ app-root {
   opacity: 0.4;
 }
 
-.node-wrapper:hover .connections__arrowhead,
 .node-wrapper--focused .connections__arrowhead {
   opacity: 0.7;
 }

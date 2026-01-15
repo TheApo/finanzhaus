@@ -27,7 +27,8 @@ export class AppComponent {
 
   // State - Multi-Select Filter
   activeCategories = signal<Set<CategoryId>>(new Set());
-  hoveredNode = signal<Node | null>(null);
+  hoveredNode = signal<Node | null>(null);  // Für Tooltip
+  hoveredPathNode = signal<Node | null>(null);  // Für Pfad-Highlighting und Unblur
   hoveredCategories = signal<CategoryId[]>([]);
   tooltipPosition = signal<{ x: number; y: number; showBelow: boolean } | null>(null);
   finanzhausVisible = signal<boolean>(true);
@@ -43,12 +44,19 @@ export class AppComponent {
 
   // Zoom State (Globaler Zoom)
   zoomLevel = signal<number>(1);
+  isAnimatingPan = signal<boolean>(false);
   private readonly ZOOM_MIN = 0.4;
   private readonly ZOOM_MAX = 2;
   private readonly ZOOM_STEP = 0.15;
 
   // Expanded Nodes Set (für alle Level)
   expandedNodes = signal<Set<string>>(new Set());
+
+  // Nodes die gerade am Einklappen sind (für Animation)
+  collapsingNodes = signal<Set<string>>(new Set());
+
+  // Gespeicherter Zustand vor dem Filtern
+  private savedExpandedNodes: Set<string> | null = null;
 
   // Effect: Initialize and update force layout
   private forceLayoutEffect = effect(() => {
@@ -57,27 +65,6 @@ export class AppComponent {
     this.forceLayout.updateNodes(root, expanded);
   });
 
-  // Track last focused node to only pan once on focus change
-  private lastFocusedNodeId: string | null = null;
-
-  // Effect: Pan to focused node ONLY when focus changes (not on position updates)
-  private focusPanEffect = effect(() => {
-    const focused = this.focusedNode();
-    const positions = this.forcePositions();
-
-    if (focused && positions.size > 0) {
-      // Nur pannen wenn sich der fokussierte Node geändert hat
-      if (this.lastFocusedNodeId !== focused.node.id) {
-        this.lastFocusedNodeId = focused.node.id;
-        const pos = positions.get(focused.node.id);
-        if (pos) {
-          this.panOffset.set({ x: -pos.x, y: -pos.y });
-        }
-      }
-    } else if (!focused) {
-      this.lastFocusedNodeId = null;
-    }
-  });
 
   t(key: string): string {
     return this.i18n.t(key);
@@ -143,13 +130,22 @@ export class AppComponent {
       this.activeCategories.set(current);
 
       if (current.size === 0) {
-        // Keine Filter mehr aktiv → View zurücksetzen
+        // Keine Filter mehr aktiv → gespeicherten Zustand wiederherstellen
+        if (this.savedExpandedNodes !== null) {
+          this.expandedNodes.set(new Set(this.savedExpandedNodes));
+          this.savedExpandedNodes = null;
+        }
         this.panOffset.set({ x: 0, y: 0 });
       } else {
         // Noch andere Filter aktiv → auf diese zentrieren
         setTimeout(() => this.centerOnFilteredNodes(), 100);
       }
     } else {
+      // Erster Filter? Zustand speichern
+      if (current.size === 0) {
+        this.savedExpandedNodes = new Set(this.expandedNodes());
+      }
+
       // Kategorie hinzufügen
       current.add(catId);
       this.activeCategories.set(current);
@@ -217,8 +213,19 @@ export class AppComponent {
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
 
-    // View zentrieren
-    this.panOffset.set({ x: -centerX, y: -centerY });
+    // View mit Animation zentrieren
+    this.animatePanTo(-centerX, -centerY);
+  }
+
+  // Animiert das Pannen zu einer Position
+  private animatePanTo(x: number, y: number): void {
+    this.isAnimatingPan.set(true);
+    this.panOffset.set({ x, y });
+
+    // Animation dauert 400ms (entspricht CSS transition)
+    setTimeout(() => {
+      this.isAnimatingPan.set(false);
+    }, 400);
   }
 
   handleNodeClick(node: Node, level: number | string, parent: Node | null, root: Node) {
@@ -238,7 +245,6 @@ export class AppComponent {
       // Klick auf Level 0 oder Level 1 → Fokus verlassen
       if (numLevel <= 1) {
         this.focusedNode.set(null);
-        this.panOffset.set({ x: 0, y: 0 }); // View zurücksetzen
         return;
       }
 
@@ -254,7 +260,6 @@ export class AppComponent {
         const newParent = this.findParentOfNode(this.rootNode(), node);
         if (newParent) {
           this.focusedNode.set({ node, parent: newParent, root, level: numLevel });
-          this.panToNode(node);
 
           // Nodes expandieren damit Kinder sichtbar sind
           const expanded = new Set(this.expandedNodes());
@@ -280,8 +285,13 @@ export class AppComponent {
 
     // Normal-Modus (kein Fokus aktiv)
     if (numLevel === 0) {
-      // Level 0: Wobble-Animation auslösen
-      this.forceLayout.wobble();
+      // Level 0: Alle Nodes einklappen (nur Level 0 + Level 1 sichtbar)
+      if (this.expandedNodes().size > 0) {
+        this.collapseAllWithAnimation();
+      } else {
+        // Bereits alles eingeklappt → Wobble-Animation
+        this.forceLayout.wobble();
+      }
       return;
     }
 
@@ -297,7 +307,6 @@ export class AppComponent {
     } else if (numLevel >= 2 && parent) {
       // Fokus-Modus aktivieren - Expanded-State bleibt wie vom Nutzer gewählt
       this.focusedNode.set({ node, parent, root, level: numLevel });
-      this.panToNode(node);
 
       // Nur den fokussierten Node selbst expandieren (für seine Kinder)
       const expanded = new Set(this.expandedNodes());
@@ -338,6 +347,19 @@ export class AppComponent {
     }
   }
 
+  // Alle Nodes mit Animation einklappen
+  private collapseAllWithAnimation() {
+    // Alle expandierten Nodes markieren als "collapsing"
+    const currentExpanded = new Set(this.expandedNodes());
+    this.collapsingNodes.set(currentExpanded);
+
+    // Nach Animation (350ms) tatsächlich entfernen
+    setTimeout(() => {
+      this.expandedNodes.set(new Set());
+      this.collapsingNodes.set(new Set());
+    }, 350);
+  }
+
   private freezeCurrentState() {
     const activeCategories = this.activeCategories();
     if (activeCategories.size === 0) return;
@@ -369,6 +391,11 @@ export class AppComponent {
   }
 
   clearAllFilters() {
+    // Gespeicherten Zustand wiederherstellen
+    if (this.savedExpandedNodes !== null) {
+      this.expandedNodes.set(new Set(this.savedExpandedNodes));
+      this.savedExpandedNodes = null;
+    }
     this.activeCategories.set(new Set());
     this.panOffset.set({ x: 0, y: 0 });
   }
@@ -537,14 +564,6 @@ export class AppComponent {
     };
 
     return checkDescendant(focused.node, node.id);
-  }
-
-  // Zentriert die View auf einen Node (für Fokus-Modus)
-  private panToNode(node: Node): void {
-    const pos = this.forcePositions().get(node.id);
-    if (pos) {
-      this.panOffset.set({ x: -pos.x, y: -pos.y });
-    }
   }
 
   // Legacy-Methode für Template-Kompatibilität
@@ -754,6 +773,25 @@ export class AppComponent {
     return manuallyOpen;
   }
 
+  // Prüft ob ein Node gerade am Einklappen ist (Level 2+ wenn Parent kollabiert)
+  isNodeCollapsing(node: Node): boolean {
+    // Prüfe ob irgendeiner der Vorfahren in collapsingNodes ist
+    const collapsingSet = this.collapsingNodes();
+    if (collapsingSet.size === 0) return false;
+
+    // Finde den Pfad zum Node und prüfe ob ein Vorfahre kollabiert
+    const path = this.findPathToNode(this.rootNode(), node.id);
+    if (!path) return false;
+
+    // Prüfe ob irgendeiner der Vorfahren (außer dem Node selbst) kollabiert
+    for (const ancestorId of path) {
+      if (ancestorId !== node.id && collapsingSet.has(ancestorId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // --- Recursive Helpers ---
 
   hasCategoryMatch(node: Node, catId: CategoryId): boolean {
@@ -797,6 +835,9 @@ export class AppComponent {
     // Level 0 (Root): Nie blurren
     if (numLevel === 0) return false;
 
+    // Hover-Pfad: Node und alle Vorfahren sind scharf
+    if (this.isOnHoveredPath(node)) return false;
+
     // Im Fokus-Modus: Alles außer Fokus-Pfad blurren (auch Level 1 und 2!)
     if (this.isInFocusMode()) {
       const focused = this.focusedNode();
@@ -835,9 +876,12 @@ export class AppComponent {
     return true;
   }
 
-  // --- Tooltip Event Handler ---
+  // --- Hover & Tooltip Event Handler ---
 
   onNodeMouseEnter(event: MouseEvent, node: Node) {
+    // Pfad-Highlighting für Linien und Unblur
+    this.hoveredPathNode.set(node);
+
     if (this.activeCategories().size === 0) {
       this.hoveredCategories.set(node.categoryIds);
     }
@@ -866,7 +910,39 @@ export class AppComponent {
 
   onNodeMouseLeave() {
     this.hoveredNode.set(null);
+    this.hoveredPathNode.set(null);
     this.hoveredCategories.set([]);
     this.tooltipPosition.set(null);
+  }
+
+  // Prüft ob ein Node auf dem Pfad vom gehoverten Node bis Level 0 liegt
+  isOnHoveredPath(node: Node): boolean {
+    const hovered = this.hoveredPathNode();
+    if (!hovered) return false;
+
+    // Der gehoverte Node selbst
+    if (node.id === hovered.id) return true;
+
+    // Ist dieser Node ein Vorfahre des gehoverten Nodes?
+    const pathToHovered = this.findPathToNode(this.rootNode(), hovered.id);
+    if (!pathToHovered) return false;
+
+    return pathToHovered.includes(node.id);
+  }
+
+  // Prüft ob eine Verbindungslinie hervorgehoben werden soll (von Parent zu Child)
+  isLineOnHoveredPath(parentNode: Node, childNode: Node): boolean {
+    const hovered = this.hoveredPathNode();
+    if (!hovered) return false;
+
+    // Finde den Pfad vom Root zum gehoverten Node
+    const pathToHovered = this.findPathToNode(this.rootNode(), hovered.id);
+    if (!pathToHovered) return false;
+
+    // Prüfe ob sowohl Parent als auch Child auf dem Pfad liegen
+    const parentOnPath = pathToHovered.includes(parentNode.id);
+    const childOnPath = pathToHovered.includes(childNode.id);
+
+    return parentOnPath && childOnPath;
   }
 }

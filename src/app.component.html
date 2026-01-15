@@ -84,6 +84,7 @@
       [class.mindmap__center--focus-mode]="isInFocusMode()"
       [class.mindmap__center--filtering]="activeCategories().size > 0"
       [class.mindmap__center--settling]="isSimulating()"
+      [class.mindmap__center--animating]="isAnimatingPan()"
       [style.margin-left.px]="panOffset().x"
       [style.margin-top.px]="panOffset().y"
       [style.transform]="'scale(' + zoomLevel() + ')'"
@@ -143,6 +144,7 @@
       [class.node-wrapper--focused]="isThisFocused"
       [class.node-wrapper--parent]="isThisParent"
       [class.node-wrapper--ancestor]="isThisInBranch"
+      [class.node-wrapper--collapsing]="isNodeCollapsing(node)"
       [style.transform]="getNodeTransformForLevel(node, level, nodePos, isThisFocused, isThisParent, parentIsParent || parentInBranch, parentNode)"
     >
       <!-- Verbindungslinien zu Kindern -->
@@ -154,6 +156,7 @@
             <line
               class="connections__line"
               [class.connections__line--blurred]="shouldBlurNode(child, (+level) + 1, node)"
+              [class.connections__line--highlighted]="isLineOnHoveredPath(node, child)"
               x1="0" y1="0"
               [attr.x2]="forceChildPos.x - forceNodePos.x"
               [attr.y2]="forceChildPos.y - forceNodePos.y"
