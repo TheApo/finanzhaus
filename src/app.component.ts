@@ -49,6 +49,15 @@ export class AppComponent {
   private readonly ZOOM_MAX = 2;
   private readonly ZOOM_STEP = 0.15;
 
+  // Node Drag State (für Level 2+)
+  draggingNode = signal<Node | null>(null);
+  isActivelyDragging = signal<boolean>(false); // true erst nach 5px Bewegung
+  private dragStartPos = { x: 0, y: 0 };
+  private dragNodeStartPos = { x: 0, y: 0 };
+  private dragMoved = false;
+  private readonly DRAG_THRESHOLD = 5; // Pixel bevor Drag startet
+  private dragContext: { level: number; parent: Node | null; root: Node } | null = null;
+
   // Expanded Nodes Set (für alle Level)
   expandedNodes = signal<Set<string>>(new Set());
 
@@ -515,6 +524,8 @@ export class AppComponent {
     this.focusedNode.set(null);
     this.panOffset.set({ x: 0, y: 0 });
     this.zoomLevel.set(1);
+    // Auch alle vom Benutzer verschobenen Positionen zurücksetzen
+    this.forceLayout.resetUserPositions();
   }
 
   // --- Pan Event Handlers (Mouse) ---
@@ -568,6 +579,119 @@ export class AppComponent {
 
   onTouchEnd() {
     this.isPanning.set(false);
+  }
+
+  // --- Node Drag Handlers (Level 2+) ---
+
+  onNodeDragStart(event: MouseEvent, node: Node, level: number, parent: Node | null, root: Node) {
+    // Nur Level 1+ können gezogen werden (L0 ist fixiert)
+    if (level < 1) return;
+    if (event.button !== 0) return; // Nur linke Maustaste
+
+    event.stopPropagation(); // Verhindert Pan
+    event.preventDefault();
+
+    const nodePos = this.forceLayout.getPosition(node.id);
+    if (!nodePos) return;
+
+    this.dragStartPos = { x: event.clientX, y: event.clientY };
+    this.dragNodeStartPos = { x: nodePos.x, y: nodePos.y };
+    this.dragMoved = false;
+    this.draggingNode.set(node);
+    this.dragContext = { level, parent, root };
+
+    // Fixiere den Node während des Drags
+    this.forceLayout.fixNode(node.id);
+  }
+
+  // Kombinierter Handler für Pan und Drag Move
+  onGlobalMouseMove(event: MouseEvent) {
+    // Zuerst Drag prüfen
+    const dragNode = this.draggingNode();
+    if (dragNode) {
+      const dx = event.clientX - this.dragStartPos.x;
+      const dy = event.clientY - this.dragStartPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Prüfe ob Threshold überschritten
+      if (!this.dragMoved && distance >= this.DRAG_THRESHOLD) {
+        this.dragMoved = true;
+        this.isActivelyDragging.set(true); // Jetzt erst visuell draggen
+      }
+
+      if (this.dragMoved) {
+        // Berechne neue Position (berücksichtige Zoom)
+        const zoom = this.zoomLevel();
+        const newX = this.dragNodeStartPos.x + dx / zoom;
+        const newY = this.dragNodeStartPos.y + dy / zoom;
+
+        this.forceLayout.setNodePosition(dragNode.id, newX, newY);
+      }
+      return; // Kein Pan während Drag
+    }
+
+    // Sonst Pan
+    if (!this.isPanning()) return;
+
+    this.panOffset.set({
+      x: event.clientX - this.panStart.x,
+      y: event.clientY - this.panStart.y
+    });
+  }
+
+  // Kombinierter Handler für Pan und Drag End
+  onGlobalMouseUp(event: MouseEvent) {
+    // Zuerst Drag prüfen
+    const draggedNode = this.draggingNode();
+    if (draggedNode && this.dragContext) {
+      if (this.dragMoved) {
+        // Drag wurde durchgeführt - Node an neuer Position speichern, Simulation starten
+        this.forceLayout.releaseNode(draggedNode.id);
+      } else {
+        // Kein Drag - war ein Klick → nur Fixierung lösen (keine Änderungen!)
+        this.forceLayout.unfixNode(draggedNode.id);
+        this.handleNodeClick(draggedNode, this.dragContext.level, this.dragContext.parent, this.dragContext.root);
+      }
+
+      this.draggingNode.set(null);
+      this.isActivelyDragging.set(false);
+      this.dragMoved = false;
+      this.dragContext = null;
+      return;
+    }
+
+    // Sonst Pan beenden
+    this.isPanning.set(false);
+  }
+
+  // Handler für MouseLeave - beendet Drag oder Pan
+  onGlobalMouseLeave() {
+    // Drag abbrechen - nur Fixierung lösen, nichts speichern
+    const node = this.draggingNode();
+    if (node) {
+      this.forceLayout.unfixNode(node.id);
+      this.draggingNode.set(null);
+      this.isActivelyDragging.set(false);
+      this.dragMoved = false;
+      this.dragContext = null;
+    }
+
+    // Pan beenden
+    this.isPanning.set(false);
+  }
+
+  isDragging(): boolean {
+    return this.draggingNode() !== null;
+  }
+
+  isNodeDragging(node: Node): boolean {
+    if (!this.isActivelyDragging()) return false;
+    const dragging = this.draggingNode();
+    return dragging !== null && dragging.id === node.id;
+  }
+
+  canDragNode(level: number): boolean {
+    return level >= 1; // L0 ist fixiert, L1+ sind verschiebbar
   }
 
   // --- Zoom Handlers ---
@@ -983,6 +1107,9 @@ export class AppComponent {
     // Hover-Pfad: Node und alle Vorfahren sind scharf
     if (this.isOnHoveredPath(node)) return false;
 
+    // Direktes Kind des gehoverten Nodes: Auch scharf (Preview der Kinder)
+    if (this.isDirectChildOfHovered(node)) return false;
+
     // Im Fokus-Modus
     if (this.isInFocusMode()) {
       const focused = this.focusedNode();
@@ -1090,6 +1217,15 @@ export class AppComponent {
     if (!pathToHovered) return false;
 
     return pathToHovered.includes(node.id);
+  }
+
+  // Prüft ob ein Node ein direktes Kind des gehoverten Nodes ist (für Preview)
+  isDirectChildOfHovered(node: Node): boolean {
+    const hovered = this.hoveredPathNode();
+    if (!hovered) return false;
+    if (!hovered.children) return false;
+
+    return hovered.children.some(child => child.id === node.id);
   }
 
   // Prüft ob eine Verbindungslinie hervorgehoben werden soll (von Parent zu Child)

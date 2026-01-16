@@ -3,6 +3,11 @@
     "title": "Finanzhaus",
     "subtitle": "Navigator"
   },
+  "controls": {
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "reset": "Ansicht zurücksetzen"
+  },
   "filter": {
     "label": "Filter",
     "remove": "Filter entfernen",

@@ -14,14 +14,20 @@
 
   <!-- Zoom Controls -->
   <div class="zoom-controls no-select">
-    <button class="zoom-btn" (click)="zoomIn()" title="Vergrößern">
+    <button class="zoom-btn" (click)="zoomIn()" [title]="t('controls.zoomIn')">
       <svg class="zoom-btn__icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
     </button>
-    <button class="zoom-btn" (click)="zoomOut()" title="Verkleinern">
+    <button class="zoom-btn" (click)="zoomOut()" [title]="t('controls.zoomOut')">
       <svg class="zoom-btn__icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+      </svg>
+    </button>
+    <div class="zoom-controls__divider"></div>
+    <button class="zoom-btn zoom-btn--reset" (click)="resetView()" [title]="t('controls.reset')">
+      <svg class="zoom-btn__icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
       </svg>
     </button>
   </div>
@@ -69,10 +75,11 @@
   <div
     class="mindmap"
     [class.mindmap--panning]="isPanning()"
+    [class.mindmap--dragging]="isDragging()"
     (mousedown)="onPanStart($event)"
-    (mousemove)="onPanMove($event)"
-    (mouseup)="onPanEnd()"
-    (mouseleave)="onPanEnd()"
+    (mousemove)="onGlobalMouseMove($event)"
+    (mouseup)="onGlobalMouseUp($event)"
+    (mouseleave)="onGlobalMouseLeave()"
     (wheel)="onWheel($event)"
     (touchstart)="onTouchStart($event)"
     (touchmove)="onTouchMove($event)"
@@ -173,9 +180,12 @@
           (+level) >= 2 ? 'category-' + getPrimaryCategory(node) : '',
           isNodeDimmed(node, (+level), parentNode?.id) ? 'node--dimmed' : '',
           shouldBlurNode(node, (+level), parentNode) ? 'node--blurred' : '',
-          isFocusedNode(node) ? 'node--focused' : ''
+          isFocusedNode(node) ? 'node--focused' : '',
+          isNodeDragging(node) ? 'node--dragging' : '',
+          canDragNode(+level) ? 'node--draggable' : ''
         ]"
-        (click)="handleNodeClick(node, (+level), parentNode, rootNode)"
+        (click)="(+level) >= 1 ? null : handleNodeClick(node, (+level), parentNode, rootNode)"
+        (mousedown)="(+level) >= 1 ? onNodeDragStart($event, node, (+level), parentNode, rootNode) : null"
         (mouseenter)="onNodeMouseEnter($event, node)"
         (mouseleave)="onNodeMouseLeave()"
       >

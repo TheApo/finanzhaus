@@ -318,6 +318,22 @@ app-root {
   height: 1.25rem;
 }
 
+.zoom-controls__divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--spacing-xs) 0;
+}
+
+.zoom-btn--reset {
+  color: var(--color-text-muted);
+}
+
+.zoom-btn--reset:hover {
+  color: var(--color-primary);
+  background-color: rgba(0, 102, 179, 0.1);
+}
+
 /* --------------------------------------------------------------------------
    Header
    -------------------------------------------------------------------------- */
@@ -466,6 +482,27 @@ app-root {
 
 .mindmap--panning {
   cursor: grabbing;
+}
+
+.mindmap--dragging {
+  cursor: grabbing;
+}
+
+.mindmap--dragging * {
+  pointer-events: none !important;
+}
+
+/* Während des Drags: Keine Transitions für sofortige Bewegung */
+.mindmap--dragging .node-wrapper {
+  transition: none !important;
+}
+
+.mindmap--dragging .node {
+  transition: none !important;
+}
+
+.mindmap--dragging .node__circle {
+  transition: none !important;
 }
 
 .mindmap__center {
@@ -650,15 +687,15 @@ app-root {
 }
 
 .node--level-2 .node__circle {
-  width: 5rem;
-  height: 5rem;
+  width: 6rem;
+  height: 6rem;
   border: 7.5px solid currentColor;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .node--level-2 .node__icon {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2rem;
+  height: 2rem;
 }
 
 .node--level-2 .node__label {
@@ -693,15 +730,15 @@ app-root {
 }
 
 .node--level-3 .node__circle {
-  width: 4rem;
-  height: 4rem;
-  border: 5px solid currentColor;
+  width: 5rem;
+  height: 5rem;
+  border: 6px solid currentColor;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .node--level-3 .node__icon {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
 }
 
 .node--level-3 .node__label {
@@ -755,9 +792,9 @@ app-root {
 .node--level-8 .node__circle,
 .node--level-9 .node__circle,
 .node--level-10 .node__circle {
-  width: 3.5rem;
-  height: 3.5rem;
-  border: 3.5px solid currentColor;
+  width: 4.5rem;
+  height: 4.5rem;
+  border: 5px solid currentColor;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -768,8 +805,8 @@ app-root {
 .node--level-8 .node__icon,
 .node--level-9 .node__icon,
 .node--level-10 .node__icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .node--level-4 .node__label,
@@ -863,6 +900,30 @@ app-root {
    -------------------------------------------------------------------------- */
 .node--dimmed {
   filter: opacity(0.4) grayscale(0.9);
+}
+
+/* Draggable nodes (Level 2+) show grab cursor */
+.node--draggable {
+  cursor: grab;
+}
+
+.node--draggable:active {
+  cursor: grabbing;
+}
+
+/* Node being dragged */
+.node--dragging {
+  cursor: grabbing;
+  z-index: 1000 !important;
+}
+
+.node--dragging .node__circle {
+  transform: scale(1.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.node--dragging .node__label {
+  opacity: 0.7;
 }
 
 /* Kombiniert: Dimmed + Blurred */
