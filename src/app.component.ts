@@ -123,45 +123,112 @@ export class AppComponent {
 
   toggleCategory(catId: CategoryId) {
     const current = new Set(this.activeCategories());
+    const inFocusMode = this.isInFocusMode();
 
     if (current.has(catId)) {
       // Kategorie entfernen
       current.delete(catId);
       this.activeCategories.set(current);
 
-      if (current.size === 0) {
-        // Keine Filter mehr aktiv → gespeicherten Zustand wiederherstellen
+      if (current.size === 0 && !inFocusMode) {
+        // Keine Filter mehr aktiv und kein Fokus → gespeicherten Zustand wiederherstellen
         if (this.savedExpandedNodes !== null) {
           this.expandedNodes.set(new Set(this.savedExpandedNodes));
           this.savedExpandedNodes = null;
         }
         this.panOffset.set({ x: 0, y: 0 });
-      } else {
-        // Noch andere Filter aktiv → auf diese zentrieren
+      } else if (!inFocusMode) {
+        // Noch andere Filter aktiv (kein Fokus) → auf diese zentrieren
         setTimeout(() => this.centerOnFilteredNodes(), 100);
       }
+      // Im Fokus-Modus: Nur Filter ändern, nichts expandieren/zentrieren
     } else {
-      // Erster Filter? Zustand speichern
-      if (current.size === 0) {
-        this.savedExpandedNodes = new Set(this.expandedNodes());
-      }
-
       // Kategorie hinzufügen
       current.add(catId);
       this.activeCategories.set(current);
 
-      // Alle Level 1 Nodes expandieren die passende Kinder haben
-      const expanded = new Set(this.expandedNodes());
-      for (const level1Node of this.mainNodes()) {
-        if (this.hasAnyCategoryMatch(level1Node, current)) {
-          this.expandNodeAndChildren(level1Node, expanded);
+      if (inFocusMode) {
+        // Im Fokus-Modus: Nur Filter setzen, auf gefilterte Fokus-Nodes zentrieren
+        setTimeout(() => this.centerOnFilteredFocusNodes(), 100);
+      } else {
+        // Erster Filter? Zustand speichern
+        if (current.size === 1) {
+          this.savedExpandedNodes = new Set(this.expandedNodes());
+        }
+
+        // Alle Level 1 Nodes expandieren die passende Kinder haben
+        const expanded = new Set(this.expandedNodes());
+        for (const level1Node of this.mainNodes()) {
+          if (this.hasAnyCategoryMatch(level1Node, current)) {
+            this.expandNodeAndChildren(level1Node, expanded);
+          }
+        }
+        this.expandedNodes.set(expanded);
+
+        // View auf passende Nodes zentrieren
+        setTimeout(() => this.centerOnFilteredNodes(), 100);
+      }
+    }
+  }
+
+  // Zentriert die View auf gefilterte Nodes im Fokus-Pfad
+  private centerOnFilteredFocusNodes(): void {
+    const positions = this.forcePositions();
+    const categories = this.activeCategories();
+    const focused = this.focusedNode();
+    if (positions.size === 0 || categories.size === 0 || !focused) return;
+
+    // Sammle alle passenden Node-Positionen im Fokus-Pfad
+    const matchingPositions: { x: number; y: number }[] = [];
+
+    // Fokussierter Node ist immer dabei
+    const focusedPos = positions.get(focused.node.id);
+    if (focusedPos) {
+      matchingPositions.push(focusedPos);
+    }
+
+    // Prüfe Nachkommen des fokussierten Nodes
+    const collectMatchingDescendants = (node: Node) => {
+      const pos = positions.get(node.id);
+      if (!pos) return;
+
+      const hasCategory = node.categoryIds.some(id => categories.has(id));
+      if (hasCategory) {
+        matchingPositions.push(pos);
+      }
+
+      if (node.children) {
+        for (const child of node.children) {
+          collectMatchingDescendants(child);
         }
       }
-      this.expandedNodes.set(expanded);
+    };
 
-      // View auf passende Nodes zentrieren
-      setTimeout(() => this.centerOnFilteredNodes(), 100);
+    if (focused.node.children) {
+      for (const child of focused.node.children) {
+        collectMatchingDescendants(child);
+      }
     }
+
+    if (matchingPositions.length === 0) return;
+
+    // Bounding Box berechnen
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    for (const pos of matchingPositions) {
+      minX = Math.min(minX, pos.x);
+      maxX = Math.max(maxX, pos.x);
+      minY = Math.min(minY, pos.y);
+      maxY = Math.max(maxY, pos.y);
+    }
+
+    // Mittelpunkt berechnen
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+
+    // View mit Animation zentrieren
+    this.animatePanTo(-centerX, -centerY);
   }
 
   // Zentriert die View auf alle Nodes die zum Filter passen
@@ -231,11 +298,6 @@ export class AppComponent {
   handleNodeClick(node: Node, level: number | string, parent: Node | null, root: Node) {
     const numLevel = Number(level);
 
-    if (this.activeCategories().size > 0) {
-      this.freezeCurrentState();
-      this.activeCategories.set(new Set());
-    }
-
     const focused = this.focusedNode();
 
     // Im Fokus-Modus
@@ -244,14 +306,13 @@ export class AppComponent {
 
       // Klick auf Level 0 oder Level 1 → Fokus verlassen
       if (numLevel <= 1) {
-        this.focusedNode.set(null);
+        this.exitFocusMode();
         return;
       }
 
       // Klick auf den fokussierten Node selbst → Fokus verlassen (ohne zu springen)
       if (role === 'focused') {
-        this.focusedNode.set(null);
-        // Nicht springen - View bleibt wo sie ist
+        this.exitFocusMode();
         return;
       }
 
@@ -285,25 +346,33 @@ export class AppComponent {
 
     // Normal-Modus (kein Fokus aktiv)
     if (numLevel === 0) {
-      // Level 0: Alle Nodes einklappen (nur Level 0 + Level 1 sichtbar)
+      // Level 0: Kompletter Reset - alles einklappen + Filter löschen
       if (this.expandedNodes().size > 0) {
         this.collapseAllWithAnimation();
       } else {
         // Bereits alles eingeklappt → Wobble-Animation
         this.forceLayout.wobble();
       }
+      // Filter zurücksetzen
+      this.activeCategories.set(new Set());
+      this.panOffset.set({ x: 0, y: 0 });
       return;
     }
 
     if (numLevel === 1) {
       // Level 1: Toggle expand
-      const currentSet = new Set(this.expandedNodes());
-      if (currentSet.has(node.id)) {
-        this.collapseNodeAndChildren(node, currentSet);
+      if (this.expandedNodes().has(node.id)) {
+        // Mit Animation schließen
+        this.collapseNodeWithAnimation(node);
+        // Filter zurücksetzen um inkonsistente Zustände zu vermeiden
+        if (this.activeCategories().size > 0) {
+          this.activeCategories.set(new Set());
+        }
       } else {
+        const currentSet = new Set(this.expandedNodes());
         this.expandNodeAndChildren(node, currentSet);
+        this.expandedNodes.set(currentSet);
       }
-      this.expandedNodes.set(currentSet);
     } else if (numLevel >= 2 && parent) {
       // Fokus-Modus aktivieren - Expanded-State bleibt wie vom Nutzer gewählt
       this.focusedNode.set({ node, parent, root, level: numLevel });
@@ -345,6 +414,46 @@ export class AppComponent {
         this.collapseNodeAndChildren(child, set);
       }
     }
+  }
+
+  // Sammelt einen Node und alle seine Kinder rekursiv
+  private collectNodeAndChildren(node: Node, set: Set<string>) {
+    set.add(node.id);
+    if (node.children) {
+      for (const child of node.children) {
+        this.collectNodeAndChildren(child, set);
+      }
+    }
+  }
+
+  // Schließt einen Node mit Animation
+  private collapseNodeWithAnimation(node: Node) {
+    // Sammle alle Nodes die geschlossen werden sollen
+    const nodesToCollapse = new Set<string>();
+    this.collectNodeAndChildren(node, nodesToCollapse);
+
+    // Markiere sie als "collapsing" für die Animation
+    const currentCollapsing = new Set(this.collapsingNodes());
+    for (const id of nodesToCollapse) {
+      currentCollapsing.add(id);
+    }
+    this.collapsingNodes.set(currentCollapsing);
+
+    // Nach Animation tatsächlich entfernen
+    setTimeout(() => {
+      const currentExpanded = new Set(this.expandedNodes());
+      for (const id of nodesToCollapse) {
+        currentExpanded.delete(id);
+      }
+      this.expandedNodes.set(currentExpanded);
+
+      // Collapsing nodes bereinigen
+      const stillCollapsing = new Set(this.collapsingNodes());
+      for (const id of nodesToCollapse) {
+        stillCollapsing.delete(id);
+      }
+      this.collapsingNodes.set(stillCollapsing);
+    }, 350);
   }
 
   // Alle Nodes mit Animation einklappen
@@ -487,6 +596,26 @@ export class AppComponent {
   }
 
   // --- Focus Mode Helpers ---
+
+  // Verlässt den Fokus-Modus und expandiert bei aktivem Filter die passenden Nodes
+  private exitFocusMode(): void {
+    this.focusedNode.set(null);
+
+    // Wenn Filter aktiv: Passende Nodes expandieren
+    const activeCategories = this.activeCategories();
+    if (activeCategories.size > 0) {
+      const expanded = new Set(this.expandedNodes());
+      for (const level1Node of this.mainNodes()) {
+        if (this.hasAnyCategoryMatch(level1Node, activeCategories)) {
+          this.expandNodeAndChildren(level1Node, expanded);
+        }
+      }
+      this.expandedNodes.set(expanded);
+
+      // View auf passende Nodes zentrieren
+      setTimeout(() => this.centerOnFilteredNodes(), 100);
+    }
+  }
 
   isInFocusMode(): boolean {
     return this.focusedNode() !== null;
@@ -767,9 +896,25 @@ export class AppComponent {
     const manuallyOpen = this.expandedNodes().has(node.id);
     const activeCategories = this.activeCategories();
 
+    // Mit Filter aktiv: Auch Nodes expandieren die zur Kategorie passen
+    // ABER: Im Fokus-Modus nur wenn Node auf dem Fokus-Pfad liegt
     if (activeCategories.size > 0) {
-      return manuallyOpen || this.hasAnyCategoryMatch(node, activeCategories);
+      const matchesCategory = this.hasAnyCategoryMatch(node, activeCategories);
+
+      if (this.isInFocusMode()) {
+        // Im Fokus-Modus: Kategorie-Match nur für Fokus-Pfad-Nodes
+        const isOnFocusPath = this.isFocusedNode(node) ||
+                              this.isFocusedParent(node) ||
+                              this.isInFocusedBranch(node) ||
+                              this.isAncestorOfFocused(node) ||
+                              this.isDescendantOfFocused(node);
+        // Nur manuell expandierte Nodes ODER Kategorie-Match wenn auf Fokus-Pfad
+        return manuallyOpen || (matchesCategory && isOnFocusPath);
+      }
+
+      return manuallyOpen || matchesCategory;
     }
+
     return manuallyOpen;
   }
 
@@ -838,25 +983,42 @@ export class AppComponent {
     // Hover-Pfad: Node und alle Vorfahren sind scharf
     if (this.isOnHoveredPath(node)) return false;
 
-    // Im Fokus-Modus: Alles außer Fokus-Pfad blurren (auch Level 1 und 2!)
+    // Im Fokus-Modus
     if (this.isInFocusMode()) {
       const focused = this.focusedNode();
       if (!focused) return false;
 
-      // Scharf: Der fokussierte Node selbst
+      // Der fokussierte Node selbst ist IMMER scharf (auch ohne passende Kategorie)
       if (node.id === focused.node.id) return false;
 
-      // Scharf: Alle Vorfahren des fokussierten Nodes
-      if (this.isAncestorOfFocused(node)) return false;
+      // Prüfe ob Node auf Fokus-Pfad liegt
+      const isAncestor = this.isAncestorOfFocused(node);
+      const isDescendant = this.isDescendantOfFocused(node);
+      const isOnFocusPath = isAncestor || isDescendant;
 
-      // Scharf: Alle Nachkommen des fokussierten Nodes (Kinder, Enkel, etc.)
-      if (this.isDescendantOfFocused(node)) return false;
+      // Wenn kein Filter aktiv: Standard Fokus-Verhalten
+      if (activeCategories.size === 0) {
+        return !isOnFocusPath;
+      }
 
-      // Blur: Alles andere im Fokus-Modus (inkl. Level 1 und 2 Geschwister!)
-      return true;
+      // Filter + Fokus kombiniert:
+      // Nicht auf Fokus-Pfad → immer blur
+      if (!isOnFocusPath) return true;
+
+      // Auf Fokus-Pfad: Prüfe Kategorie
+      const hasCategory = node.categoryIds.some(id => activeCategories.has(id));
+      const hasMatchingChildren = this.hasAnyCategoryMatch(node, activeCategories);
+
+      // Vorfahren: Scharf wenn sie passende Nachkommen haben (Pfad zum Match)
+      if (isAncestor) {
+        return !hasCategory && !hasMatchingChildren;
+      }
+
+      // Nachkommen: Scharf wenn sie selbst passen oder passende Kinder haben
+      return !hasCategory && !hasMatchingChildren;
     }
 
-    // Mit aktivem Kategorie-Filter: Blur alle die NICHT zum Filter passen
+    // Normaler Modus mit Filter (kein Fokus)
     if (activeCategories.size > 0) {
       // Level 1: Blur wenn KEINE Kinder eine der Kategorien haben
       if (numLevel === 1) {
