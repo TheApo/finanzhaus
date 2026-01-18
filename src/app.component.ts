@@ -1,6 +1,29 @@
 import { Component, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService, Node, CategoryId, Category, DataMode } from './services/data.service';
+
+// Debug-Panel Größen-Einstellungen
+export interface NodeSizeConfig {
+  level0NodeSize: number;
+  level0TextSize: number;
+  level1NodeSize: number;
+  level1TextSize: number;
+  level2NodeSize: number;
+  level2TextSize: number;
+  level3NodeSize: number;
+  level3TextSize: number;
+}
+
+const DEFAULT_NODE_SIZES: NodeSizeConfig = {
+  level0NodeSize: 8,
+  level0TextSize: 1.5,
+  level1NodeSize: 7,
+  level1TextSize: 0.875,
+  level2NodeSize: 6,
+  level2TextSize: 0.75,
+  level3NodeSize: 3.5,
+  level3TextSize: 0.625,
+};
 import { I18nService } from './services/i18n.service';
 import { ForceLayoutService } from './services/force-layout.service';
 import { FinanzhausComponent } from './components/finanzhaus.component';
@@ -74,7 +97,14 @@ export class AppComponent {
   // Datenmodus (Beratung / Produkte)
   dataMode = this.dataService.dataMode;
 
+  // Debug-Panel für Node-Größen
+  debugPanelOpen = signal<boolean>(false);
+  nodeSizes = signal<NodeSizeConfig>({ ...DEFAULT_NODE_SIZES });
+  private readonly DEBUG_SIZES_STORAGE_KEY = 'finanzhaus-debug-sizes';
+
   constructor() {
+    // Debug-Größen aus localStorage laden
+    this.loadDebugSizesFromStorage();
     // Datenmodus aus localStorage laden (vor dem State laden!)
     this.loadDataModeFromStorage();
     // Zustand aus localStorage laden
@@ -98,6 +128,42 @@ export class AppComponent {
     } catch (e) {
       console.warn('Failed to save data mode to localStorage:', e);
     }
+  }
+
+  // Debug-Panel Methoden
+  private loadDebugSizesFromStorage(): void {
+    try {
+      const stored = localStorage.getItem(this.DEBUG_SIZES_STORAGE_KEY);
+      if (stored) {
+        const sizes = JSON.parse(stored) as Partial<NodeSizeConfig>;
+        this.nodeSizes.set({ ...DEFAULT_NODE_SIZES, ...sizes });
+      }
+    } catch (e) {
+      console.warn('Failed to load debug sizes from localStorage:', e);
+    }
+  }
+
+  private saveDebugSizesToStorage(): void {
+    try {
+      localStorage.setItem(this.DEBUG_SIZES_STORAGE_KEY, JSON.stringify(this.nodeSizes()));
+    } catch (e) {
+      console.warn('Failed to save debug sizes to localStorage:', e);
+    }
+  }
+
+  toggleDebugPanel(): void {
+    this.debugPanelOpen.set(!this.debugPanelOpen());
+  }
+
+  updateNodeSize(key: keyof NodeSizeConfig, value: number): void {
+    const current = this.nodeSizes();
+    this.nodeSizes.set({ ...current, [key]: value });
+    this.saveDebugSizesToStorage();
+  }
+
+  resetDebugSizes(): void {
+    this.nodeSizes.set({ ...DEFAULT_NODE_SIZES });
+    this.saveDebugSizesToStorage();
   }
 
   private getStorageKey(): string {
@@ -287,7 +353,7 @@ export class AppComponent {
           this.expandedNodes.set(new Set(this.savedExpandedNodes));
           this.savedExpandedNodes = null;
         }
-        this.panOffset.set({ x: 0, y: 0 });
+        this.animatePanTo(0, 0);
       } else if (!inFocusMode) {
         // Noch andere Filter aktiv (kein Fokus) → auf diese zentrieren
         setTimeout(() => this.centerOnFilteredNodes(), 100);
@@ -501,7 +567,7 @@ export class AppComponent {
         // Etwas ist expandiert → alles einklappen + Filter löschen
         this.collapseAllWithAnimation();
         this.activeCategories.set(new Set());
-        this.panOffset.set({ x: 0, y: 0 });
+        this.animatePanTo(0, 0);
       } else {
         // Nichts expandiert (nur L1 sichtbar) → alle L1 Nodes expandieren
         this.expandAllLevel1Nodes();
@@ -671,7 +737,7 @@ export class AppComponent {
       this.savedExpandedNodes = null;
     }
     this.activeCategories.set(new Set());
-    this.panOffset.set({ x: 0, y: 0 });
+    this.animatePanTo(0, 0);
   }
 
   resetView() {
@@ -754,6 +820,30 @@ export class AppComponent {
       return;
     }
 
+    // Node Drag (Touch)
+    const dragNode = this.draggingNode();
+    if (dragNode && event.touches.length === 1) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const dx = touch.clientX - this.dragStartPos.x;
+      const dy = touch.clientY - this.dragStartPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Prüfe ob Threshold überschritten
+      if (!this.dragMoved && distance >= this.DRAG_THRESHOLD) {
+        this.dragMoved = true;
+        this.isActivelyDragging.set(true);
+      }
+
+      if (this.dragMoved) {
+        const zoom = this.zoomLevel();
+        const newX = this.dragNodeStartPos.x + dx / zoom;
+        const newY = this.dragNodeStartPos.y + dy / zoom;
+        this.forceLayout.setNodePosition(dragNode.id, newX, newY);
+      }
+      return;
+    }
+
     // Pan
     if (this.isPanning() && event.touches.length === 1) {
       event.preventDefault();
@@ -766,6 +856,26 @@ export class AppComponent {
   }
 
   onTouchEnd(event: TouchEvent) {
+    // Node Drag beenden (Touch)
+    const draggedNode = this.draggingNode();
+    if (draggedNode && this.dragContext) {
+      if (this.dragMoved) {
+        // Drag wurde durchgeführt
+        this.forceLayout.releaseNode(draggedNode.id);
+        this.saveStateToStorage();
+      } else {
+        // Kein Drag - war ein Tap → Node-Klick auslösen
+        this.forceLayout.unfixNode(draggedNode.id);
+        this.handleNodeClick(draggedNode, this.dragContext.level, this.dragContext.parent, this.dragContext.root);
+      }
+
+      this.draggingNode.set(null);
+      this.isActivelyDragging.set(false);
+      this.dragMoved = false;
+      this.dragContext = null;
+      return;
+    }
+
     // Wenn noch Finger übrig: Prüfen ob wir zu Pan wechseln
     if (event.touches.length === 1 && this.isPinching) {
       this.isPinching = false;
@@ -783,6 +893,27 @@ export class AppComponent {
       this.isPinching = false;
       this.isPanning.set(false);
     }
+  }
+
+  // Touch-Start auf einem Node (für Drag & Drop)
+  onNodeTouchStart(event: TouchEvent, node: Node, level: number, parent: Node | null, root: Node) {
+    if (level < 1) return; // L0 ist fixiert
+    if (event.touches.length !== 1) return;
+
+    event.stopPropagation();
+    event.preventDefault(); // Verhindert simulierte Mouse-Events nach Touch
+
+    const touch = event.touches[0];
+    const nodePos = this.forceLayout.getPosition(node.id);
+    if (!nodePos) return;
+
+    this.dragStartPos = { x: touch.clientX, y: touch.clientY };
+    this.dragNodeStartPos = { x: nodePos.x, y: nodePos.y };
+    this.dragMoved = false;
+    this.draggingNode.set(node);
+    this.dragContext = { level, parent, root };
+
+    this.forceLayout.fixNode(node.id);
   }
 
   private getTouchDistance(touches: TouchList): number {
