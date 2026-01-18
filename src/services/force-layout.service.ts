@@ -335,8 +335,267 @@ export class ForceLayoutService {
     this.userPositions.clear();
   }
 
+  /**
+   * Setzt die Position eines einzelnen Nodes zurück (löscht aus userPositions).
+   * Der Node wird dann wieder an seine berechnete Ideal-Position gesetzt.
+   */
+  resetNodePosition(nodeId: string): void {
+    this.userPositions.delete(nodeId);
+    const node = this.nodeMap.get(nodeId);
+    if (node) {
+      // Zurück zur Ideal-Position
+      node.x = node.idealX;
+      node.y = node.idealY;
+      node.fx = undefined;
+      node.fy = undefined;
+      this.updatePositionSignal();
+    }
+  }
+
+  /**
+   * Prüft ob ein Node mit einem anderen überlappt.
+   * Verwendet die konfigurierten Kollisions-Radien.
+   */
+  checkCollision(nodeId1: string, nodeId2: string): boolean {
+    const node1 = this.nodeMap.get(nodeId1);
+    const node2 = this.nodeMap.get(nodeId2);
+    if (!node1 || !node2) return false;
+    if (node1.x === undefined || node1.y === undefined) return false;
+    if (node2.x === undefined || node2.y === undefined) return false;
+
+    const radius1 = CONFIG.COLLISION_RADII[Math.min(node1.level, 4)] || CONFIG.COLLISION_RADII[4];
+    const radius2 = CONFIG.COLLISION_RADII[Math.min(node2.level, 4)] || CONFIG.COLLISION_RADII[4];
+
+    const dx = node1.x - node2.x;
+    const dy = node1.y - node2.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Überlappung wenn Abstand < Summe der Radien
+    return distance < (radius1 + radius2);
+  }
+
   getPosition(nodeId: string): { x: number; y: number } | undefined {
     return this._nodePositions().get(nodeId);
+  }
+
+  /**
+   * Ordnet Kinder-Nodes kreisförmig um einen Parent an.
+   * Verwendet konzentrische Ringe wenn zu viele Kinder für einen Ring.
+   * Positioniert auch Enkel-Nodes so, dass sie vom Großeltern-Node weg zeigen.
+   *
+   * Spezialfall Level 1 Parent mit < 4 Kindern:
+   * Kinder werden in einem Fächer weg von Level 0 positioniert (nicht voller Kreis).
+   */
+  arrangeChildrenCircular(parentId: string, childIds: string[]): void {
+    const parent = this.nodeMap.get(parentId);
+    if (!parent || parent.x === undefined || parent.y === undefined) return;
+    if (childIds.length === 0) return;
+
+    const parentX = parent.x;
+    const parentY = parent.y;
+    const parentLevel = parent.level;
+
+    // Kollisions-Radius für Kinder (Level des Parents + 1)
+    const childLevel = Math.min(parentLevel + 1, 4);
+    const childRadius = CONFIG.COLLISION_RADII[childLevel] || 65;
+
+    // Erster Ring-Radius: Parent-Radius + Kind-Radius + kleiner Puffer
+    const parentRadius = CONFIG.COLLISION_RADII[parentLevel] || 100;
+    const baseRingRadius = parentRadius + childRadius + 2;
+
+    // Spezialfall: Level 1 oder Level 2 Parent mit weniger als 4 Kindern
+    // → Fächer weg vom Großeltern statt voller Kreis
+    if ((parentLevel === 1 || parentLevel === 2) && childIds.length < 4) {
+      this.arrangeChildrenInFanAwayFromGrandparent(parent, childIds, baseRingRadius);
+      return;
+    }
+
+    // Minimaler Abstand zwischen Kindern
+    // Level 1 Parent: Engerer Abstand damit 8 Level 2 Elemente in den ersten Ring passen
+    const minChildSpacing = parentLevel === 1
+      ? childRadius * 1.6  // Engerer Abstand für Level 2 um Level 1
+      : childRadius * 2 + 20;
+
+    // Berechne wie viele Kinder pro Ring passen
+    // Umfang = 2 * PI * ringRadius, teilen durch minChildSpacing
+    const calculateNodesPerRing = (ringRadius: number): number => {
+      const circumference = 2 * Math.PI * ringRadius;
+      return Math.max(1, Math.floor(circumference / minChildSpacing));
+    };
+
+    const ringSpacing = childRadius + 10; // Kleinerer Abstand zwischen Ringen
+
+    // Verteile Kinder auf Ringe
+    const positions: Array<{ id: string; x: number; y: number; angle: number }> = [];
+    let remainingChildren = [...childIds];
+    let ringIndex = 0;
+
+    while (remainingChildren.length > 0) {
+      const ringRadius = baseRingRadius + ringIndex * ringSpacing;
+      const nodesInThisRing = Math.min(
+        calculateNodesPerRing(ringRadius),
+        remainingChildren.length
+      );
+
+      // Kinder für diesen Ring
+      const childrenForRing = remainingChildren.slice(0, nodesInThisRing);
+      remainingChildren = remainingChildren.slice(nodesInThisRing);
+
+      // Gleichmäßig auf dem Ring verteilen
+      const angleStep = (2 * Math.PI) / childrenForRing.length;
+      // Versatz für jeden Ring: halber Winkelschritt, damit Nodes versetzt sind
+      const ringOffset = ringIndex * (angleStep / 2);
+      const startAngle = -Math.PI / 2 + ringOffset;
+
+      childrenForRing.forEach((childId, index) => {
+        const angle = startAngle + index * angleStep;
+        positions.push({
+          id: childId,
+          x: parentX + Math.cos(angle) * ringRadius,
+          y: parentY + Math.sin(angle) * ringRadius,
+          angle: angle // Winkel speichern für Enkel-Positionierung
+        });
+      });
+
+      ringIndex++;
+    }
+
+    // Positionen anwenden und Enkel positionieren
+    this.applyPositionsAndArrangeGrandchildren(positions, parentX, parentY);
+
+    this.updatePositionSignal();
+  }
+
+  /**
+   * Positioniert Kinder in einem Fächer, der vom Großeltern (L0) weg zeigt.
+   * Wird verwendet wenn Level 1 Parent weniger als 4 Kinder hat.
+   */
+  private arrangeChildrenInFanAwayFromGrandparent(
+    parent: LayoutNode,
+    childIds: string[],
+    ringRadius: number
+  ): void {
+    const parentX = parent.x!;
+    const parentY = parent.y!;
+
+    // Finde den Großeltern (Level 0)
+    const grandparent = parent.parentId ? this.nodeMap.get(parent.parentId) : null;
+    const grandparentX = grandparent?.x ?? 0;
+    const grandparentY = grandparent?.y ?? 0;
+
+    // Winkel von Großeltern zu Parent = "Weg-Richtung"
+    const outwardAngle = Math.atan2(parentY - grandparentY, parentX - grandparentX);
+
+    // Fächer-Winkel: 100° bei 2 Kindern, 60° bei 3 Kindern
+    const anglePerChild = childIds.length === 2
+      ? Math.PI * 0.56  // ~100° für 2 Kinder
+      : Math.PI / 3;    // 60° für 3 Kinder
+    const totalFanAngle = (childIds.length - 1) * anglePerChild;
+    const startAngle = outwardAngle - totalFanAngle / 2;
+
+    const positions: Array<{ id: string; x: number; y: number; angle: number }> = [];
+
+    // Tatsächlicher Winkelschritt (falls totalFanAngle begrenzt wurde)
+    const actualAngleStep = childIds.length > 1 ? totalFanAngle / (childIds.length - 1) : 0;
+
+    childIds.forEach((childId, index) => {
+      const angle = childIds.length === 1
+        ? outwardAngle
+        : startAngle + index * actualAngleStep;
+
+      positions.push({
+        id: childId,
+        x: parentX + Math.cos(angle) * ringRadius,
+        y: parentY + Math.sin(angle) * ringRadius,
+        angle: angle
+      });
+    });
+
+    // Positionen anwenden und Enkel positionieren
+    this.applyPositionsAndArrangeGrandchildren(positions, parentX, parentY);
+
+    this.updatePositionSignal();
+  }
+
+  /**
+   * Wendet Positionen an und positioniert Enkel-Nodes.
+   */
+  private applyPositionsAndArrangeGrandchildren(
+    positions: Array<{ id: string; x: number; y: number; angle: number }>,
+    parentX: number,
+    parentY: number
+  ): void {
+    for (const pos of positions) {
+      const child = this.nodeMap.get(pos.id);
+      if (child) {
+        child.x = pos.x;
+        child.y = pos.y;
+        child.idealX = pos.x;
+        child.idealY = pos.y;
+        this.userPositions.set(pos.id, { x: pos.x, y: pos.y });
+
+        // Enkel-Nodes positionieren (weg vom Großeltern-Node)
+        if (child.children && child.children.length > 0) {
+          this.arrangeGrandchildrenOutward(child, pos.angle, parentX, parentY);
+        }
+      }
+    }
+  }
+
+  /**
+   * Positioniert Enkel-Nodes in einem Fächer, der vom Großeltern weg zeigt.
+   * @param childNode Der Eltern-Node der Enkel
+   * @param outwardAngle Der Winkel vom Großeltern zum Eltern (Richtung "weg")
+   * @param grandparentX X-Position des Großeltern
+   * @param grandparentY Y-Position des Großeltern
+   */
+  private arrangeGrandchildrenOutward(
+    childNode: LayoutNode,
+    outwardAngle: number,
+    grandparentX: number,
+    grandparentY: number
+  ): void {
+    const grandchildren = childNode.children;
+    if (!grandchildren || grandchildren.length === 0) return;
+    if (childNode.x === undefined || childNode.y === undefined) return;
+
+    const childX = childNode.x;
+    const childY = childNode.y;
+
+    // Kollisions-Radius für Enkel
+    const grandchildLevel = Math.min(childNode.level + 1, 4);
+    const grandchildRadius = CONFIG.COLLISION_RADII[grandchildLevel] || 65;
+
+    // Abstand vom Kind-Node
+    const childRadius = CONFIG.COLLISION_RADII[childNode.level] || 100;
+    const distance = childRadius + grandchildRadius + 2;
+
+    // Fächer-Winkel (abhängig von Anzahl der Enkel)
+    const totalFanAngle = Math.min(Math.PI * 0.8, grandchildren.length * 0.3); // Max 144°
+    const angleStep = grandchildren.length > 1
+      ? totalFanAngle / (grandchildren.length - 1)
+      : 0;
+    const startAngle = outwardAngle - totalFanAngle / 2;
+
+    grandchildren.forEach((grandchild, index) => {
+      const angle = grandchildren.length === 1
+        ? outwardAngle
+        : startAngle + index * angleStep;
+
+      const newX = childX + Math.cos(angle) * distance;
+      const newY = childY + Math.sin(angle) * distance;
+
+      grandchild.x = newX;
+      grandchild.y = newY;
+      grandchild.idealX = newX;
+      grandchild.idealY = newY;
+      this.userPositions.set(grandchild.id, { x: newX, y: newY });
+
+      // Rekursiv: Auch Ur-Enkel positionieren
+      if (grandchild.children && grandchild.children.length > 0) {
+        this.arrangeGrandchildrenOutward(grandchild, angle, childX, childY);
+      }
+    });
   }
 
   /**

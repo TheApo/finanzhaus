@@ -328,6 +328,7 @@
         (click)="(+level) >= 1 ? null : handleNodeClick(node, (+level), parentNode, rootNode)"
         (mousedown)="(+level) >= 1 ? onNodeDragStart($event, node, (+level), parentNode, rootNode) : null"
         (touchstart)="(+level) >= 1 ? onNodeTouchStart($event, node, (+level), parentNode, rootNode) : null"
+        (contextmenu)="onNodeContextMenu($event, node, (+level))"
         (mouseenter)="onNodeMouseEnter($event, node)"
         (mouseleave)="onNodeMouseLeave()"
       >
@@ -337,6 +338,25 @@
           </svg>
         </div>
         <span class="node__label no-select">{{ node.label }}</span>
+
+        <!-- Circular Arrange Button - erscheint bei expandiertem Level 1 oder fokussiertem Level 2 Node mit Kindern -->
+        @if ((((+level) === 1 && isExpanded) || ((+level) === 2 && isFocusedNode(node))) && node.children?.length) {
+          <button
+            class="node__arrange-btn no-select"
+            (click)="arrangeChildrenCircular(node, $event)"
+            (mousedown)="$event.stopPropagation()"
+            title="Kinder kreisförmig anordnen"
+          >
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" stroke-dasharray="4 2" />
+              <circle cx="12" cy="5" r="2" fill="currentColor" />
+              <circle cx="18" cy="10" r="2" fill="currentColor" />
+              <circle cx="16" cy="17" r="2" fill="currentColor" />
+              <circle cx="8" cy="17" r="2" fill="currentColor" />
+              <circle cx="6" cy="10" r="2" fill="currentColor" />
+            </svg>
+          </button>
+        }
       </div>
 
       <!-- Rekursive Kinder (Level 0 zeigt immer Kinder) -->

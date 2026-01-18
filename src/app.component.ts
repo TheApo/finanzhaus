@@ -861,8 +861,15 @@ export class AppComponent {
     if (draggedNode && this.dragContext) {
       if (this.dragMoved) {
         // Drag wurde durchgeführt
-        this.forceLayout.releaseNode(draggedNode.id);
-        this.saveStateToStorage();
+        // Level 1 Kollisionserkennung: Prüfe ob Level 1 auf Level 2 liegt
+        if (this.dragContext.level === 1 && this.hasCollisionWithChildren(draggedNode)) {
+          // Kollision! Position zurücksetzen
+          this.forceLayout.resetNodePosition(draggedNode.id);
+        } else {
+          // Keine Kollision - Position speichern
+          this.forceLayout.releaseNode(draggedNode.id);
+          this.saveStateToStorage();
+        }
       } else {
         // Kein Drag - war ein Tap → Node-Klick auslösen
         this.forceLayout.unfixNode(draggedNode.id);
@@ -986,10 +993,16 @@ export class AppComponent {
     const draggedNode = this.draggingNode();
     if (draggedNode && this.dragContext) {
       if (this.dragMoved) {
-        // Drag wurde durchgeführt - Node an neuer Position speichern, Simulation starten
-        this.forceLayout.releaseNode(draggedNode.id);
-        // Zustand in localStorage speichern (inkl. neuer Position)
-        this.saveStateToStorage();
+        // Drag wurde durchgeführt
+        // Level 1 Kollisionserkennung: Prüfe ob Level 1 auf Level 2 liegt
+        if (this.dragContext.level === 1 && this.hasCollisionWithChildren(draggedNode)) {
+          // Kollision! Position zurücksetzen
+          this.forceLayout.resetNodePosition(draggedNode.id);
+        } else {
+          // Keine Kollision - Position speichern
+          this.forceLayout.releaseNode(draggedNode.id);
+          this.saveStateToStorage();
+        }
       } else {
         // Kein Drag - war ein Klick → nur Fixierung lösen (keine Änderungen!)
         this.forceLayout.unfixNode(draggedNode.id);
@@ -1035,6 +1048,65 @@ export class AppComponent {
 
   canDragNode(level: number): boolean {
     return level >= 1; // L0 ist fixiert, L1+ sind verschiebbar
+  }
+
+  /**
+   * Prüft ob ein Level 1 Node mit seinen Level 2 Kindern kollidiert.
+   * Wird nach dem Drag aufgerufen um zu verhindern, dass Level 1 auf Level 2 landet.
+   */
+  private hasCollisionWithChildren(node: Node): boolean {
+    if (!node.children) return false;
+
+    for (const child of node.children) {
+      if (this.forceLayout.checkCollision(node.id, child.id)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Rechtsklick auf Level 1 oder 2 Node: Ordnet Kinder kreisförmig an.
+   */
+  onNodeContextMenu(event: MouseEvent, node: Node, level: number): void {
+    // Nur für Level 1 und 2 mit Kindern
+    if ((level !== 1 && level !== 2) || !node.children || node.children.length === 0) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.arrangeChildrenCircular(node, event);
+  }
+
+  /**
+   * Ordnet Level 3 Kinder eines Level 2 Nodes kreisförmig an.
+   * Wird vom Button oder Rechtsklick aufgerufen.
+   */
+  arrangeChildrenCircular(node: Node, event?: Event): void {
+    if (!node.children || node.children.length === 0) {
+      return;
+    }
+
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    // Node muss expandiert sein damit Kinder sichtbar sind
+    const expanded = new Set(this.expandedNodes());
+    expanded.add(node.id);
+    this.expandedNodes.set(expanded);
+
+    // Kinder-IDs sammeln
+    const childIds = node.children.map(child => child.id);
+
+    // Kreisförmig anordnen
+    this.forceLayout.arrangeChildrenCircular(node.id, childIds);
+
+    // Speichern
+    this.saveStateToStorage();
   }
 
   // --- Zoom Handlers ---
@@ -1453,6 +1525,9 @@ export class AppComponent {
     // Direktes Kind des gehoverten Nodes: Auch scharf (Preview der Kinder)
     if (this.isDirectChildOfHovered(node)) return false;
 
+    // Wenn über L1 gehovert wird: Alle Nachkommen dieses L1 sind scharf
+    if (this.isDescendantOfHoveredL1(node)) return false;
+
     // Im Fokus-Modus
     if (this.isInFocusMode()) {
       const focused = this.focusedNode();
@@ -1569,6 +1644,31 @@ export class AppComponent {
     if (!hovered.children) return false;
 
     return hovered.children.some(child => child.id === node.id);
+  }
+
+  // Prüft ob der gehoverte Node SELBST ein L1 ist und der aktuelle Node ein Nachkomme davon ist
+  isDescendantOfHoveredL1(node: Node): boolean {
+    const hovered = this.hoveredPathNode();
+    if (!hovered) return false;
+
+    // Finde Pfad zum gehoverten Node
+    const pathToHovered = this.findPathToNode(this.rootNode(), hovered.id);
+    if (!pathToHovered) return false;
+
+    // Der gehoverte Node muss SELBST L1 sein (Pfadlänge = 2: [Root, L1])
+    if (pathToHovered.length !== 2) return false;
+
+    const l1Id = hovered.id;
+
+    // Prüfe ob L1 expandiert ist
+    if (!this.expandedNodes().has(l1Id)) return false;
+
+    // Finde Pfad zum aktuellen Node
+    const pathToNode = this.findPathToNode(this.rootNode(), node.id);
+    if (!pathToNode || pathToNode.length < 2) return false;
+
+    // Prüfe ob der Node ein Nachkomme dieses L1 ist
+    return pathToNode[1] === l1Id;
   }
 
   // Prüft ob eine Verbindungslinie hervorgehoben werden soll (von Parent zu Child)
