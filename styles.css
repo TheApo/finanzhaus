@@ -1383,7 +1383,7 @@ app-root {
 }
 
 /* Hervorgehobene Linien auf dem Hover-Pfad (von gehovertem Node bis Level 0) */
-.connections__line--highlighted {
+.connections__line--highlighted:not(.connections__line--blurred) {
   stroke: #1e293b !important;
   opacity: 0.9 !important;
   stroke-width: 3.5 !important;

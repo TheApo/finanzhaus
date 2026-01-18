@@ -1874,14 +1874,22 @@ export class AppComponent {
     const hovered = this.hoveredPathNode();
     if (!hovered) return false;
 
+    const root = this.rootNode();
+
+    // Wenn L0 gehovert wird: ALLE sichtbaren Linien hervorheben
+    // (CSS filtert geblurrte Linien aus)
+    if (hovered.id === root.id) {
+      return true;
+    }
+
     // Wenn der gehoverte Node selbst der Parent ist, alle Linien zu Kindern hervorheben
-    // Gilt für L0→L1 und L1→L2
-    if (hovered.id === parentNode.id && level <= 1) {
+    // Gilt für L1→L2
+    if (hovered.id === parentNode.id && level === 1) {
       return true;
     }
 
     // Finde den Pfad vom Root zum gehoverten Node
-    const pathToHovered = this.findPathToNode(this.rootNode(), hovered.id);
+    const pathToHovered = this.findPathToNode(root, hovered.id);
     if (!pathToHovered) return false;
 
     // Prüfe ob sowohl Parent als auch Child auf dem Pfad liegen
