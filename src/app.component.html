@@ -304,7 +304,7 @@
             <line
               class="connections__line"
               [class.connections__line--blurred]="shouldBlurNode(child, (+level) + 1, node)"
-              [class.connections__line--highlighted]="isLineOnHoveredPath(node, child)"
+              [class.connections__line--highlighted]="isLineOnHoveredPath(node, child, +level)"
               x1="0" y1="0"
               [attr.x2]="forceChildPos.x - forceNodePos.x"
               [attr.y2]="forceChildPos.y - forceNodePos.y"

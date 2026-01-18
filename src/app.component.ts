@@ -24,6 +24,9 @@ const DEFAULT_NODE_SIZES: NodeSizeConfig = {
   level3NodeSize: 3.5,
   level3TextSize: 0.625,
 };
+
+// Default-Positionen für Produkte-Modus (aus externer JSON-Datei)
+import produkteDefaultState from './data/product_default.json';
 import { I18nService } from './services/i18n.service';
 import { ForceLayoutService } from './services/force-layout.service';
 import { FinanzhausComponent } from './components/finanzhaus.component';
@@ -102,6 +105,9 @@ export class AppComponent {
   nodeSizes = signal<NodeSizeConfig>({ ...DEFAULT_NODE_SIZES });
   private readonly DEBUG_SIZES_STORAGE_KEY = 'finanzhaus-debug-sizes';
 
+  // Flag für automatische Kreisanordnung im Beratung-Modus beim ersten Laden
+  private needsBeratungInitialArrangement = false;
+
   constructor() {
     // Debug-Größen aus localStorage laden
     this.loadDebugSizesFromStorage();
@@ -175,6 +181,15 @@ export class AppComponent {
     const root = this.rootNode();
     const expanded = this.expandedNodes();
     this.forceLayout.updateNodes(root, expanded);
+
+    // Beratung-Modus: Automatische Kreisanordnung beim ersten Laden
+    if (this.needsBeratungInitialArrangement && root.children && root.children.length > 0) {
+      this.needsBeratungInitialArrangement = false;
+      // Warten bis Force-Layout initialisiert ist
+      setTimeout(() => {
+        this.applyInitialCircularArrangement();
+      }, 100);
+    }
   });
 
   // Effect: Zustand in localStorage speichern bei jeder Änderung
@@ -193,7 +208,23 @@ export class AppComponent {
   private loadStateFromStorage(): void {
     try {
       const stored = localStorage.getItem(this.getStorageKey());
-      if (!stored) return;
+
+      // Wenn kein localStorage: Default-Verhalten je nach Modus
+      if (!stored) {
+        if (this.dataMode() === 'produkte') {
+          // Produkte-Modus: Default-Positionen aus JSON-Datei laden
+          for (const [nodeId, pos] of Object.entries(produkteDefaultState.userPositions)) {
+            this.forceLayout['userPositions'].set(nodeId, pos as { x: number; y: number });
+          }
+          // Auto-Fit nach dem Laden der Positionen
+          setTimeout(() => this.fitViewToL0L1(), 100);
+        } else if (this.dataMode() === 'beratung') {
+          // Beratung-Modus: Flag setzen für automatische Kreisanordnung
+          // (fitViewToL0L1 wird in applyInitialCircularArrangement aufgerufen)
+          this.needsBeratungInitialArrangement = true;
+        }
+        return;
+      }
 
       const state = JSON.parse(stored);
 
@@ -741,15 +772,143 @@ export class AppComponent {
   }
 
   resetView() {
-    this.expandedNodes.set(new Set());
+    // 1. Alle User-Positionen zurücksetzen
+    this.forceLayout.resetUserPositions();
+
+    // 2. localStorage löschen
+    this.clearStateFromStorage();
+
+    // 3. Standard-Positionen je nach Datenmodus setzen (VOR den Signal-Änderungen!)
+    if (this.dataMode() === 'produkte') {
+      // Produkte-Modus: Default-Positionen aus JSON-Datei laden
+      for (const [nodeId, pos] of Object.entries(produkteDefaultState.userPositions)) {
+        this.forceLayout['userPositions'].set(nodeId, pos as { x: number; y: number });
+      }
+    }
+
+    // 4. State und View zurücksetzen
     this.activeCategories.set(new Set());
     this.focusedNode.set(null);
-    this.panOffset.set({ x: 0, y: 0 });
-    this.zoomLevel.set(1);
-    // Auch alle vom Benutzer verschobenen Positionen zurücksetzen
-    this.forceLayout.resetUserPositions();
-    // localStorage löschen (wird erst wieder gespeichert beim nächsten State-Change)
-    this.clearStateFromStorage();
+
+    // 5. Beratung-Modus: Direkt die korrekten expandedNodes setzen und Kreisanordnung anwenden
+    if (this.dataMode() === 'beratung') {
+      // Alle L1 und L2 Nodes als expanded setzen (damit L3 sichtbar wird)
+      const expanded = new Set<string>();
+      const root = this.rootNode();
+      for (const l1Node of root.children || []) {
+        expanded.add(l1Node.id);
+        for (const l2Node of l1Node.children || []) {
+          expanded.add(l2Node.id);
+        }
+      }
+      this.expandedNodes.set(expanded);
+
+      // Kreisanordnung anwenden nachdem Layout aktualisiert ist
+      setTimeout(() => {
+        for (const l1Node of root.children || []) {
+          if (l1Node.children && l1Node.children.length > 0) {
+            const childIds = l1Node.children.map(child => child.id);
+            this.forceLayout.arrangeChildrenCircular(l1Node.id, childIds);
+          }
+        }
+        // Auto-Fit nach Kreisanordnung
+        this.fitViewToL0L1();
+        this.saveStateToStorage();
+      }, 200);
+    } else {
+      // Produkte-Modus: Einfach zurücksetzen und Auto-Fit
+      this.expandedNodes.set(new Set());
+      // Warten bis Force-Layout die Positionen hat
+      setTimeout(() => {
+        this.fitViewToL0L1();
+        this.saveStateToStorage();
+      }, 100);
+    }
+  }
+
+  /**
+   * Berechnet Zoom und Pan so, dass L0 und alle L1 Nodes sichtbar sind.
+   * Berücksichtigt Force-Layout, userPositions und Default-Werte.
+   */
+  fitViewToL0L1(): void {
+    const root = this.rootNode();
+    const l1Nodes = root.children || [];
+    if (l1Nodes.length === 0) return;
+
+    // Sammle alle L1 Positionen aus verschiedenen Quellen
+    const positions: { x: number; y: number }[] = [];
+
+    // L0 ist immer bei (0, 0)
+    positions.push({ x: 0, y: 0 });
+
+    for (const l1Node of l1Nodes) {
+      // Priorität: 1. userPositions, 2. Force-Layout, 3. Default
+      const userPos = this.forceLayout['userPositions'].get(l1Node.id);
+      if (userPos) {
+        positions.push(userPos);
+        continue;
+      }
+
+      const forcePos = this.forcePositions().get(l1Node.id);
+      if (forcePos) {
+        positions.push(forcePos);
+        continue;
+      }
+
+      // Fallback: Default-Positionen für Produkte-Modus
+      if (this.dataMode() === 'produkte') {
+        const defaultPos = (produkteDefaultState.userPositions as Record<string, { x: number; y: number }>)[l1Node.id];
+        if (defaultPos) {
+          positions.push(defaultPos);
+        }
+      }
+    }
+
+    if (positions.length <= 1) return; // Nur L0, keine L1 gefunden
+
+    // Bounding Box berechnen
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    for (const pos of positions) {
+      minX = Math.min(minX, pos.x);
+      maxX = Math.max(maxX, pos.x);
+      minY = Math.min(minY, pos.y);
+      maxY = Math.max(maxY, pos.y);
+    }
+
+    // Padding für Node-Größen hinzufügen (L1 Nodes sind ~7rem = ~112px)
+    const nodePadding = 150;
+    minX -= nodePadding;
+    maxX += nodePadding;
+    minY -= nodePadding;
+    maxY += nodePadding;
+
+    const boxWidth = maxX - minX;
+    const boxHeight = maxY - minY;
+    const boxCenterX = (minX + maxX) / 2;
+    const boxCenterY = (minY + maxY) / 2;
+
+    // Viewport-Größe ermitteln (mit etwas Margin für UI-Elemente)
+    const viewportWidth = window.innerWidth * 0.85;
+    const viewportHeight = window.innerHeight * 0.85;
+
+    // Zoom berechnen der die Box reinpasst
+    const zoomX = viewportWidth / boxWidth;
+    const zoomY = viewportHeight / boxHeight;
+    let newZoom = Math.min(zoomX, zoomY);
+
+    // Zoom-Grenzen einhalten
+    newZoom = Math.max(this.ZOOM_MIN, Math.min(this.ZOOM_MAX, newZoom));
+    newZoom = Math.round(newZoom * 100) / 100;
+
+    // Pan berechnen um Box zu zentrieren
+    const panX = -boxCenterX;
+    const panY = -boxCenterY;
+
+    // Anwenden
+    this.zoomLevel.set(newZoom);
+    this.panOffset.set({ x: panX, y: panY });
   }
 
   // --- Pan Event Handlers (Mouse) ---
@@ -1107,6 +1266,45 @@ export class AppComponent {
 
     // Speichern
     this.saveStateToStorage();
+  }
+
+  /**
+   * Wendet automatisch Kreisanordnung auf alle L1 Nodes an.
+   * Wird beim ersten Laden im Beratung-Modus aufgerufen.
+   */
+  private applyInitialCircularArrangement(): void {
+    const root = this.rootNode();
+    if (!root.children || root.children.length === 0) {
+      return;
+    }
+
+    // Alle L1 UND L2 Nodes expandieren (damit L3 Kinder sichtbar werden)
+    const expanded = new Set(this.expandedNodes());
+    for (const l1Node of root.children) {
+      expanded.add(l1Node.id);
+      // Auch alle L2 Kinder expandieren
+      if (l1Node.children) {
+        for (const l2Node of l1Node.children) {
+          expanded.add(l2Node.id);
+        }
+      }
+    }
+    this.expandedNodes.set(expanded);
+
+    // Warten bis alle Nodes im Layout sind (L1, L2 und L3)
+    setTimeout(() => {
+      // Kreisanordnung für jede L1 Node anwenden (positioniert L2 UND L3)
+      for (const l1Node of root.children!) {
+        if (l1Node.children && l1Node.children.length > 0) {
+          const childIds = l1Node.children.map(child => child.id);
+          this.forceLayout.arrangeChildrenCircular(l1Node.id, childIds);
+        }
+      }
+      // Auto-Fit nach Kreisanordnung
+      this.fitViewToL0L1();
+      // Zustand speichern
+      this.saveStateToStorage();
+    }, 150);
   }
 
   // --- Zoom Handlers ---
@@ -1672,9 +1870,15 @@ export class AppComponent {
   }
 
   // Prüft ob eine Verbindungslinie hervorgehoben werden soll (von Parent zu Child)
-  isLineOnHoveredPath(parentNode: Node, childNode: Node): boolean {
+  isLineOnHoveredPath(parentNode: Node, childNode: Node, level: number): boolean {
     const hovered = this.hoveredPathNode();
     if (!hovered) return false;
+
+    // Wenn der gehoverte Node selbst der Parent ist, alle Linien zu Kindern hervorheben
+    // Gilt für L0→L1 und L1→L2
+    if (hovered.id === parentNode.id && level <= 1) {
+      return true;
+    }
 
     // Finde den Pfad vom Root zum gehoverten Node
     const pathToHovered = this.findPathToNode(this.rootNode(), hovered.id);
