@@ -18,42 +18,48 @@ import { Node } from './data.service';
  * - Keine Linienkreuzungen zwischen verschiedenen Branches
  * - Übersichtliche, logische Struktur
  * - Skaliert mit beliebig vielen Kindern
+ *
+ * Layout-Modi:
+ * - 'simulation': Force-Simulation für dynamisches Layout (mit Wabbeln)
+ * - 'static': Statische Vorberechnung ohne Simulation (sofortige Platzierung)
  */
+
+export type LayoutMode = 'simulation' | 'static';
 
 const CONFIG = {
   // Basis-Abstände pro Level
   BASE_DISTANCES: {
-    1: 240,    // Level 1 vom Zentrum (war 380)
-    2: 180,    // Level 2 vom Level 1 (war 260)
-    3: 140,    // Level 3 (war 200)
-    4: 120,    // Level 4+ (war 170)
+    1: 350,    // Level 1 vom Zentrum
+    2: 300,    // Level 2 vom Level 1
+    3: 100,    // Level 3 (Grid-Startabstand)
+    4: 100,    // Level 4+
   } as Record<number, number>,
 
-  // Zusätzlicher Abstand pro Kind (dynamisch)
-  DISTANCE_PER_CHILD: 12,
+  // Zusätzlicher Abstand pro Kind für Level 2 (damit sie weiter auseinander sind)
+  DISTANCE_PER_CHILD: 40,
 
-  // Minimaler Winkel zwischen Geschwistern (in Grad)
-  MIN_ANGLE_BETWEEN_SIBLINGS: 18,
+  // Minimaler Winkel zwischen Geschwistern (in Grad) - größer = mehr Platz
+  MIN_ANGLE_BETWEEN_SIBLINGS: 25,
 
-  // Kollisions-Radien - berücksichtigt Node + Label (Label ist ca. 80-120px breit)
+  // Kollisions-Radien - berücksichtigt Node + Label
   COLLISION_RADII: {
-    0: 80,     // Level 0
-    1: 90,     // Level 1 (größere Labels)
-    2: 85,     // Level 2 (mit Label darunter)
-    3: 80,     // Level 3
-    4: 75,     // Level 4+
+    0: 100,    // Level 0
+    1: 110,    // Level 1 (größere Labels)
+    2: 100,    // Level 2 (mit Label darunter)
+    3: 65,     // Level 3 (kleinere Nodes, gekürzte Labels)
+    4: 60,     // Level 4+
   } as Record<number, number>,
 
-  // Konzentrische Ringe: Ab dieser Kinderzahl werden 2 Ringe verwendet
+  // Konzentrische Ringe: Ab dieser Kinderzahl werden Ringe verwendet
   RING_THRESHOLD: 6,
-  RING_DISTANCE_FACTOR: 0.65, // Innerer Ring ist X% des äußeren
+  RING_DISTANCE_FACTOR: 0.6,
 
-  // Simulation
+  // Simulation - schneller stabilisieren
   ANCHOR_STRENGTH: 0.5,
-  SECTOR_CONSTRAINT_STRENGTH: 0.9,
-  COLLISION_STRENGTH: 1,
-  ALPHA_DECAY: 0.03,
-  VELOCITY_DECAY: 0.5
+  SECTOR_CONSTRAINT_STRENGTH: 0.98,
+  COLLISION_STRENGTH: 0.8,
+  ALPHA_DECAY: 0.08,  // Viel schneller beenden
+  VELOCITY_DECAY: 0.6
 };
 
 interface LayoutNode extends SimulationNodeDatum {
@@ -97,12 +103,22 @@ export class ForceLayoutService {
 
   private _nodePositions = signal<Map<string, { x: number; y: number }>>(new Map());
   private _isSettling = signal<boolean>(false);
+  private _layoutMode = signal<LayoutMode>('static'); // Default: Static (kein Wabbeln)
 
   nodePositions: Signal<Map<string, { x: number; y: number }>> = this._nodePositions.asReadonly();
   isSettling: Signal<boolean> = this._isSettling.asReadonly();
+  layoutMode: Signal<LayoutMode> = this._layoutMode.asReadonly();
 
   constructor() {
     this.destroyRef.onDestroy(() => this.destroy());
+  }
+
+  /**
+   * Setzt den Layout-Modus: 'simulation' oder 'static'
+   * Bei 'static' werden Positionen sofort berechnet ohne Wabbeln.
+   */
+  setLayoutMode(mode: LayoutMode): void {
+    this._layoutMode.set(mode);
   }
 
   initSimulation(rootNode: Node, expandedIds: Set<string>): void {
@@ -112,10 +128,118 @@ export class ForceLayoutService {
     this.assignSectors();
     this.calculateIdealPositions();
     this.initializeActualPositions();
-    this.startSimulation();
+
+    if (this._layoutMode() === 'static') {
+      // Statischer Modus: Sofortige Platzierung, keine Simulation
+      this.applyStaticLayout();
+    } else {
+      // Simulation-Modus: Force-Simulation starten
+      this.startSimulation();
+    }
+  }
+
+  /**
+   * Statischer Modus: Wendet die idealen Positionen direkt an
+   * ohne Force-Simulation (kein Wabbeln, sofortige Platzierung)
+   */
+  private applyStaticLayout(): void {
+    // WICHTIG: Zuerst userPositions anwenden (vom Benutzer verschobene Nodes)
+    for (const node of this.layoutNodes) {
+      if (node.level === 0) continue; // L0 ist immer fixiert im Zentrum
+
+      const userPos = this.userPositions.get(node.id);
+      if (userPos) {
+        // Benutzer hat diesen Node verschoben - Position übernehmen
+        node.idealX = userPos.x;
+        node.idealY = userPos.y;
+      }
+    }
+
+    // Kollisions-Auflösung: Einfacher iterativer Algorithmus
+    // (Nur für Nodes ohne userPosition - die anderen bleiben fixiert)
+    this.resolveCollisionsStatically();
+
+    // Positionen übernehmen
+    for (const node of this.layoutNodes) {
+      node.x = node.idealX;
+      node.y = node.idealY;
+    }
+
+    // Signal aktualisieren
+    this.updatePositionSignal();
+    this._isSettling.set(false);
+  }
+
+  /**
+   * Löst Kollisionen statisch auf (ohne Simulation)
+   * Iteriert mehrfach und schiebt überlappende Nodes auseinander
+   * Nodes mit userPositions werden NICHT verschoben (sie sind "fixiert")
+   */
+  private resolveCollisionsStatically(): void {
+    const iterations = 50; // Anzahl der Iterationen für Kollisions-Auflösung
+    const padding = 10; // Zusätzlicher Abstand zwischen Nodes
+
+    for (let iter = 0; iter < iterations; iter++) {
+      let hasCollision = false;
+
+      for (let i = 0; i < this.layoutNodes.length; i++) {
+        const nodeA = this.layoutNodes[i];
+        const radiusA = CONFIG.COLLISION_RADII[Math.min(nodeA.level, 4)] || CONFIG.COLLISION_RADII[4];
+        const aIsFixed = nodeA.level === 0 || this.userPositions.has(nodeA.id);
+
+        for (let j = i + 1; j < this.layoutNodes.length; j++) {
+          const nodeB = this.layoutNodes[j];
+          const radiusB = CONFIG.COLLISION_RADII[Math.min(nodeB.level, 4)] || CONFIG.COLLISION_RADII[4];
+          const bIsFixed = nodeB.level === 0 || this.userPositions.has(nodeB.id);
+
+          // Wenn beide fixiert sind, können wir nichts tun
+          if (aIsFixed && bIsFixed) continue;
+
+          const dx = nodeB.idealX - nodeA.idealX;
+          const dy = nodeB.idealY - nodeA.idealY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const minDistance = radiusA + radiusB + padding;
+
+          if (distance < minDistance && distance > 0) {
+            hasCollision = true;
+
+            // Überlappung berechnen
+            const overlap = minDistance - distance;
+            const pushFactor = overlap / distance / 2;
+
+            // Nur nicht-fixierte Nodes verschieben
+            if (!aIsFixed && !bIsFixed) {
+              // Beide verschieben (gleich verteilt)
+              nodeA.idealX -= dx * pushFactor;
+              nodeA.idealY -= dy * pushFactor;
+              nodeB.idealX += dx * pushFactor;
+              nodeB.idealY += dy * pushFactor;
+            } else if (!aIsFixed) {
+              // Nur A verschieben
+              nodeA.idealX -= dx * pushFactor * 2;
+              nodeA.idealY -= dy * pushFactor * 2;
+            } else if (!bIsFixed) {
+              // Nur B verschieben
+              nodeB.idealX += dx * pushFactor * 2;
+              nodeB.idealY += dy * pushFactor * 2;
+            }
+          }
+        }
+      }
+
+      // Frühzeitig beenden wenn keine Kollisionen mehr
+      if (!hasCollision) break;
+    }
   }
 
   updateNodes(rootNode: Node, expandedIds: Set<string>): void {
+    // Im statischen Modus: Immer neu initialisieren
+    if (this._layoutMode() === 'static') {
+      this.initSimulation(rootNode, expandedIds);
+      return;
+    }
+
+    // Simulation-Modus: Falls keine Simulation existiert, initialisieren
     if (!this.simulation) {
       this.initSimulation(rootNode, expandedIds);
       return;
@@ -515,18 +639,13 @@ export class ForceLayoutService {
     if (children.length === 0) return;
 
     const level = parent.level + 1;
-    const baseDistance = CONFIG.BASE_DISTANCES[Math.min(level, 4)] || CONFIG.BASE_DISTANCES[4];
 
-    // Dynamischer Abstand basierend auf Kinderzahl
-    const dynamicDistance = baseDistance + (children.length * CONFIG.DISTANCE_PER_CHILD);
-
-    // Konzentrische Ringe bei vielen Kindern
-    const useRings = children.length >= CONFIG.RING_THRESHOLD;
-
-    if (useRings) {
-      this.positionChildrenInRings(parent, children, dynamicDistance);
+    // Level 1 und 2: Sektor-basiert (radial um Parent)
+    // Level 3+: Fächer-Layout (hinter dem Parent, vom Zentrum weg)
+    if (level <= 2) {
+      this.positionChildrenRadial(parent, children, level);
     } else {
-      this.positionChildrenSingleRing(parent, children, dynamicDistance);
+      this.positionChildrenFan(parent, children, level);
     }
 
     // Rekursiv für alle Kinder
@@ -535,58 +654,69 @@ export class ForceLayoutService {
     }
   }
 
-  private positionChildrenSingleRing(parent: LayoutNode, children: LayoutNode[], distance: number): void {
-    children.forEach((child, index) => {
-      // Position im Sektor
+  // Level 1 & 2: Radiale Positionierung im Sektor
+  private positionChildrenRadial(parent: LayoutNode, children: LayoutNode[], level: number): void {
+    const baseDistance = CONFIG.BASE_DISTANCES[level] || CONFIG.BASE_DISTANCES[4];
+    const dynamicDistance = baseDistance + (children.length * CONFIG.DISTANCE_PER_CHILD);
+
+    children.forEach(child => {
       child.idealAngle = child.sectorCenter;
-      child.idealRadius = distance;
+      child.idealRadius = dynamicDistance;
       child.ring = 0;
-
-      // Absolute Position berechnen
-      child.idealX = parent.idealX + Math.cos(child.idealAngle) * distance;
-      child.idealY = parent.idealY + Math.sin(child.idealAngle) * distance;
+      child.idealX = parent.idealX + Math.cos(child.idealAngle) * dynamicDistance;
+      child.idealY = parent.idealY + Math.sin(child.idealAngle) * dynamicDistance;
     });
   }
 
-  private positionChildrenInRings(parent: LayoutNode, children: LayoutNode[], outerDistance: number): void {
-    const innerDistance = outerDistance * CONFIG.RING_DISTANCE_FACTOR;
+  // Level 3+: Fächer-Layout HINTER dem Parent (weiter vom Zentrum weg)
+  // Positionen sind RELATIV zum Parent, nicht absolut vom Zentrum
+  private positionChildrenFan(parent: LayoutNode, children: LayoutNode[], level: number): void {
+    const count = children.length;
+    if (count === 0) return;
 
-    // Sortiere Kinder nach Gewicht (große Subtrees außen)
-    const sortedChildren = [...children].sort((a, b) => b.weight - a.weight);
+    // Sektor des Parents verwenden - Kinder bleiben in diesem Sektor
+    const sectorCenter = parent.sectorCenter;
+    const sectorSpan = Math.abs(parent.sectorEnd - parent.sectorStart);
 
-    // Verteile auf Ringe: Schwere außen, leichte innen
-    const outerRing: LayoutNode[] = [];
-    const innerRing: LayoutNode[] = [];
+    // Basis-Abstand vom Parent (NICHT vom Zentrum!)
+    const baseDistance = CONFIG.BASE_DISTANCES[level] || CONFIG.BASE_DISTANCES[4];
+    const rowSpacing = 70;
 
-    sortedChildren.forEach((child, index) => {
-      if (index % 2 === 0) {
-        outerRing.push(child);
-      } else {
-        innerRing.push(child);
+    // Berechne wie viele Reihen wir brauchen
+    // Je mehr Kinder, desto mehr Reihen (tiefer statt breiter)
+    const nodesPerRow = Math.max(3, Math.min(5, Math.ceil(Math.sqrt(count))));
+    const numRows = Math.ceil(count / nodesPerRow);
+
+    let nodeIndex = 0;
+    for (let row = 0; row < numRows && nodeIndex < count; row++) {
+      const nodesInThisRow = Math.min(nodesPerRow, count - nodeIndex);
+
+      // Abstand vom Parent für diese Reihe (NICHT rowRadius vom Zentrum!)
+      const distanceFromParent = baseDistance + row * rowSpacing;
+
+      // Verfügbarer Winkelbereich: nutze nur 70% des Sektors um Überlappung zu vermeiden
+      const availableAngle = sectorSpan * 0.7;
+
+      // Winkel pro Node in dieser Reihe
+      const angleStep = nodesInThisRow > 1 ? availableAngle / (nodesInThisRow - 1) : 0;
+      const startAngle = sectorCenter - availableAngle / 2;
+
+      for (let col = 0; col < nodesInThisRow && nodeIndex < count; col++) {
+        const child = children[nodeIndex];
+
+        // Winkel für diesen Node
+        const angle = nodesInThisRow === 1 ? sectorCenter : startAngle + col * angleStep;
+
+        // Position RELATIV zum Parent berechnen (wie bei positionChildrenRadial)
+        child.idealAngle = angle;
+        child.idealRadius = parent.idealRadius + distanceFromParent;
+        child.idealX = parent.idealX + Math.cos(angle) * distanceFromParent;
+        child.idealY = parent.idealY + Math.sin(angle) * distanceFromParent;
+        child.ring = row;
+
+        nodeIndex++;
       }
-    });
-
-    // Positioniere äußeren Ring
-    this.positionRingChildren(parent, outerRing, outerDistance, 0);
-
-    // Positioniere inneren Ring (versetzt)
-    this.positionRingChildren(parent, innerRing, innerDistance, 1);
-  }
-
-  private positionRingChildren(parent: LayoutNode, ringChildren: LayoutNode[], distance: number, ringIndex: number): void {
-    if (ringChildren.length === 0) return;
-
-    // Sortiere nach Sektor-Center um die Reihenfolge beizubehalten
-    ringChildren.sort((a, b) => a.sectorCenter - b.sectorCenter);
-
-    ringChildren.forEach(child => {
-      child.idealAngle = child.sectorCenter;
-      child.idealRadius = distance;
-      child.ring = ringIndex;
-
-      child.idealX = parent.idealX + Math.cos(child.idealAngle) * distance;
-      child.idealY = parent.idealY + Math.sin(child.idealAngle) * distance;
-    });
+    }
   }
 
   // ============================================================
@@ -654,15 +784,19 @@ export class ForceLayoutService {
 
   /**
    * Anker-Kraft: Zieht Nodes zu ihrer idealen Position
+   * Level 3+ haben stärkere Anker-Kraft um das Keil-Layout zu erhalten
    */
   private createAnchorForce() {
     const nodes = this.layoutNodes;
-    const strength = CONFIG.ANCHOR_STRENGTH;
+    const baseStrength = CONFIG.ANCHOR_STRENGTH;
 
     return () => {
       for (const node of nodes) {
         if (node.level === 0) continue;
         if (node.x === undefined || node.y === undefined) continue;
+
+        // Level 3+ brauchen stärkere Anker um das Keil-Layout zu erhalten
+        const strength = node.level >= 3 ? 0.8 : baseStrength;
 
         const dx = node.idealX - node.x;
         const dy = node.idealY - node.y;
@@ -676,6 +810,7 @@ export class ForceLayoutService {
   /**
    * Sektor-Constraint: Hält Nodes innerhalb ihres zugewiesenen Sektors
    * Verhindert Linienkreuzungen zwischen verschiedenen Branches
+   * NUR für Level 1 und 2 - Level 3+ verwendet das Keil-Layout
    */
   private createSectorConstraintForce() {
     const nodes = this.layoutNodes;
@@ -684,7 +819,9 @@ export class ForceLayoutService {
 
     return () => {
       for (const node of nodes) {
-        if (node.level === 0) continue;
+        // Level 0, 1, 2: Sektor-Constraint aktiv
+        // Level 3+: KEINE Sektor-Constraint - diese nutzen das Keil-Layout
+        if (node.level === 0 || node.level >= 3) continue;
         if (node.x === undefined || node.y === undefined) continue;
 
         const parent = node.parentId ? nodeMap.get(node.parentId) : null;

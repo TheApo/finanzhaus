@@ -12,6 +12,18 @@
     </svg>
   </button>
 
+  <!-- Data Mode Toggle Button (Beratung / Produkte) -->
+  <button
+    class="datamode-toggle no-select"
+    (click)="toggleDataMode()"
+    [title]="dataMode() === 'beratung' ? t('dataMode.switchToProdukte') : t('dataMode.switchToBeratung')"
+  >
+    <span class="datamode-toggle__label">{{ t('dataMode.' + dataMode()) }}</span>
+    <svg class="datamode-toggle__icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+    </svg>
+  </button>
+
   <!-- Zoom Controls -->
   <div class="zoom-controls no-select">
     <button class="zoom-btn" (click)="zoomIn()" [title]="t('controls.zoomIn')">
@@ -83,8 +95,8 @@
     (wheel)="onWheel($event)"
     (touchstart)="onTouchStart($event)"
     (touchmove)="onTouchMove($event)"
-    (touchend)="onTouchEnd()"
-    (touchcancel)="onTouchEnd()"
+    (touchend)="onTouchEnd($event)"
+    (touchcancel)="onTouchEnd($event)"
   >
     <div
       class="mindmap__center"

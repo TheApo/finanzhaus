@@ -8,6 +8,12 @@
     "zoomOut": "Verkleinern",
     "reset": "Ansicht zurücksetzen"
   },
+  "dataMode": {
+    "beratung": "Beratung",
+    "produkte": "Produkte",
+    "switchToBeratung": "Zu Beratung wechseln",
+    "switchToProdukte": "Zu Produkte wechseln"
+  },
   "filter": {
     "label": "Filter",
     "remove": "Filter entfernen",

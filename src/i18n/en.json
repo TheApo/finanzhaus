@@ -8,6 +8,12 @@
     "zoomOut": "Zoom out",
     "reset": "Reset view"
   },
+  "dataMode": {
+    "beratung": "Consulting",
+    "produkte": "Products",
+    "switchToBeratung": "Switch to Consulting",
+    "switchToProdukte": "Switch to Products"
+  },
   "filter": {
     "label": "Filter",
     "remove": "Remove filter",

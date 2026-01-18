@@ -1,6 +1,6 @@
 import { Component, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DataService, Node, CategoryId, Category } from './services/data.service';
+import { DataService, Node, CategoryId, Category, DataMode } from './services/data.service';
 import { I18nService } from './services/i18n.service';
 import { ForceLayoutService } from './services/force-layout.service';
 import { FinanzhausComponent } from './components/finanzhaus.component';
@@ -45,7 +45,7 @@ export class AppComponent {
   // Zoom State (Globaler Zoom)
   zoomLevel = signal<number>(1);
   isAnimatingPan = signal<boolean>(false);
-  private readonly ZOOM_MIN = 0.4;
+  private readonly ZOOM_MIN = 0.1;  // Weiter rauszoomen erlaubt
   private readonly ZOOM_MAX = 2;
   private readonly ZOOM_STEP = 0.15;
 
@@ -67,12 +67,154 @@ export class AppComponent {
   // Gespeicherter Zustand vor dem Filtern
   private savedExpandedNodes: Set<string> | null = null;
 
+  // localStorage Key für Persistenz (dynamisch pro Datenmodus)
+  private readonly STORAGE_KEY_PREFIX = 'finanzhaus-view-state';
+  private readonly DATAMODE_STORAGE_KEY = 'finanzhaus-datamode';
+
+  // Datenmodus (Beratung / Produkte)
+  dataMode = this.dataService.dataMode;
+
+  constructor() {
+    // Datenmodus aus localStorage laden (vor dem State laden!)
+    this.loadDataModeFromStorage();
+    // Zustand aus localStorage laden
+    this.loadStateFromStorage();
+  }
+
+  private loadDataModeFromStorage(): void {
+    try {
+      const storedMode = localStorage.getItem(this.DATAMODE_STORAGE_KEY);
+      if (storedMode === 'beratung' || storedMode === 'produkte') {
+        this.dataService.setDataMode(storedMode);
+      }
+    } catch (e) {
+      console.warn('Failed to load data mode from localStorage:', e);
+    }
+  }
+
+  private saveDataModeToStorage(): void {
+    try {
+      localStorage.setItem(this.DATAMODE_STORAGE_KEY, this.dataMode());
+    } catch (e) {
+      console.warn('Failed to save data mode to localStorage:', e);
+    }
+  }
+
+  private getStorageKey(): string {
+    return `${this.STORAGE_KEY_PREFIX}-${this.dataMode()}`;
+  }
+
   // Effect: Initialize and update force layout
   private forceLayoutEffect = effect(() => {
     const root = this.rootNode();
     const expanded = this.expandedNodes();
     this.forceLayout.updateNodes(root, expanded);
   });
+
+  // Effect: Zustand in localStorage speichern bei jeder Änderung
+  private saveStateEffect = effect(() => {
+    // Alle relevanten Signale lesen (tracked)
+    const expanded = this.expandedNodes();
+    const categories = this.activeCategories();
+    const zoom = this.zoomLevel();
+    const pan = this.panOffset();
+    const focused = this.focusedNode();
+
+    // Zustand speichern
+    this.saveStateToStorage();
+  });
+
+  private loadStateFromStorage(): void {
+    try {
+      const stored = localStorage.getItem(this.getStorageKey());
+      if (!stored) return;
+
+      const state = JSON.parse(stored);
+
+      // Expanded Nodes wiederherstellen
+      if (state.expandedNodes && Array.isArray(state.expandedNodes)) {
+        this.expandedNodes.set(new Set(state.expandedNodes));
+      }
+
+      // Active Categories wiederherstellen
+      if (state.activeCategories && Array.isArray(state.activeCategories)) {
+        this.activeCategories.set(new Set(state.activeCategories));
+      }
+
+      // Zoom Level wiederherstellen
+      if (typeof state.zoomLevel === 'number') {
+        this.zoomLevel.set(state.zoomLevel);
+      }
+
+      // Pan Offset wiederherstellen
+      if (state.panOffset && typeof state.panOffset.x === 'number') {
+        this.panOffset.set(state.panOffset);
+      }
+
+      // User Positions im ForceLayout wiederherstellen
+      if (state.userPositions && typeof state.userPositions === 'object') {
+        for (const [nodeId, pos] of Object.entries(state.userPositions)) {
+          const position = pos as { x: number; y: number };
+          this.forceLayout['userPositions'].set(nodeId, position);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load state from localStorage:', e);
+    }
+  }
+
+  private saveStateToStorage(): void {
+    try {
+      // User Positions aus dem ForceLayout holen
+      const userPositions: Record<string, { x: number; y: number }> = {};
+      this.forceLayout['userPositions'].forEach((pos, nodeId) => {
+        userPositions[nodeId] = pos;
+      });
+
+      const state = {
+        expandedNodes: Array.from(this.expandedNodes()),
+        activeCategories: Array.from(this.activeCategories()),
+        zoomLevel: this.zoomLevel(),
+        panOffset: this.panOffset(),
+        userPositions
+      };
+
+      localStorage.setItem(this.getStorageKey(), JSON.stringify(state));
+    } catch (e) {
+      console.warn('Failed to save state to localStorage:', e);
+    }
+  }
+
+  private clearStateFromStorage(): void {
+    try {
+      localStorage.removeItem(this.getStorageKey());
+    } catch (e) {
+      console.warn('Failed to clear state from localStorage:', e);
+    }
+  }
+
+  // Wechselt zwischen Beratung und Produkte
+  toggleDataMode(): void {
+    // Aktuellen Zustand speichern
+    this.saveStateToStorage();
+
+    // Datenmodus wechseln
+    this.dataService.toggleDataMode();
+
+    // Neuen Datenmodus speichern
+    this.saveDataModeToStorage();
+
+    // State zurücksetzen für neue Daten
+    this.expandedNodes.set(new Set());
+    this.activeCategories.set(new Set());
+    this.focusedNode.set(null);
+    this.panOffset.set({ x: 0, y: 0 });
+    this.zoomLevel.set(1);
+    this.forceLayout.resetUserPositions();
+
+    // Neuen Zustand laden (falls vorhanden)
+    this.loadStateFromStorage();
+  }
 
 
   t(key: string): string {
@@ -355,16 +497,15 @@ export class AppComponent {
 
     // Normal-Modus (kein Fokus aktiv)
     if (numLevel === 0) {
-      // Level 0: Kompletter Reset - alles einklappen + Filter löschen
       if (this.expandedNodes().size > 0) {
+        // Etwas ist expandiert → alles einklappen + Filter löschen
         this.collapseAllWithAnimation();
+        this.activeCategories.set(new Set());
+        this.panOffset.set({ x: 0, y: 0 });
       } else {
-        // Bereits alles eingeklappt → Wobble-Animation
-        this.forceLayout.wobble();
+        // Nichts expandiert (nur L1 sichtbar) → alle L1 Nodes expandieren
+        this.expandAllLevel1Nodes();
       }
-      // Filter zurücksetzen
-      this.activeCategories.set(new Set());
-      this.panOffset.set({ x: 0, y: 0 });
       return;
     }
 
@@ -414,6 +555,21 @@ export class AppComponent {
         set.add(child.id);
       }
     }
+  }
+
+  /**
+   * Expandiert alle Level 1 Nodes (zeigt alle Level 2 Kinder)
+   * Wird aufgerufen wenn auf Level 0 geklickt wird und nichts expandiert ist
+   */
+  private expandAllLevel1Nodes(): void {
+    const expanded = new Set<string>();
+    const level1Nodes = this.mainNodes();
+
+    for (const l1Node of level1Nodes) {
+      this.expandNodeAndChildren(l1Node, expanded);
+    }
+
+    this.expandedNodes.set(expanded);
   }
 
   private collapseNodeAndChildren(node: Node, set: Set<string>) {
@@ -526,6 +682,8 @@ export class AppComponent {
     this.zoomLevel.set(1);
     // Auch alle vom Benutzer verschobenen Positionen zurücksetzen
     this.forceLayout.resetUserPositions();
+    // localStorage löschen (wird erst wieder gespeichert beim nächsten State-Change)
+    this.clearStateFromStorage();
   }
 
   // --- Pan Event Handlers (Mouse) ---
@@ -555,30 +713,82 @@ export class AppComponent {
 
   // --- Touch Event Handlers (iPad/Tablet) ---
 
-  onTouchStart(event: TouchEvent) {
-    if (event.touches.length !== 1) return;
+  // Pinch-to-Zoom State
+  private isPinching = false;
+  private initialPinchDistance = 0;
+  private initialPinchZoom = 1;
 
-    const touch = event.touches[0];
-    this.isPanning.set(true);
-    this.panStart = {
-      x: touch.clientX - this.panOffset().x,
-      y: touch.clientY - this.panOffset().y
-    };
+  onTouchStart(event: TouchEvent) {
+    // Pinch-to-Zoom: 2 Finger
+    if (event.touches.length === 2) {
+      event.preventDefault();
+      this.isPinching = true;
+      this.isPanning.set(false);
+      this.initialPinchDistance = this.getTouchDistance(event.touches);
+      this.initialPinchZoom = this.zoomLevel();
+      return;
+    }
+
+    // Pan: 1 Finger
+    if (event.touches.length === 1) {
+      const touch = event.touches[0];
+      this.isPanning.set(true);
+      this.panStart = {
+        x: touch.clientX - this.panOffset().x,
+        y: touch.clientY - this.panOffset().y
+      };
+    }
   }
 
   onTouchMove(event: TouchEvent) {
-    if (!this.isPanning() || event.touches.length !== 1) return;
+    // Pinch-to-Zoom
+    if (this.isPinching && event.touches.length === 2) {
+      event.preventDefault();
+      const currentDistance = this.getTouchDistance(event.touches);
+      const scale = currentDistance / this.initialPinchDistance;
+      let newZoom = this.initialPinchZoom * scale;
 
-    event.preventDefault(); // Verhindert Scrollen der Seite
-    const touch = event.touches[0];
-    this.panOffset.set({
-      x: touch.clientX - this.panStart.x,
-      y: touch.clientY - this.panStart.y
-    });
+      // Zoom-Grenzen einhalten
+      newZoom = Math.max(this.ZOOM_MIN, Math.min(this.ZOOM_MAX, newZoom));
+      this.zoomLevel.set(Math.round(newZoom * 100) / 100);
+      return;
+    }
+
+    // Pan
+    if (this.isPanning() && event.touches.length === 1) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      this.panOffset.set({
+        x: touch.clientX - this.panStart.x,
+        y: touch.clientY - this.panStart.y
+      });
+    }
   }
 
-  onTouchEnd() {
-    this.isPanning.set(false);
+  onTouchEnd(event: TouchEvent) {
+    // Wenn noch Finger übrig: Prüfen ob wir zu Pan wechseln
+    if (event.touches.length === 1 && this.isPinching) {
+      this.isPinching = false;
+      const touch = event.touches[0];
+      this.isPanning.set(true);
+      this.panStart = {
+        x: touch.clientX - this.panOffset().x,
+        y: touch.clientY - this.panOffset().y
+      };
+      return;
+    }
+
+    // Alle Finger weg
+    if (event.touches.length === 0) {
+      this.isPinching = false;
+      this.isPanning.set(false);
+    }
+  }
+
+  private getTouchDistance(touches: TouchList): number {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
   }
 
   // --- Node Drag Handlers (Level 2+) ---
@@ -647,6 +857,8 @@ export class AppComponent {
       if (this.dragMoved) {
         // Drag wurde durchgeführt - Node an neuer Position speichern, Simulation starten
         this.forceLayout.releaseNode(draggedNode.id);
+        // Zustand in localStorage speichern (inkl. neuer Position)
+        this.saveStateToStorage();
       } else {
         // Kein Drag - war ein Klick → nur Fixierung lösen (keine Änderungen!)
         this.forceLayout.unfixNode(draggedNode.id);

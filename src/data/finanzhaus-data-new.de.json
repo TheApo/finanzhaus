@@ -1,0 +1,1131 @@
+{
+  "root": {
+    "id": "ihr_unternehmen",
+    "name": "Ihr Unternehmen",
+    "finanzhaus": "strategie",
+    "icon": "network"
+  },
+  "categories": [
+    {
+      "id": "strategie",
+      "label": "Genossenschaftliche Idee"
+    },
+    {
+      "id": "privat_finanz",
+      "label": "Private FinanzPlanung"
+    },
+    {
+      "id": "gruendung",
+      "label": "Gründung und Nachfolge"
+    },
+    {
+      "id": "absicherung",
+      "label": "Versicherung"
+    },
+    {
+      "id": "vorsorge",
+      "label": "Vorsorge & Mitarbeiter"
+    },
+    {
+      "id": "vermoegen",
+      "label": "Vermögen & Eigenkapital"
+    },
+    {
+      "id": "ausland",
+      "label": "Auslandsgeschäft"
+    },
+    {
+      "id": "finanzierung",
+      "label": "Finanzierung"
+    },
+    {
+      "id": "zahlungsverkehr",
+      "label": "Zahlungsverkehr"
+    }
+  ],
+  "topics": [
+    {
+      "id": "l1_zahlungsverkehr",
+      "name": "Zahlungsverkehr",
+      "finanzhaus": "zahlungsverkehr",
+      "icon": "banknotes",
+      "blaetter": [
+        {
+          "id": "l2_zahlungsverkehr_zahlungsverkehr_im_sepa_raum_abwickeln",
+          "name": "Zahlungsverkehr im SEPA-Raum abwickeln",
+          "finanzhaus": "zahlungsverkehr",
+          "blaetter": [
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_geschaeftskonto",
+              "name": "Geschäftskonto",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_girocard_servicecard",
+              "name": "girocard & Servicecard",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_firmenkreditkarte",
+              "name": "Firmenkreditkarte",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_kartenterminal",
+              "name": "Kartenterminal",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_akzeptanz_zahlverfahren_ecommerce",
+              "name": "Akzeptanz Zahlverfahren eCommerce",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_instant_payment",
+              "name": "Instant Payment",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_zahlungsverkehrssoftware",
+              "name": "Zahlungsverkehrssoftware",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_webanwendungen_als_ergaenzung_zum_onlinebanking",
+              "name": "Webanwendungen als Ergänzung zum OnlineBanking",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_vr_smart_guide",
+              "name": "VR Smart Guide",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_kontenkonzentration_genocon",
+              "name": "Kontenkonzentration GenoCon",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_vr_rechnungsservice",
+              "name": "VR-RechnungsService",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_bargeld_service",
+              "name": "Bargeld Service",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_request_to_pay",
+              "name": "Request-to-pay",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_online_bezahlverfahren",
+              "name": "Online Bezahlverfahren",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_pay_per_use",
+              "name": "Pay-per-use",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_vr_ticket_system",
+              "name": "VR Ticket System",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_giralgeld_token_finledger",
+              "name": "Giralgeld-Token / Finledger",
+              "finanzhaus": "zahlungsverkehr"
+            }
+          ]
+        },
+        {
+          "id": "l2_zahlungsverkehr_liquiditaet_vorhalten_und_absichern",
+          "name": "Liquidität vorhalten und absichern",
+          "finanzhaus": "zahlungsverkehr",
+          "blaetter": [
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_kontokorrentkredit",
+              "name": "Kontokorrentkredit",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_geldmarktdarlehen",
+              "name": "Geldmarktdarlehen",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_aval",
+              "name": "Aval",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_r_v_kautionsversicherung",
+              "name": "R+V-Kautionsversicherung",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_dz_privatbank_luxcredit",
+              "name": "DZ PRIVATBANK Luxcredit",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_r_v_kontoschutzpolice",
+              "name": "R+V-KontoschutzPolice",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_r_v_ratenschutzpolice",
+              "name": "R+V-RatenschutzPolice",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_factoring",
+              "name": "Factoring",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_tagesgeld",
+              "name": "Tagesgeld",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_festgeld",
+              "name": "Festgeld",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_kurzfristige_geld_liquiditaetsanlage_in_wertpapieren",
+              "name": "kurzfristige Geld-/Liquiditätsanlage in Wertpapieren",
+              "finanzhaus": "zahlungsverkehr"
+            },
+            {
+              "id": "l3_liquiditaet_vorhalten_und_absichern_vr_smart_flexibel",
+              "name": "VR Smart flexibel",
+              "finanzhaus": "zahlungsverkehr"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l1_finanzierung",
+      "name": "Finanzierung",
+      "finanzhaus": "finanzierung",
+      "icon": "building-library",
+      "blaetter": [
+        {
+          "id": "l2_finanzierung_investitionen_finanzieren",
+          "name": "Investitionen finanzieren",
+          "finanzhaus": "finanzierung",
+          "blaetter": [
+            {
+              "id": "l3_investitionen_finanzieren_darlehen",
+              "name": "Darlehen",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_geldmarktdarlehen_in_fremdwaehrung",
+              "name": "Geldmarktdarlehen in Fremdwährung",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_darlehen_in_fremdwaehrung",
+              "name": "Darlehen in Fremdwährung",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_foerderkredite",
+              "name": "Förderkredite",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_leasing",
+              "name": "Leasing",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_mietkauf",
+              "name": "Mietkauf",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_aussenhandels_und_exportfinanzierung",
+              "name": "Außenhandels- und Exportfinanzierung",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_individualmeta",
+              "name": "IndividualMeta",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_kautionsversicherung_fuer_genobanken",
+              "name": "Kautionsversicherung für Genobanken",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_standardmeta_4_0",
+              "name": "StandardMeta 4.0",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_vr_circle_open_circle",
+              "name": "VR Circle/Open Circle",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_reversemeta",
+              "name": "ReverseMeta",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_vr_smart_express",
+              "name": "VR Smart express",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_vr_smart_flexibel",
+              "name": "VR Smart flexibel",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_dz_privatbank_luxcredit",
+              "name": "DZ PRIVATBANK Luxcredit",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_vrep_akquisitionsmezzanine",
+              "name": "VREP Akquisitionsmezzanine",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_vrep_wachstumsmezzanine",
+              "name": "VREP Wachstumsmezzanine",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_vrep_unternehmerkapital",
+              "name": "VREP Unternehmerkapital",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_dz_bank_m_a_einwerbung_von_wachstums_und_eigenkapital",
+              "name": "DZ BANK M&A Einwerbung von Wachstums- und Eigenkapital",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_zinsderivate",
+              "name": "Zinsderivate",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_akquisitionsfinanzierung",
+              "name": "Akquisitionsfinanzierung",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_strukturierte_finanzierung_aktiv",
+              "name": "Strukturierte Finanzierung Aktiv",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_strukturierte_finanzierung_passiv",
+              "name": "Strukturierte Finanzierung Passiv",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_schuldscheindarlehen_aktiv",
+              "name": "Schuldscheindarlehen Aktiv",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_schuldscheindarlehen_passiv",
+              "name": "Schuldscheindarlehen Passiv",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_projektfinanzierung_erneuerbare_energien",
+              "name": "Projektfinanzierung erneuerbare Energien",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_bonds",
+              "name": "Bonds",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_abcp",
+              "name": "ABCP",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_investitionen_finanzieren_ipo",
+              "name": "IPO",
+              "finanzhaus": "finanzierung"
+            }
+          ]
+        },
+        {
+          "id": "l2_finanzierung_finanzierungen_optimieren",
+          "name": "Finanzierungen optimieren",
+          "finanzhaus": "finanzierung",
+          "blaetter": [
+            {
+              "id": "l3_finanzierungen_optimieren_darlehen",
+              "name": "Darlehen",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_finanzierungen_optimieren_zinsderivate",
+              "name": "Zinsderivate",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_finanzierungen_optimieren_dz_privatbank_luxcredit",
+              "name": "DZ PRIVATBANK Luxcredit",
+              "finanzhaus": "finanzierung"
+            },
+            {
+              "id": "l3_finanzierungen_optimieren_bonitaetsmanager",
+              "name": "Bonitätsmanager",
+              "finanzhaus": "finanzierung"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l1_versicherung",
+      "name": "Versicherung",
+      "finanzhaus": "absicherung",
+      "icon": "shield",
+      "blaetter": [
+        {
+          "id": "l2_versicherung_notfall_regeln",
+          "name": "Notfall regeln",
+          "finanzhaus": "absicherung",
+          "blaetter": [
+            {
+              "id": "l3_notfall_regeln_r_v_risiko_unfallpolice_unternehmer",
+              "name": "R+V-Risiko-UnfallPolice Unternehmer",
+              "finanzhaus": "absicherung"
+            }
+          ]
+        },
+        {
+          "id": "l2_versicherung_sachwerte_absichern",
+          "name": "Sachwerte absichern",
+          "finanzhaus": "absicherung",
+          "blaetter": [
+            {
+              "id": "l3_sachwerte_absichern_r_v_gewerbepolice_basisbaustein_betriebshaftpflicht_inhaltsversicherung_elektronik_gewerbliche_mietkaution",
+              "name": "R+V-GewerbePolice Basisbaustein Betriebshaftpflicht, Inhaltsversicherung, Elektronik, gewerbliche Mietkaution",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_gewerbepolice_zusatzbaustein_technik_mobilitaet_autoinhaltsdeckung_maschine_fahrbar_stationaer",
+              "name": "R+V-GewerbePolice Zusatzbaustein Technik & Mobilität: Autoinhaltsdeckung, Maschine (fahrbar & stationär)",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_gewerbepolice_zusatzbaustein_recht_durchsetzen_rechtsschutzversicherung",
+              "name": "R+V-GewerbePolice Zusatzbaustein Recht durchsetzen: Rechtsschutzversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_gewerbepolice_zusatzbaustein_schutz_vor_digitalen_risiken_cyberrisk_versicherung_wirtschaftskriminalitaet",
+              "name": "R+V-GewerbePolice Zusatzbaustein Schutz vor digitalen Risiken: CyberRisk Versicherung, Wirtschaftskriminalität",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_gewerbepolice_zusatzbaustein_liquiditaet_schaffen_warenkreditversicherung_kautionsversicherung",
+              "name": "R+V-GewerbePolice Zusatzbaustein Liquidität schaffen: Warenkreditversicherung, Kautionsversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_gebaeudeversicherung",
+              "name": "R+V-UnternehmensPolice Gebäudeversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_inhaltsversicherung",
+              "name": "R+V-UnternehmensPolice Inhaltsversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_ertragsausfallversicherung",
+              "name": "R+V-UnternehmensPolice Ertragsausfallversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_allgemeine_haftpflicht_betriebshaftpflicht",
+              "name": "R+V-UnternehmensPolice Allgemeine Haftpflicht (Betriebshaftpflicht)",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_vermoegensschaden_haftpflicht",
+              "name": "R+V-UnternehmensPolice Vermögensschaden Haftpflicht",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_d_o_versicherung",
+              "name": "R+V-UnternehmensPolice D&O-Versicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_rechtsschutzversicherung",
+              "name": "R+V-UnternehmensPolice Rechtsschutzversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_elektronikversicherung",
+              "name": "R+V-UnternehmensPolice Elektronikversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_maschinenversicherung_fahrbar_und_stationaer",
+              "name": "R+V-UnternehmensPolice Maschinenversicherung (fahrbar und stationär)",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_cyberrisk_versicherung",
+              "name": "R+V-UnternehmensPolice CyberRisk Versicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_internet_und_wirtschaftskriminalitaetsversicherung",
+              "name": "R+V-UnternehmensPolice Internet- und Wirtschaftskriminalitätsversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_warenkreditversicherung",
+              "name": "R+V-UnternehmensPolice Warenkreditversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_transportversicherung",
+              "name": "R+V-UnternehmensPolice Transportversicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_agrarpolice",
+              "name": "R+V-AgrarPolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_medizinerpolice",
+              "name": "R+V-MedizinerPolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_energiepolice",
+              "name": "R+V-EnergiePolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_bauschutzpolice",
+              "name": "R+V-BauschutzPolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_branchenpolice",
+              "name": "R+V-BranchenPolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_flottenpolice",
+              "name": "R+V-FlottenPolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_kravag_logistic_police",
+              "name": "KRAVAG  Logistic-Police",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_sachwerte_absichern_r_v_investitionsgueterkreditversicherung",
+              "name": "R+V Investitionsgüterkreditversicherung",
+              "finanzhaus": "absicherung"
+            }
+          ]
+        },
+        {
+          "id": "l2_versicherung_vermoegenswerte_absichern",
+          "name": "Vermögenswerte absichern",
+          "finanzhaus": "absicherung",
+          "blaetter": [
+            {
+              "id": "l3_vermoegenswerte_absichern_r_v_gewerbepolice",
+              "name": "R+V-GewerbePolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_vermoegenswerte_absichern_r_v_unternehmenspolice",
+              "name": "R+V-UnternehmensPolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_vermoegenswerte_absichern_r_v_agrarpolice",
+              "name": "R+V-AgrarPolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_vermoegenswerte_absichern_dz_privatbank_termfix_versicherung",
+              "name": "DZ PRIVATBANK TermFix Versicherung",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_vermoegenswerte_absichern_r_v_medizinerpolice",
+              "name": "R+V-MedizinerPolice",
+              "finanzhaus": "absicherung"
+            },
+            {
+              "id": "l3_vermoegenswerte_absichern_r_v_vertrauensschadenversicherung",
+              "name": "R+V-Vertrauensschadenversicherung",
+              "finanzhaus": "absicherung"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l1_vorsorge_und_mitarbeiterbindung",
+      "name": "Vorsorge und Mitarbeiterbindung",
+      "finanzhaus": "vorsorge",
+      "icon": "users",
+      "blaetter": [
+        {
+          "id": "l2_vorsorge_und_mitarbeiterbindung_mitarbeiter_binden",
+          "name": "Mitarbeiter binden",
+          "finanzhaus": "vorsorge",
+          "blaetter": [
+            {
+              "id": "l3_mitarbeiter_binden_r_v_risiko_unfallpolice_gruppe",
+              "name": "R+V-Risiko-UnfallPolice Gruppe",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_mitarbeiter_binden_lebensarbeitszeitkonten_altersteilzeitkonten",
+              "name": "Lebensarbeitszeitkonten/ Altersteilzeitkonten",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_mitarbeiter_binden_gesundheitskonzept_profil",
+              "name": "Gesundheitskonzept PROFIL",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_mitarbeiter_binden_gesundheitskonzept_agil",
+              "name": "Gesundheitskonzept AGIL",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_mitarbeiter_binden_bav_loesungen_fuer_den_mitarbeiter",
+              "name": "baV-Lösungen für den Mitarbeiter",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_mitarbeiter_binden_givve_karte",
+              "name": "givve Karte",
+              "finanzhaus": "vorsorge"
+            }
+          ]
+        },
+        {
+          "id": "l2_vorsorge_und_mitarbeiterbindung_betriebliche_altersvorsorge_anbieten",
+          "name": "Betriebliche Altersvorsorge anbieten",
+          "finanzhaus": "vorsorge",
+          "blaetter": [
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_r_v_firmenrente",
+              "name": "R+V-Firmenrente",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_bav_rahmenvertrag",
+              "name": "bAV-Rahmenvertrag",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_r_v_direktversicherung",
+              "name": "R+V-Direktversicherung",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_r_v_pensionskasse",
+              "name": "R+V-Pensionskasse",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_r_v_pensionsfonds",
+              "name": "R+V-Pensionsfonds",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_unterstuetzungskasse_mit_r_v_rueckdeckungsversicherung",
+              "name": "Unterstützungskasse mit R+V-Rückdeckungsversicherung",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_pensionszusage_mit_r_v_rueckdeckungsversicherung",
+              "name": "Pensionszusage mit R+V-Rückdeckungsversicherung",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_ui_dynacom_classic_fuer_mitarbeiter",
+              "name": "UI Dynacom Classic für Mitarbeiter",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_bavl",
+              "name": "bAVL",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_bav_branchenloesungen_apothekenrente_metallrente_reiserente_klinikrente",
+              "name": "bAV Branchenlösungen  - Apothekenrente, MetallRente, ReiseRente, KlinikRente",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_ui_ggf_versorgung_inkl_bav_indexinvest",
+              "name": "UI GGF-Versorgung, inkl. bAV-Indexinvest",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_ui_absicherung_auslagerung_von_pensionsverpflichtungen",
+              "name": "UI Absicherung / Auslagerung von Pensionsverpflichtungen",
+              "finanzhaus": "vorsorge"
+            },
+            {
+              "id": "l3_betriebliche_altersvorsorge_anbieten_lebensarbeitszeitkonten_altersteilzeitkonten",
+              "name": "Lebensarbeitszeitkonten/ Altersteilzeitkonten",
+              "finanzhaus": "vorsorge"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l1_vermoegen_eigenkapital",
+      "name": "Vermögen & Eigenkapital",
+      "finanzhaus": "vermoegen",
+      "icon": "chart",
+      "blaetter": [
+        {
+          "id": "l2_vermoegen_eigenkapital_vermoegen_ek_aufbauen_und_anlegen",
+          "name": "Vermögen/ EK aufbauen und anlegen",
+          "finanzhaus": "vermoegen",
+          "blaetter": [
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_depot_b",
+              "name": "Depot B",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_union_depot",
+              "name": "Union Depot",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_fonds_gemaess_hausmeinung",
+              "name": "Fonds (gemäß Hausmeinung)",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_langfristige_betriebliche_vermoegensanlage_fonds_gemaess_hausmeinung",
+              "name": "Langfristige betriebliche Vermögensanlage  - Fonds (gemäß Hausmeinung)",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_renten_aktien_ihs_strukturierte_produkte_zertifikate",
+              "name": "Renten/Aktien/IHS/Strukturierte Produkte (Zertifikate)",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_dz_bank_m_a_einwerbung_von_wachstums_und_eigenkapital_strategischen_partnern",
+              "name": "DZ BANK M&A Einwerbung von Wachstums- und Eigenkapital, strategischen Partnern",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_tagesgeld_termingeld",
+              "name": "Tagesgeld/Termingeld",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_dz_privatbank_vermoegensverwaltung",
+              "name": "DZ PRIVATBANK Vermögensverwaltung",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_dz_privatbank_beratungsdepot",
+              "name": "DZ PRIVATBANK Beratungsdepot",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_aufbauen_und_anlegen_firmenkundeninvest_vermoegensverwaltungsloesung",
+              "name": "FirmenkundenInvest Vermögensverwaltungslösung",
+              "finanzhaus": "vermoegen"
+            }
+          ]
+        },
+        {
+          "id": "l2_vermoegen_eigenkapital_vermoegen_ek_verwenden",
+          "name": "Vermögen/ EK verwenden",
+          "finanzhaus": "vermoegen",
+          "blaetter": [
+            {
+              "id": "l3_vermoegen_ek_verwenden_union_depot_zielfondsinvestment_mit_auszahlplan",
+              "name": "Union Depot - Zielfondsinvestment mit Auszahlplan",
+              "finanzhaus": "vermoegen"
+            },
+            {
+              "id": "l3_vermoegen_ek_verwenden_dz_bank_m_a_beratung_bei_unternehmenszukaeufen",
+              "name": "DZ BANK M&A Beratung bei Unternehmenszukäufen",
+              "finanzhaus": "vermoegen"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l1_auslandsgeschaeft",
+      "name": "Auslandsgeschäft",
+      "finanzhaus": "ausland",
+      "icon": "globe",
+      "blaetter": [
+        {
+          "id": "l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_abwickeln",
+          "name": "Warengeschäfte und Dienstleistungen abwickeln",
+          "finanzhaus": "ausland",
+          "blaetter": [
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_auslandszahlungsverkehr",
+              "name": "Auslandszahlungsverkehr",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_firmenkreditkarte",
+              "name": "Firmenkreditkarte",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_internationales_cash_management_konto_im_ausland_fuehren",
+              "name": "Internationales Cash Management - Konto im Ausland führen",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_bargeldver_und_entsorgung_in_oesterreich_schweiz",
+              "name": "Bargeldver- und entsorgung in Österreich & Schweiz",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_fremdwaehrungskonto",
+              "name": "Fremdwährungskonto",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_dokumentaeres_auslandsgeschaeft_akkreditiv_garantie_inkasso",
+              "name": "Dokumentäres Auslandsgeschäft  -Akkreditiv, Garantie, Inkasso",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_warentransportversicherung",
+              "name": "Warentransportversicherung",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_lagerversicherung",
+              "name": "Lagerversicherung",
+              "finanzhaus": "ausland"
+            }
+          ]
+        },
+        {
+          "id": "l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_finanzieren",
+          "name": "Warengeschäfte und Dienstleistungen finanzieren",
+          "finanzhaus": "ausland",
+          "blaetter": [
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_finanzieren_kontokorrentkredit_in_fremdwaehrung",
+              "name": "Kontokorrentkredit in Fremdwährung",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_finanzieren_darlehen_in_fremdwaehrung",
+              "name": "Darlehen in Fremdwährung",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_warengeschaefte_und_dienstleistungen_finanzieren_aussenhandels_und_exportfinanzierung",
+              "name": "Außenhandels- und Exportfinanzierung",
+              "finanzhaus": "ausland"
+            }
+          ]
+        },
+        {
+          "id": "l2_auslandsgeschaeft_waehrungsschwankungen_absichern",
+          "name": "Währungsschwankungen absichern",
+          "finanzhaus": "ausland",
+          "blaetter": [
+            {
+              "id": "l3_waehrungsschwankungen_absichern_devisenkassageschaeft",
+              "name": "Devisenkassageschäft",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_waehrungsschwankungen_absichern_devisentermingeschaefte_kurssicherung",
+              "name": "Devisentermingeschäfte (Kurssicherung)",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_waehrungsschwankungen_absichern_devisenoption_kurssicherung",
+              "name": "Devisenoption (Kurssicherung)",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_waehrungsschwankungen_absichern_partizipationsstrategien",
+              "name": "Partizipationsstrategien",
+              "finanzhaus": "ausland"
+            },
+            {
+              "id": "l3_waehrungsschwankungen_absichern_zinsderivate",
+              "name": "Zinsderivate",
+              "finanzhaus": "ausland"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l1_gruendung_nachfolge",
+      "name": "Gründung & Nachfolge",
+      "finanzhaus": "gruendung",
+      "icon": "rocket",
+      "blaetter": [
+        {
+          "id": "l2_gruendung_nachfolge_existenzgruendung_finanzieren",
+          "name": "Existenzgründung finanzieren",
+          "finanzhaus": "gruendung",
+          "blaetter": [
+            {
+              "id": "l3_existenzgruendung_finanzieren_kautionsversicherung_fuer_existenzgruender",
+              "name": "Kautionsversicherung für Existenzgründer",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_existenzgruendung_finanzieren_foerderdarlehen_existenzgruendung",
+              "name": "Förderdarlehen Existenzgründung",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_existenzgruendung_finanzieren_darlehen",
+              "name": "Darlehen",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_existenzgruendung_finanzieren_dz_privatbank_luxcredit",
+              "name": "DZ PRIVATBANK Luxcredit",
+              "finanzhaus": "gruendung"
+            }
+          ]
+        },
+        {
+          "id": "l2_gruendung_nachfolge_unternehmensnachfolge_regeln",
+          "name": "Unternehmensnachfolge regeln",
+          "finanzhaus": "gruendung",
+          "blaetter": [
+            {
+              "id": "l3_unternehmensnachfolge_regeln_vr_nachfolgeberatung_unternehmensbewertung",
+              "name": "VR NachfolgeBeratung Unternehmensbewertung",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_vr_nachfolgeberatung_m_a_beratung",
+              "name": "VR NachfolgeBeratung M&A-Beratung",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_dz_bank_m_a_beratung",
+              "name": "DZ BANK M&A-Beratung",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_dz_privatbank_vermoegensplanung_und_strukturierung",
+              "name": "DZ PRIVATBANK Vermögensplanung und -strukturierung",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_dz_privatbank_stiftungsmanagement_stiftungsgruendung",
+              "name": "DZ PRIVATBANK Stiftungsmanagement / Stiftungsgründung",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_vrep_nachfolgebegleitung",
+              "name": "VREP Nachfolgebegleitung",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_vrep_gesellschafterwechsel",
+              "name": "VREP Gesellschafterwechsel",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_vrep_unternehmensnachfolge",
+              "name": "VREP Unternehmensnachfolge",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_ggf_versorgung_inkl_bav_indexinvest",
+              "name": "GGF-Versorgung, inkl. bAV-Indexinvest",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_absicherung_auslagerung_von_pensionsverpflichtungen",
+              "name": "Absicherung / Auslagerung von Pensionsverpflichtungen",
+              "finanzhaus": "gruendung"
+            },
+            {
+              "id": "l3_unternehmensnachfolge_regeln_venture_capital_produkte",
+              "name": "Venture Capital Produkte",
+              "finanzhaus": "gruendung"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l1_private_finanzplanung",
+      "name": "Private FinanzPlanung",
+      "finanzhaus": "privat_finanz",
+      "icon": "person",
+      "blaetter": [
+        {
+          "id": "l2_private_finanzplanung_girokonto_bezahlen",
+          "name": "Girokonto & Bezahlen",
+          "finanzhaus": "privat_finanz",
+          "blaetter": [
+            {
+              "id": "l3_girokonto_bezahlen_zahlungen_abwickeln",
+              "name": "Zahlungen abwickeln",
+              "finanzhaus": "privat_finanz"
+            }
+          ]
+        },
+        {
+          "id": "l2_private_finanzplanung_versicherung_schuetzen",
+          "name": "Versicherung & Schützen",
+          "finanzhaus": "privat_finanz",
+          "blaetter": [
+            {
+              "id": "l3_versicherung_schuetzen_einkommen_und_familie_absichern",
+              "name": "Einkommen und Familie absichern",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_versicherung_schuetzen_sachwerte_absichern",
+              "name": "Sachwerte absichern",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_versicherung_schuetzen_gesundheit_absichern",
+              "name": "Gesundheit absichern",
+              "finanzhaus": "privat_finanz"
+            }
+          ]
+        },
+        {
+          "id": "l2_private_finanzplanung_geldanlage_und_sparen",
+          "name": "Geldanlage und Sparen",
+          "finanzhaus": "privat_finanz",
+          "blaetter": [
+            {
+              "id": "l3_geldanlage_und_sparen_vermoegen_ansparen",
+              "name": "Vermögen ansparen",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_geldanlage_und_sparen_vermoegen_anlegen",
+              "name": "Vermögen anlegen",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_geldanlage_und_sparen_vermoegen_optimieren",
+              "name": "Vermögen optimieren",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_geldanlage_und_sparen_vermoegen_verwenden",
+              "name": "Vermögen verwenden",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_geldanlage_und_sparen_vermoegen_vererben_verschenken",
+              "name": "Vermögen vererben/ verschenken",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_geldanlage_und_sparen_reserven_haben",
+              "name": "Reserven haben",
+              "finanzhaus": "privat_finanz"
+            }
+          ]
+        },
+        {
+          "id": "l2_private_finanzplanung_kredit_finanzieren",
+          "name": "Kredit & Finanzieren",
+          "finanzhaus": "privat_finanz",
+          "blaetter": [
+            {
+              "id": "l3_kredit_finanzieren_wuensche_finanzieren",
+              "name": "Wünsche finanzieren",
+              "finanzhaus": "privat_finanz"
+            }
+          ]
+        },
+        {
+          "id": "l2_private_finanzplanung_zukunft_und_vorsorgen",
+          "name": "Zukunft und vorsorgen",
+          "finanzhaus": "privat_finanz",
+          "blaetter": [
+            {
+              "id": "l3_zukunft_und_vorsorgen_fuer_das_alter_vorsorgen",
+              "name": "Für das Alter vorsorgen",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_zukunft_und_vorsorgen_fuer_die_kinder_vorsorgen",
+              "name": "Für die Kinder vorsorgen",
+              "finanzhaus": "privat_finanz"
+            }
+          ]
+        },
+        {
+          "id": "l2_private_finanzplanung_immobilien_wohnen",
+          "name": "Immobilien & Wohnen",
+          "finanzhaus": "privat_finanz",
+          "blaetter": [
+            {
+              "id": "l3_immobilien_wohnen_wohneingentum_erwerben_finanzieren",
+              "name": "Wohneingentum erwerben/ finanzieren",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_immobilien_wohnen_modernisieren_und_renovieren",
+              "name": "Modernisieren und Renovieren",
+              "finanzhaus": "privat_finanz"
+            },
+            {
+              "id": "l3_immobilien_wohnen_anschlussfinanzierung_sichern",
+              "name": "Anschlussfinanzierung sichern",
+              "finanzhaus": "privat_finanz"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

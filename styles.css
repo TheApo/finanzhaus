@@ -277,6 +277,50 @@ app-root {
 }
 
 /* --------------------------------------------------------------------------
+   Data Mode Toggle Button (Beratung / Produkte)
+   -------------------------------------------------------------------------- */
+.datamode-toggle {
+  position: absolute;
+  top: calc(var(--spacing-md) + 3rem);
+  left: var(--spacing-md);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: var(--color-white);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--color-shadow);
+  transition: all var(--transition-fast);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.datamode-toggle:hover {
+  background-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.datamode-toggle:active {
+  transform: scale(0.98);
+}
+
+.datamode-toggle__label {
+  min-width: 4rem;
+  text-align: left;
+}
+
+.datamode-toggle__icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
    Zoom Controls
    -------------------------------------------------------------------------- */
 .zoom-controls {
@@ -730,21 +774,31 @@ app-root {
 }
 
 .node--level-3 .node__circle {
-  width: 5rem;
-  height: 5rem;
-  border: 6px solid currentColor;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 4px solid currentColor;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .node--level-3 .node__icon {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .node--level-3 .node__label {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   font-weight: 500;
-  padding-top: 0.25rem;
+  padding-top: 0.15rem;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node--level-3:hover .node__label {
+  max-width: none;
+  overflow: visible;
+  white-space: nowrap;
 }
 
 /* Level 3 becomes sharp on hover, in focus mode, or when matching filter */
