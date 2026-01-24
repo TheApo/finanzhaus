@@ -58,87 +58,104 @@
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_geschaeftskonto",
               "name": "Geschäftskonto",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Geschäftskonto</b><br><br>Das leistungsstarke Firmenkonto für Ihren <b>professionellen Zahlungsverkehr</b> im SEPA-Raum.<br><br>• Effiziente Abwicklung aller Ein- und Auszahlungen<br>• Integration mit gängigen Buchhaltungssystemen<br>• Transparente Kontoführung mit detaillierten Umsatzübersichten<br>• Flexible Verfügungsberechtigungen für Mitarbeiter<br>• Attraktive Konditionen für Geschäftskunden"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_girocard_servicecard",
               "name": "girocard & Servicecard",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>girocard & Servicecard</b><br><br>Flexible Kartenlösungen für den <b>bargeldlosen Geschäftsalltag</b> Ihrer Mitarbeiter.<br><br>• Kontaktloses Bezahlen an allen gängigen Terminals<br>• Bargeldverfügung an über 15.000 Geldautomaten<br>• Individuelle Verfügungslimits pro Karte<br>• Einfache Kostenkontrolle und Abrechnung<br>• Separierung von Geschäfts- und Privatausgaben"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_firmenkreditkarte",
               "name": "Firmenkreditkarte",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Firmenkreditkarte</b><br><br>Die internationale Zahlungslösung für <b>weltweite Geschäftsreisen</b> und Einkäufe.<br><br>• Akzeptanz bei über 40 Millionen Händlern weltweit<br>• Monatliche Sammelabrechnung für bessere Liquiditätsplanung<br>• Umfangreiche Versicherungsleistungen inklusive<br>• Online-Reporting und Ausgabenkontrolle<br>• Individuelle Kartenlimits für jeden Mitarbeiter"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_kartenterminal",
               "name": "Kartenterminal",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Kartenterminal</b><br><br>Moderne Bezahlterminals für die <b>sichere Kartenakzeptanz</b> am Point of Sale.<br><br>• Akzeptanz aller gängigen Debit- und Kreditkarten<br>• Kontaktlose Zahlungen via NFC und Mobile Payment<br>• Schnelle Gutschrift der Umsätze auf Ihr Geschäftskonto<br>• Stationäre und mobile Terminallösungen verfügbar<br>• 24/7 technischer Support und Wartung"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_akzeptanz_zahlverfahren_ecommerce",
               "name": "Akzeptanz Zahlverfahren eCommerce",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Akzeptanz Zahlverfahren eCommerce</b><br><br>Umfassende Payment-Lösungen für Ihren <b>erfolgreichen Online-Handel</b>.<br><br>• Integration aller relevanten Online-Zahlverfahren<br>• Sichere Zahlungsabwicklung nach PCI-DSS-Standard<br>• Minimierung von Kaufabbrüchen durch Vielfalt<br>• Automatisierte Zahlungszuordnung und Reporting<br>• Schutz vor Zahlungsausfällen und Betrug"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_instant_payment",
               "name": "Instant Payment",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Instant Payment</b><br><br>Überweisungen in <b>Echtzeit</b> - rund um die Uhr, 365 Tage im Jahr.<br><br>• Gutschrift beim Empfänger innerhalb von Sekunden<br>• Verfügbarkeit 24/7 ohne Bankarbeitstage-Beschränkung<br>• Ideal für zeitkritische Geschäftstransaktionen<br>• Sofortige Bestätigung der erfolgreichen Zahlung<br>• Nahtlose Integration in bestehende Prozesse"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_zahlungsverkehrssoftware",
               "name": "Zahlungsverkehrssoftware",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Zahlungsverkehrssoftware</b><br><br>Professionelle Software für die <b>effiziente Steuerung</b> Ihres gesamten Zahlungsverkehrs.<br><br>• Zentrale Verwaltung aller Bankverbindungen<br>• Automatisierte Zahlungsläufe und Stapelverarbeitung<br>• SEPA-konforme Überweisungen und Lastschriften<br>• Schnittstellen zu ERP- und Buchhaltungssystemen<br>• Mehrstufige Freigabeprozesse nach Vier-Augen-Prinzip"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_webanwendungen_als_ergaenzung_zum_onlinebanking",
               "name": "Webanwendungen als Ergänzung zum OnlineBanking",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Webanwendungen als Ergänzung zum OnlineBanking</b><br><br>Digitale Tools zur <b>Optimierung</b> Ihrer täglichen Banking-Prozesse.<br><br>• Erweiterte Analysefunktionen und Auswertungen<br>• Automatisierte Kontoauszugsverarbeitung<br>• Liquiditätsplanung und Cash-Forecasting<br>• Dokumentenmanagement und Archivierung<br>• Benutzerfreundliche Oberfläche ohne Softwareinstallation"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_vr_smart_guide",
               "name": "VR Smart Guide",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>VR Smart Guide</b><br><br>Der digitale Assistent für <b>intelligentes Finanzmanagement</b> Ihres Unternehmens.<br><br>• Automatische Kategorisierung von Geschäftsvorfällen<br>• Übersichtliche Dashboards mit Kennzahlen<br>• Frühwarnsystem für Liquiditätsengpässe<br>• Individuelle Benachrichtigungen und Alerts<br>• Handlungsempfehlungen basierend auf Ihren Daten"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_kontenkonzentration_genocon",
               "name": "Kontenkonzentration GenoCon",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Kontenkonzentration GenoCon</b><br><br>Zentrales Cash Management für <b>optimale Liquiditätssteuerung</b> im Konzern.<br><br>• Automatischer Liquiditätsausgleich zwischen Konten<br>• Zentralisierung von Guthaben auf einem Masterkonto<br>• Reduzierung von Zinsaufwendungen<br>• Transparente Übersicht über alle Tochtergesellschaften<br>• Flexible Konfiguration der Pooling-Strukturen"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_vr_rechnungsservice",
               "name": "VR-RechnungsService",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>VR-RechnungsService</b><br><br>Digitale Rechnungsverarbeitung für <b>effizientes Forderungsmanagement</b>.<br><br>• Elektronischer Rechnungsversand und -empfang<br>• Automatische Zuordnung eingehender Zahlungen<br>• Mahnwesen und Zahlungserinnerungen<br>• Übersichtliches Dashboard für offene Posten<br>• Schnittstellen zu gängiger Buchhaltungssoftware"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_bargeld_service",
               "name": "Bargeld Service",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Bargeld Service</b><br><br>Professionelle Bargeldlogistik für <b>sichere Ein- und Auszahlungen</b>.<br><br>• Wertgesicherte Abholung und Zustellung<br>• Zählung und Aufbereitung von Bargeldbeständen<br>• Flexible Abholrhythmen nach Ihrem Bedarf<br>• Versicherter Transport durch zertifizierte Dienstleister<br>• Zeitnahe Gutschrift auf Ihrem Geschäftskonto"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_request_to_pay",
               "name": "Request-to-pay",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Request-to-pay</b><br><br>Die innovative Zahlungsaufforderung für <b>beschleunigte Zahlungseingänge</b>.<br><br>• Digitale Zahlungsanfrage direkt an den Schuldner<br>• Einfache Bestätigung durch den Zahlungspflichtigen<br>• Verkürzung der Forderungslaufzeiten<br>• Transparenter Status über alle Anfragen<br>• Nahtlose Integration in Rechnungsprozesse"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_online_bezahlverfahren",
               "name": "Online Bezahlverfahren",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Online Bezahlverfahren</b><br><br>Sichere Zahlungsmethoden für <b>reibungslosen E-Commerce</b>.<br><br>• Unterstützung von giropay, paydirekt und weiteren Verfahren<br>• Echtzeit-Zahlungsbestätigung für schnellen Versand<br>• Hohe Konversionsraten durch Kundenvertrauen<br>• Schutz vor Zahlungsausfällen<br>• Einfache technische Integration"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_pay_per_use",
               "name": "Pay-per-use",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Pay-per-use</b><br><br>Nutzungsbasierte Abrechnungsmodelle für <b>flexible Geschäftsmodelle</b>.<br><br>• Automatisierte Abrechnung nach tatsächlicher Nutzung<br>• Ideal für Maschinen, Software und Services<br>• Transparente Kostenzuordnung für Ihre Kunden<br>• Integration von IoT-Daten und Zählerständen<br>• Unterstützung von Subscription-Modellen"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_vr_ticket_system",
               "name": "VR Ticket System",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>VR Ticket System</b><br><br>Digitales Ticketing für <b>effiziente Veranstaltungsabwicklung</b>.<br><br>• Online-Ticketverkauf mit integrierter Zahlungsabwicklung<br>• Digitale und druckbare Ticketformate<br>• Einlasskontrolle via App oder Scanner<br>• Echtzeit-Reporting über Verkaufszahlen<br>• Flexible Preisgestaltung und Kontingentsteuerung"
             },
             {
               "id": "l3_zahlungsverkehr_im_sepa_raum_abwickeln_giralgeld_token_finledger",
               "name": "Giralgeld-Token / Finledger",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Giralgeld-Token / Finledger</b><br><br>Blockchain-basierte Zahlungslösung für <b>programmierbare Transaktionen</b>.<br><br>• Tokenisiertes Giralgeld auf DLT-Basis<br>• Smart Contracts für automatisierte Zahlungsauslösung<br>• Echtzeit-Settlement ohne Intermediäre<br>• Ideal für Machine-to-Machine-Payments<br>• Zukunftssichere Technologie für digitale Geschäftsmodelle"
             }
           ]
         },
@@ -150,62 +167,74 @@
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_kontokorrentkredit",
               "name": "Kontokorrentkredit",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Kontokorrentkredit</b><br><br>Die flexible Kreditlinie für <b>kurzfristigen Liquiditätsbedarf</b> im Tagesgeschäft.<br><br>• Jederzeitige Verfügbarkeit bis zum vereinbarten Limit<br>• Zinszahlung nur für tatsächlich genutzte Beträge<br>• Überbrückung saisonaler Schwankungen<br>• Schnelle Reaktion auf unerwartete Zahlungsanforderungen<br>• Flexible Rückführung ohne feste Tilgungsraten"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_geldmarktdarlehen",
               "name": "Geldmarktdarlehen",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Geldmarktdarlehen</b><br><br>Kurzfristige Finanzierung zu <b>attraktiven Geldmarktkonditionen</b>.<br><br>• Laufzeiten von wenigen Tagen bis zu 12 Monaten<br>• Zinssatz orientiert am aktuellen Geldmarktniveau<br>• Planbare Zinskosten durch Festzinsvereinbarung<br>• Ideal für definierte kurzfristige Finanzierungsbedarfe<br>• Schnelle Bereitstellung bei bestehendem Rahmen"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_aval",
               "name": "Aval",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Aval</b><br><br>Bankbürgschaften und Garantien zur <b>Schonung Ihrer Liquidität</b>.<br><br>• Anzahlungs-, Vertragserfüllungs- und Gewährleistungsbürgschaften<br>• Mietavale und Zollbürgschaften<br>• Keine Barkaution erforderlich<br>• Stärkung Ihrer Verhandlungsposition bei Vertragspartnern<br>• Flexible Laufzeiten und Avalarten"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_r_v_kautionsversicherung",
               "name": "R+V-Kautionsversicherung",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>R+V-Kautionsversicherung</b><br><br>Versicherungsgestützte Bürgschaften zur <b>Erweiterung Ihres Avalrahmens</b>.<br><br>• Ergänzung oder Alternative zu Bankavalen<br>• Schonung Ihrer Kreditlinien bei der Hausbank<br>• Alle gängigen Bürgschaftsarten abgedeckt<br>• Schnelle Ausstellung durch etablierten Versicherer<br>• Akzeptanz bei öffentlichen und privaten Auftraggebern"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_dz_privatbank_luxcredit",
               "name": "DZ PRIVATBANK Luxcredit",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>DZ PRIVATBANK Luxcredit</b><br><br>Lombardkredit gegen Wertpapierverpfändung für <b>flexible Liquiditätsgewinnung</b>.<br><br>• Kreditlinie besichert durch Ihr Wertpapierdepot<br>• Erhalt der Anlagestrategie ohne Verkauf<br>• Attraktive Zinssätze durch erstklassige Besicherung<br>• Schnelle Verfügbarkeit der Mittel<br>• Flexible Nutzung für geschäftliche und private Zwecke"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_r_v_kontoschutzpolice",
               "name": "R+V-KontoschutzPolice",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>R+V-KontoschutzPolice</b><br><br>Absicherung Ihres Kontokorrentkredits gegen <b>unvorhergesehene Ausfallrisiken</b>.<br><br>• Übernahme der Kreditraten bei Arbeitsunfähigkeit<br>• Schutz bei schwerer Krankheit des Inhabers<br>• Absicherung im Todesfall<br>• Erhalt der Unternehmensfortführung<br>• Entlastung von Angehörigen und Gesellschaftern"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_r_v_ratenschutzpolice",
               "name": "R+V-RatenschutzPolice",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>R+V-RatenschutzPolice</b><br><br>Absicherung Ihrer Darlehensraten gegen <b>persönliche Schicksalsschläge</b>.<br><br>• Übernahme der Ratenzahlungen bei Arbeitsunfähigkeit<br>• Schutz bei unverschuldeter Arbeitslosigkeit<br>• Tilgung der Restschuld im Todesfall<br>• Planungssicherheit für Ihr Unternehmen<br>• Flexible Absicherungsvarianten wählbar"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_factoring",
               "name": "Factoring",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Factoring</b><br><br>Verkauf Ihrer Forderungen für <b>sofortige Liquidität</b> und Risikoabsicherung.<br><br>• Unmittelbare Auszahlung von bis zu 90% des Rechnungsbetrags<br>• Übernahme des Ausfallrisikos (echtes Factoring)<br>• Professionelles Debitorenmanagement inklusive<br>• Verbesserung Ihrer Bilanzstruktur<br>• Wachstumsfinanzierung ohne zusätzliche Sicherheiten"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_tagesgeld",
               "name": "Tagesgeld",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Tagesgeld</b><br><br>Täglich verfügbare Geldanlage für Ihre <b>kurzfristige Liquiditätsreserve</b>.<br><br>• Attraktive Verzinsung ohne Kündigungsfristen<br>• Jederzeitige Verfügbarkeit der Einlagen<br>• Sicherheit durch Einlagensicherung<br>• Keine Mindestanlagebeträge<br>• Automatische Zinsgutschrift"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_festgeld",
               "name": "Festgeld",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Festgeld</b><br><br>Planbare Geldanlage mit <b>garantierter Verzinsung</b> für einen festen Zeitraum.<br><br>• Höhere Zinsen als bei täglich verfügbaren Anlagen<br>• Laufzeiten von 1 Monat bis mehrere Jahre<br>• Planungssicherheit durch feste Konditionen<br>• Sicherheit durch Einlagensicherung<br>• Ideal für bekannte zukünftige Zahlungsverpflichtungen"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_kurzfristige_geld_liquiditaetsanlage_in_wertpapieren",
               "name": "kurzfristige Geld-/Liquiditätsanlage in Wertpapieren",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>Kurzfristige Geld-/Liquiditätsanlage in Wertpapieren</b><br><br>Renditechancen für Ihre Liquiditätsreserve durch <b>wertpapierbasierte Anlageformen</b>.<br><br>• Geldmarktnahe Fonds mit hoher Liquidität<br>• Kurzlaufende Anleihen erstklassiger Emittenten<br>• Diversifikation über verschiedene Anlageklassen<br>• Tägliche Handelbarkeit der Positionen<br>• Professionelles Portfoliomanagement"
             },
             {
               "id": "l3_liquiditaet_vorhalten_und_absichern_vr_smart_flexibel",
               "name": "VR Smart flexibel",
-              "finanzhaus": "zahlungsverkehr"
+              "finanzhaus": "zahlungsverkehr",
+              "tooltip": "<b>VR Smart flexibel</b><br><br>Die digitale Finanzierungslösung für <b>schnellen und unkomplizierten</b> Kapitalbedarf.<br><br>• Online-Antragstellung in wenigen Minuten<br>• Schnelle Kreditentscheidung und Auszahlung<br>• Flexible Laufzeiten und Rückzahlungsoptionen<br>• Keine umfangreichen Unterlagen erforderlich<br>• Transparente Konditionen ohne versteckte Kosten"
             }
           ]
         }
@@ -225,147 +254,176 @@
             {
               "id": "l3_investitionen_finanzieren_darlehen",
               "name": "Darlehen",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Darlehen</b><br><br>Klassische Investitionsfinanzierung mit <b>planbaren Raten</b> für Ihre Wachstumsprojekte.<br><br>• Feste oder variable Zinssätze nach Wahl<br>• Flexible Laufzeiten bis zu 20 Jahren<br>• Tilgungsfreie Anlaufzeiten möglich<br>• Individuelle Sicherheitengestaltung<br>• Beratung zur optimalen Finanzierungsstruktur"
             },
             {
               "id": "l3_investitionen_finanzieren_geldmarktdarlehen_in_fremdwaehrung",
               "name": "Geldmarktdarlehen in Fremdwährung",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Geldmarktdarlehen in Fremdwährung</b><br><br>Kurzfristige Finanzierung in <b>internationalen Währungen</b> zu Geldmarktkonditionen.<br><br>• Verfügbar in allen gängigen Handelswährungen<br>• Absicherung von Währungsrisiken im Auslandsgeschäft<br>• Natural Hedging bei Fremdwährungserlösen<br>• Attraktive Zinssätze am internationalen Geldmarkt<br>• Flexible Laufzeiten von Tagen bis Monaten"
             },
             {
               "id": "l3_investitionen_finanzieren_darlehen_in_fremdwaehrung",
               "name": "Darlehen in Fremdwährung",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Darlehen in Fremdwährung</b><br><br>Langfristige Investitionsfinanzierung in <b>ausländischer Währung</b>.<br><br>• Finanzierung in EUR, USD, CHF und weiteren Währungen<br>• Matching von Einnahmen und Finanzierungswährung<br>• Nutzung von Zinsvorteilen in anderen Währungsräumen<br>• Absicherungsmöglichkeiten gegen Kursschwankungen<br>• Individuelle Strukturierung nach Ihrem Bedarf"
             },
             {
               "id": "l3_investitionen_finanzieren_foerderkredite",
               "name": "Förderkredite",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Förderkredite</b><br><br>Zinsgünstige Finanzierungen aus <b>öffentlichen Förderprogrammen</b>.<br><br>• KfW-Kredite für Investitionen und Innovationen<br>• Landesförderinstitute und EU-Programme<br>• Tilgungszuschüsse und Zinsverbilligungen<br>• Lange Laufzeiten mit tilgungsfreien Anlaufjahren<br>• Beratung zur optimalen Fördermittelkombination"
             },
             {
               "id": "l3_investitionen_finanzieren_leasing",
               "name": "Leasing",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Leasing</b><br><br>Nutzung von Investitionsgütern ohne <b>Kapitalbindung</b> und mit steuerlichen Vorteilen.<br><br>• Fahrzeug-, Maschinen- und Immobilienleasing<br>• Bilanzneutrale Finanzierung (Operating Lease)<br>• Planbare monatliche Raten als Betriebsausgaben<br>• Full-Service-Pakete mit Wartung und Versicherung<br>• Flexible Vertragsgestaltung und Laufzeitende-Optionen"
             },
             {
               "id": "l3_investitionen_finanzieren_mietkauf",
               "name": "Mietkauf",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Mietkauf</b><br><br>Ratenzahlung mit <b>automatischem Eigentumsübergang</b> am Vertragsende.<br><br>• Sofortige wirtschaftliche Nutzung des Objekts<br>• Aktivierung in Ihrer Bilanz möglich<br>• AfA-Berechtigung während der Laufzeit<br>• Planbare monatliche Raten<br>• Keine Schlussrate oder Kaufoption erforderlich"
             },
             {
               "id": "l3_investitionen_finanzieren_aussenhandels_und_exportfinanzierung",
               "name": "Außenhandels- und Exportfinanzierung",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Außenhandels- und Exportfinanzierung</b><br><br>Maßgeschneiderte Finanzierungen für Ihr <b>internationales Geschäft</b>.<br><br>• Bestellerkredite und Lieferantenkredite<br>• Forfaitierung von Exportforderungen<br>• Absicherung durch Euler Hermes/Bund<br>• Finanzierung in lokalen Währungen<br>• Akkreditivbestätigungen und -finanzierungen"
             },
             {
               "id": "l3_investitionen_finanzieren_individualmeta",
               "name": "IndividualMeta",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>IndividualMeta</b><br><br>Maßgeschneiderte Metafinanzierung für <b>komplexe Finanzierungsstrukturen</b>.<br><br>• Individuelle Strukturierung nach Kundenbedarf<br>• Kombination verschiedener Finanzierungsbausteine<br>• Optimierung der Finanzierungskosten<br>• Flexible Anpassung an Projektverläufe<br>• Begleitung durch erfahrene Spezialisten"
             },
             {
               "id": "l3_investitionen_finanzieren_kautionsversicherung_fuer_genobanken",
               "name": "Kautionsversicherung für Genobanken",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Kautionsversicherung für Genobanken</b><br><br>Rückversicherungslösung zur <b>Erweiterung des Avalgeschäfts</b>.<br><br>• Risikoentlastung für die Genossenschaftsbank<br>• Erweiterung der Avalkapazitäten<br>• Attraktive Rückversicherungskonditionen<br>• Schnelle Abwicklung über etablierte Prozesse<br>• Stärkung der Kundenbeziehung im Firmengeschäft"
             },
             {
               "id": "l3_investitionen_finanzieren_standardmeta_4_0",
               "name": "StandardMeta 4.0",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>StandardMeta 4.0</b><br><br>Standardisierte Metafinanzierung für <b>effiziente Kreditprozesse</b>.<br><br>• Schnelle Bearbeitung durch standardisierte Abläufe<br>• Digitale Antragsstrecke und Dokumentation<br>• Attraktive Konditionen durch Volumenbündelung<br>• Transparente Gebührenstruktur<br>• Ideal für mittelständische Finanzierungen"
             },
             {
               "id": "l3_investitionen_finanzieren_vr_circle_open_circle",
               "name": "VR Circle/Open Circle",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>VR Circle/Open Circle</b><br><br>Konsortialfinanzierung im <b>Netzwerk der Genossenschaftsbanken</b>.<br><br>• Finanzierung großer Volumina durch Bankenkonsortien<br>• Risikoteilung zwischen mehreren Partnern<br>• Zugang zu Großkreditfinanzierungen<br>• Beibehaltung der Hausbankbeziehung<br>• Professionelles Konsortialmanagement"
             },
             {
               "id": "l3_investitionen_finanzieren_reversemeta",
               "name": "ReverseMeta",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>ReverseMeta</b><br><br>Refinanzierung bestehender Kredite zur <b>Optimierung der Passivseite</b>.<br><br>• Umstrukturierung bestehender Finanzierungen<br>• Nutzung verbesserter Marktkonditionen<br>• Verlängerung von Laufzeiten<br>• Konsolidierung mehrerer Kredite<br>• Anpassung an veränderte Unternehmenssituationen"
             },
             {
               "id": "l3_investitionen_finanzieren_vr_smart_express",
               "name": "VR Smart express",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>VR Smart express</b><br><br>Schnellkredit mit <b>digitaler Sofortzusage</b> für kleinere Investitionen.<br><br>• Online-Antrag mit sofortiger Kreditentscheidung<br>• Auszahlung innerhalb von 24 Stunden<br>• Keine umfangreiche Dokumentation erforderlich<br>• Feste Monatsraten und transparente Kosten<br>• Ideal für Beträge bis 250.000 Euro"
             },
             {
               "id": "l3_investitionen_finanzieren_vr_smart_flexibel",
               "name": "VR Smart flexibel",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>VR Smart flexibel</b><br><br>Die anpassungsfähige Finanzierung mit <b>maximaler Flexibilität</b>.<br><br>• Flexible Tilgungsraten und Sondertilgungen<br>• Anpassung an saisonale Umsatzschwankungen<br>• Digitale Verwaltung und Steuerung<br>• Schnelle Entscheidungsprozesse<br>• Kombinierbar mit anderen Finanzierungsbausteinen"
             },
             {
               "id": "l3_investitionen_finanzieren_dz_privatbank_luxcredit",
               "name": "DZ PRIVATBANK Luxcredit",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>DZ PRIVATBANK Luxcredit</b><br><br>Wertpapierbesicherter Kredit für <b>flexible Investitionsfinanzierung</b>.<br><br>• Kreditlinie gegen Verpfändung Ihres Depots<br>• Erhalt Ihrer Anlagestrategie<br>• Attraktive Zinsen durch erstklassige Sicherheiten<br>• Schnelle Verfügbarkeit für Investitionen<br>• Flexible Nutzung und Rückführung"
             },
             {
               "id": "l3_investitionen_finanzieren_vrep_akquisitionsmezzanine",
               "name": "VREP Akquisitionsmezzanine",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>VREP Akquisitionsmezzanine</b><br><br>Nachrangiges Kapital für <b>Unternehmenskäufe</b> und Buy-outs.<br><br>• Ergänzung der Eigenkapitalquote bei Akquisitionen<br>• Nachrangig gegenüber Bankfinanzierungen<br>• Flexible Ausgestaltung der Rückzahlung<br>• Beteiligung an Wertsteigerungen möglich<br>• Professionelle Begleitung durch VREP-Spezialisten"
             },
             {
               "id": "l3_investitionen_finanzieren_vrep_wachstumsmezzanine",
               "name": "VREP Wachstumsmezzanine",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>VREP Wachstumsmezzanine</b><br><br>Eigenkapitalähnliche Mittel für <b>organisches Unternehmenswachstum</b>.<br><br>• Stärkung der Eigenkapitalbasis<br>• Finanzierung von Expansion und Innovation<br>• Keine Verwässerung bestehender Gesellschafteranteile<br>• Flexible Laufzeiten bis zu 10 Jahren<br>• Unternehmerische Beratung inklusive"
             },
             {
               "id": "l3_investitionen_finanzieren_vrep_unternehmerkapital",
               "name": "VREP Unternehmerkapital",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>VREP Unternehmerkapital</b><br><br>Beteiligungskapital für <b>strategische Unternehmensentwicklung</b>.<br><br>• Echte Eigenkapitalbeteiligung durch VREP<br>• Langfristige Partnerschaft auf Augenhöhe<br>• Zugang zu Netzwerk und Know-how<br>• Unterstützung bei strategischen Entscheidungen<br>• Exit-Optionen nach Unternehmerwunsch"
             },
             {
               "id": "l3_investitionen_finanzieren_dz_bank_m_a_einwerbung_von_wachstums_und_eigenkapital",
               "name": "DZ BANK M&A Einwerbung von Wachstums- und Eigenkapital",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>DZ BANK M&A Einwerbung von Wachstums- und Eigenkapital</b><br><br>Professionelle Begleitung bei der <b>Kapitalakquise</b> für Ihr Unternehmen.<br><br>• Identifikation geeigneter Investoren<br>• Erstellung von Investment-Memoranden<br>• Strukturierung der Kapitalrunde<br>• Verhandlungsführung mit Investoren<br>• Due-Diligence-Begleitung und Closing"
             },
             {
               "id": "l3_investitionen_finanzieren_zinsderivate",
               "name": "Zinsderivate",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Zinsderivate</b><br><br>Absicherungsinstrumente für Ihr <b>Zinsänderungsrisiko</b>.<br><br>• Zinsswaps zur Fixierung variabler Zinsen<br>• Zinscaps und -floors zur Begrenzung von Zinsspitzen<br>• Strukturierte Zinsprodukte nach Bedarf<br>• Optimierung Ihrer Finanzierungskosten<br>• Professionelle Beratung zu Markt und Timing"
             },
             {
               "id": "l3_investitionen_finanzieren_akquisitionsfinanzierung",
               "name": "Akquisitionsfinanzierung",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Akquisitionsfinanzierung</b><br><br>Maßgeschneiderte Finanzierung für <b>Unternehmenskäufe</b> und Beteiligungserwerb.<br><br>• Strukturierung des Kaufpreises und der Finanzierung<br>• Senior Debt und Mezzanine aus einer Hand<br>• Berücksichtigung von Cashflow und Synergien<br>• Flexible Tilgungsstrukturen<br>• Begleitung vom Signing bis zum Closing"
             },
             {
               "id": "l3_investitionen_finanzieren_strukturierte_finanzierung_aktiv",
               "name": "Strukturierte Finanzierung Aktiv",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Strukturierte Finanzierung Aktiv</b><br><br>Komplexe Finanzierungsstrukturen als <b>Kapitalgeber</b> für große Projekte.<br><br>• Beteiligung an syndizierten Finanzierungen<br>• Investition in strukturierte Kreditprodukte<br>• Attraktive Renditen bei kalkulierbarem Risiko<br>• Diversifikation des Kreditportfolios<br>• Professionelles Risikomanagement"
             },
             {
               "id": "l3_investitionen_finanzieren_strukturierte_finanzierung_passiv",
               "name": "Strukturierte Finanzierung Passiv",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Strukturierte Finanzierung Passiv</b><br><br>Maßgeschneiderte Finanzierungslösungen für <b>komplexe Unternehmensbedarfe</b>.<br><br>• Kombination verschiedener Finanzierungsinstrumente<br>• Anpassung an individuelle Cashflow-Strukturen<br>• Optimierung von Bilanz und Kennzahlen<br>• Einbindung verschiedener Sicherheiten<br>• Langfristige Finanzierungspartnerschaften"
             },
             {
               "id": "l3_investitionen_finanzieren_schuldscheindarlehen_aktiv",
               "name": "Schuldscheindarlehen Aktiv",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Schuldscheindarlehen Aktiv</b><br><br>Investition in Schuldscheindarlehen als <b>attraktive Anlageklasse</b>.<br><br>• Direktinvestition in Unternehmensfinanzierungen<br>• Attraktive Renditen im aktuellen Zinsumfeld<br>• Diversifikation über Branchen und Laufzeiten<br>• Bonitätsstarke mittelständische Emittenten<br>• Professionelle Analyse und Auswahl"
             },
             {
               "id": "l3_investitionen_finanzieren_schuldscheindarlehen_passiv",
               "name": "Schuldscheindarlehen Passiv",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Schuldscheindarlehen Passiv</b><br><br>Kapitalmarktnahe Finanzierung für <b>etablierte Mittelständler</b>.<br><br>• Volumina ab 20 Mio. Euro<br>• Diversifizierte Investorenbasis<br>• Flexible Laufzeiten und Tranchen<br>• Geringere Dokumentationsanforderungen als Anleihen<br>• Begleitung bei Strukturierung und Platzierung"
             },
             {
               "id": "l3_investitionen_finanzieren_projektfinanzierung_erneuerbare_energien",
               "name": "Projektfinanzierung erneuerbare Energien",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Projektfinanzierung erneuerbare Energien</b><br><br>Spezialisierte Finanzierung für <b>nachhaltige Energieprojekte</b>.<br><br>• Wind-, Solar- und Biomasseprojekte<br>• Non-Recourse-Strukturen auf Projektbasis<br>• Langfristige Laufzeiten bis zu 20 Jahren<br>• Kombination mit Förderprogrammen<br>• Erfahrenes Team für Projektbewertung"
             },
             {
               "id": "l3_investitionen_finanzieren_bonds",
               "name": "Bonds",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Bonds</b><br><br>Unternehmensanleihen zur <b>Kapitalmarktfinanzierung</b> größerer Unternehmen.<br><br>• Emission von Unternehmensanleihen<br>• Zugang zu breiter Investorenbasis<br>• Flexible Ausgestaltung der Anleihebedingungen<br>• Öffentliche oder private Platzierung<br>• Begleitung durch erfahrene Kapitalmarktspezialisten"
             },
             {
               "id": "l3_investitionen_finanzieren_abcp",
               "name": "ABCP",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>ABCP</b><br><br>Asset-Backed Commercial Paper zur <b>Refinanzierung von Forderungen</b>.<br><br>• Verbriefung von Handelsforderungen<br>• Günstige Refinanzierung am Geldmarkt<br>• Verbesserung der Bilanzstruktur<br>• Regelmäßige revolvierende Struktur<br>• Professionelle Programmadministration"
             },
             {
               "id": "l3_investitionen_finanzieren_ipo",
               "name": "IPO",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>IPO</b><br><br>Begleitung beim Börsengang zur <b>Eigenkapitalbeschaffung</b> über den Kapitalmarkt.<br><br>• Prüfung der Börsenreife und Timing<br>• Auswahl des geeigneten Börsensegments<br>• Erstellung von Equity Story und Prospekt<br>• Koordination des Bookbuilding-Prozesses<br>• Langfristige Investor-Relations-Unterstützung"
             }
           ]
         },
@@ -377,22 +435,26 @@
             {
               "id": "l3_finanzierungen_optimieren_darlehen",
               "name": "Darlehen",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Darlehen</b><br><br>Umstrukturierung bestehender Finanzierungen zur <b>Optimierung Ihrer Kreditkosten</b>.<br><br>• Analyse des bestehenden Kreditportfolios<br>• Umschuldung zu verbesserten Konditionen<br>• Anpassung von Laufzeiten und Tilgungsstrukturen<br>• Zusammenführung mehrerer Kredite<br>• Nutzung aktueller Marktchancen"
             },
             {
               "id": "l3_finanzierungen_optimieren_zinsderivate",
               "name": "Zinsderivate",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Zinsderivate</b><br><br>Professionelles Zinsmanagement zur <b>Steuerung Ihrer Finanzierungskosten</b>.<br><br>• Absicherung gegen steigende Zinsen<br>• Optimierung des Zinsprofils Ihres Portfolios<br>• Flexible Anpassung an Marktentwicklungen<br>• Kombination verschiedener Derivatetypen<br>• Regelmäßiges Reporting und Bewertung"
             },
             {
               "id": "l3_finanzierungen_optimieren_dz_privatbank_luxcredit",
               "name": "DZ PRIVATBANK Luxcredit",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>DZ PRIVATBANK Luxcredit</b><br><br>Depotbesicherter Kredit zur <b>Liquiditätsoptimierung</b> ohne Wertpapierverkauf.<br><br>• Nutzung bestehender Depotbestände als Sicherheit<br>• Günstige Konditionen durch erstklassige Besicherung<br>• Erhalt der Anlagestrategie und Dividenden<br>• Flexible Inanspruchnahme nach Bedarf<br>• Schnelle Verfügbarkeit der Mittel"
             },
             {
               "id": "l3_finanzierungen_optimieren_bonitaetsmanager",
               "name": "Bonitätsmanager",
-              "finanzhaus": "finanzierung"
+              "finanzhaus": "finanzierung",
+              "tooltip": "<b>Bonitätsmanager</b><br><br>Digitales Tool zur <b>Verbesserung Ihrer Kreditwürdigkeit</b>.<br><br>• Analyse Ihrer aktuellen Bonitätskennzahlen<br>• Identifikation von Optimierungspotenzialen<br>• Simulation von Maßnahmen auf Ihr Rating<br>• Empfehlungen zur Bilanzstrukturverbesserung<br>• Vorbereitung auf Kreditgespräche"
             }
           ]
         }
@@ -412,7 +474,8 @@
             {
               "id": "l3_notfall_regeln_r_v_risiko_unfallpolice_unternehmer",
               "name": "R+V-Risiko-UnfallPolice Unternehmer",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-Risiko-UnfallPolice Unternehmer</b><br><br>Umfassende Absicherung für <b>Unternehmer und Geschäftsführer</b> bei Unfall und Krankheit.<br><br>• Invaliditätsleistung bei dauerhaften Unfallfolgen<br>• Todesfallschutz für Hinterbliebene<br>• Krankenhaus-Tagegeld und Genesungsgeld<br>• Weltweiter Schutz rund um die Uhr<br>• Sicherung der Unternehmensfortführung"
             }
           ]
         },
@@ -424,132 +487,158 @@
             {
               "id": "l3_sachwerte_absichern_r_v_gewerbepolice_basisbaustein_betriebshaftpflicht_inhaltsversicherung_elektronik_gewerbliche_mietkaution",
               "name": "R+V-GewerbePolice Basisbaustein Betriebshaftpflicht, Inhaltsversicherung, Elektronik, gewerbliche Mietkaution",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-GewerbePolice Basisbaustein</b><br><br>Das modulare Versicherungspaket für <b>umfassenden Gewerbeschutz</b>.<br><br>• Betriebshaftpflicht für Personen- und Sachschäden<br>• Inhaltsversicherung für Inventar und Waren<br>• Elektronikschutz für IT und Kommunikationstechnik<br>• Gewerbliche Mietkaution ohne Liquiditätsbindung<br>• Flexibel erweiterbar durch Zusatzbausteine"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_gewerbepolice_zusatzbaustein_technik_mobilitaet_autoinhaltsdeckung_maschine_fahrbar_stationaer",
               "name": "R+V-GewerbePolice Zusatzbaustein Technik & Mobilität: Autoinhaltsdeckung, Maschine (fahrbar & stationär)",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-GewerbePolice Technik & Mobilität</b><br><br>Erweiterter Schutz für <b>mobile Werte und Maschinen</b>.<br><br>• Autoinhaltsversicherung für Werkzeuge und Materialien<br>• Maschinenversicherung für fahrbare Geräte<br>• Schutz für stationäre Produktionsmaschinen<br>• Absicherung gegen Bruch und Beschädigung<br>• Ersatz bei Diebstahl aus Fahrzeugen"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_gewerbepolice_zusatzbaustein_recht_durchsetzen_rechtsschutzversicherung",
               "name": "R+V-GewerbePolice Zusatzbaustein Recht durchsetzen: Rechtsschutzversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-GewerbePolice Rechtsschutz</b><br><br>Rechtliche Absicherung für <b>gewerbliche Streitigkeiten</b>.<br><br>• Arbeitsrechtsschutz bei Konflikten mit Mitarbeitern<br>• Vertragsrechtsschutz für geschäftliche Verträge<br>• Steuerrechtsschutz bei Auseinandersetzungen mit dem Finanzamt<br>• Verkehrsrechtsschutz für Firmenfahrzeuge<br>• Kostenübernahme für Anwälte und Gerichtsverfahren"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_gewerbepolice_zusatzbaustein_schutz_vor_digitalen_risiken_cyberrisk_versicherung_wirtschaftskriminalitaet",
               "name": "R+V-GewerbePolice Zusatzbaustein Schutz vor digitalen Risiken: CyberRisk Versicherung, Wirtschaftskriminalität",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-GewerbePolice Digitale Risiken</b><br><br>Schutz vor <b>Cyberattacken und Wirtschaftskriminalität</b>.<br><br>• Absicherung bei Hackerangriffen und Datenverlust<br>• Schutz vor Betriebsunterbrechung durch IT-Ausfall<br>• Übernahme von Forensik- und Wiederherstellungskosten<br>• Absicherung gegen Betrug und Unterschlagung<br>• 24/7 Notfall-Hotline bei Cybervorfällen"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_gewerbepolice_zusatzbaustein_liquiditaet_schaffen_warenkreditversicherung_kautionsversicherung",
               "name": "R+V-GewerbePolice Zusatzbaustein Liquidität schaffen: Warenkreditversicherung, Kautionsversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-GewerbePolice Liquidität schaffen</b><br><br>Absicherung von Forderungen und <b>Schonung Ihrer Liquidität</b>.<br><br>• Warenkreditversicherung gegen Forderungsausfall<br>• Kautionsversicherung als Alternative zum Aval<br>• Bonitätsprüfung Ihrer Geschäftspartner<br>• Keine Bindung von Barsicherheiten<br>• Verbesserung Ihrer Finanzierungskonditionen"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_gebaeudeversicherung",
               "name": "R+V-UnternehmensPolice Gebäudeversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Gebäudeversicherung</b><br><br>Umfassender Schutz für Ihre <b>betrieblichen Immobilien</b>.<br><br>• Absicherung gegen Feuer, Sturm und Hagel<br>• Leitungswasserschäden inklusive<br>• Elementarschadenschutz optional zubuchbar<br>• Neuwertentschädigung bei Totalschaden<br>• Schutz für feste Einbauten und Außenanlagen"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_inhaltsversicherung",
               "name": "R+V-UnternehmensPolice Inhaltsversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Inhaltsversicherung</b><br><br>Schutz für Ihr <b>betriebliches Inventar</b> und Warenbestände.<br><br>• Absicherung von Maschinen und Betriebseinrichtung<br>• Warenschutz gegen alle versicherten Gefahren<br>• Einbruchdiebstahl und Vandalismus inklusive<br>• Flexible Versicherungssummen nach Bedarf<br>• Vorsorgeversicherung für Neuanschaffungen"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_ertragsausfallversicherung",
               "name": "R+V-UnternehmensPolice Ertragsausfallversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Ertragsausfallversicherung</b><br><br>Absicherung Ihres <b>Betriebsgewinns</b> bei Betriebsunterbrechung.<br><br>• Ersatz entgangener Gewinne nach Sachschaden<br>• Übernahme fortlaufender Kosten wie Gehälter und Mieten<br>• Haftzeit bis zu 24 Monaten wählbar<br>• Absicherung bei Lieferantenausfall möglich<br>• Sicherung der Unternehmensexistenz"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_allgemeine_haftpflicht_betriebshaftpflicht",
               "name": "R+V-UnternehmensPolice Allgemeine Haftpflicht (Betriebshaftpflicht)",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Betriebshaftpflicht</b><br><br>Absicherung gegen <b>Haftungsansprüche Dritter</b> aus Ihrer Geschäftstätigkeit.<br><br>• Personen-, Sach- und Vermögensschäden abgedeckt<br>• Produkthaftpflicht inklusive<br>• Umwelthaftpflicht-Basisdeckung<br>• Hohe Deckungssummen bis 10 Mio. Euro und mehr<br>• Prüfung und Abwehr unberechtigter Ansprüche"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_vermoegensschaden_haftpflicht",
               "name": "R+V-UnternehmensPolice Vermögensschaden Haftpflicht",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Vermögensschaden-Haftpflicht</b><br><br>Schutz vor <b>finanziellen Schäden</b> bei Beratungs- und Dienstleistungsfehlern.<br><br>• Absicherung bei fehlerhafter Beratung<br>• Schutz vor Vermögensschäden ohne Sachschaden<br>• Wichtig für Berater, Makler und Dienstleister<br>• Deckung von Schadenersatzansprüchen<br>• Abwehr unberechtigter Forderungen"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_d_o_versicherung",
               "name": "R+V-UnternehmensPolice D&O-Versicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice D&O-Versicherung</b><br><br>Managerhaftpflicht für <b>Geschäftsführer und Vorstände</b>.<br><br>• Schutz des Privatvermögens bei Pflichtverletzungen<br>• Absicherung bei Innenhaftung gegenüber der Gesellschaft<br>• Deckung bei Ansprüchen von Gesellschaftern und Dritten<br>• Übernahme von Verteidigungs- und Rechtskosten<br>• Schutz auch nach Ausscheiden aus dem Amt"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_rechtsschutzversicherung",
               "name": "R+V-UnternehmensPolice Rechtsschutzversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Rechtsschutzversicherung</b><br><br>Umfassender Rechtsschutz für <b>Ihr Unternehmen und Management</b>.<br><br>• Arbeitsrechtsschutz für Arbeitgeberprozesse<br>• Vertragsrechtsschutz im gewerblichen Bereich<br>• Strafrechtsschutz für Führungskräfte<br>• Steuer- und Sozialgerichtsschutz<br>• Freie Anwaltswahl und Kostenübernahme"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_elektronikversicherung",
               "name": "R+V-UnternehmensPolice Elektronikversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Elektronikversicherung</b><br><br>Allgefahrenschutz für Ihre <b>IT-Infrastruktur</b> und elektronischen Anlagen.<br><br>• Schutz gegen alle unvorhergesehenen Schäden<br>• Server, Computer und Netzwerktechnik abgedeckt<br>• Datenträger und Datenwiederherstellung inklusive<br>• Mehrkostendeckung bei Ausfall<br>• Auch mobile Geräte versicherbar"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_maschinenversicherung_fahrbar_und_stationaer",
               "name": "R+V-UnternehmensPolice Maschinenversicherung (fahrbar und stationär)",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Maschinenversicherung</b><br><br>Allgefahrenschutz für <b>Produktions- und Baumaschinen</b>.<br><br>• Stationäre Maschinen und Produktionsanlagen<br>• Fahrbare Arbeitsmaschinen und Baugeräte<br>• Schutz gegen Bruch, Bedienungsfehler und Sabotage<br>• Entschädigung zum Neuwert möglich<br>• Betriebsunterbrechung optional absicherbar"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_cyberrisk_versicherung",
               "name": "R+V-UnternehmensPolice CyberRisk Versicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice CyberRisk Versicherung</b><br><br>Umfassender Schutz vor <b>digitalen Bedrohungen</b> und deren Folgen.<br><br>• Absicherung bei Hackerangriffen und Ransomware<br>• Betriebsunterbrechung durch Cybervorfall<br>• Kosten für IT-Forensik und Datenwiederherstellung<br>• Haftpflichtansprüche bei Datenschutzverletzungen<br>• Krisenmanagement und PR-Maßnahmen"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_internet_und_wirtschaftskriminalitaetsversicherung",
               "name": "R+V-UnternehmensPolice Internet- und Wirtschaftskriminalitätsversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Wirtschaftskriminalitätsversicherung</b><br><br>Schutz vor <b>internen und externen Straftaten</b>.<br><br>• Absicherung gegen Betrug durch Mitarbeiter<br>• Schutz vor Fake-President-Fraud und CEO-Betrug<br>• Computerbetrug und Phishing-Schäden<br>• Unterschlagung und Veruntreuung<br>• Schnelle Schadensregulierung und Prävention"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_warenkreditversicherung",
               "name": "R+V-UnternehmensPolice Warenkreditversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Warenkreditversicherung</b><br><br>Absicherung Ihrer <b>Forderungen aus Warenlieferungen</b>.<br><br>• Schutz vor Zahlungsausfall Ihrer Kunden<br>• Bonitätsprüfung und Limitsystem<br>• Entschädigung bei Insolvenz des Abnehmers<br>• Politische Risiken im Export absicherbar<br>• Verbesserung Ihrer Bankfinanzierung"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_unternehmenspolice_transportversicherung",
               "name": "R+V-UnternehmensPolice Transportversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice Transportversicherung</b><br><br>Schutz für Ihre <b>Waren während des Transports</b>.<br><br>• Absicherung auf allen Transportwegen<br>• National und international gültig<br>• Alle Gefahren oder benannte Risiken wählbar<br>• Lagerrisiken einschließbar<br>• Individuelle Deckungskonzepte nach Bedarf"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_agrarpolice",
               "name": "R+V-AgrarPolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-AgrarPolice</b><br><br>Spezialisierter Versicherungsschutz für <b>Landwirtschaft und Agrarwirtschaft</b>.<br><br>• Betriebshaftpflicht für landwirtschaftliche Risiken<br>• Gebäude- und Inhaltsversicherung für Höfe<br>• Maschinenversicherung für Landtechnik<br>• Ernte- und Tierversicherungen<br>• Branchenspezifische Deckungskonzepte"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_medizinerpolice",
               "name": "R+V-MedizinerPolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-MedizinerPolice</b><br><br>Maßgeschneiderter Schutz für <b>Ärzte und medizinische Einrichtungen</b>.<br><br>• Berufshaftpflicht für ärztliche Behandlungsfehler<br>• Praxisinventar- und Elektronikversicherung<br>• Betriebsunterbrechungsschutz<br>• Cyberrisiken in der Praxis absichern<br>• Rechtsschutz für medizinische Streitigkeiten"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_energiepolice",
               "name": "R+V-EnergiePolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-EnergiePolice</b><br><br>Spezialversicherung für <b>Energieerzeuger und -versorger</b>.<br><br>• Absicherung von Solar- und Windkraftanlagen<br>• Maschinenbruch und Ertragsausfall<br>• Betreiberhaftpflicht inklusive<br>• Technische Risiken und Naturgefahren<br>• Individuelle Lösungen für jede Anlagengröße"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_bauschutzpolice",
               "name": "R+V-BauschutzPolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-BauschutzPolice</b><br><br>Umfassender Versicherungsschutz für <b>Bauprojekte und Bauunternehmen</b>.<br><br>• Bauleistungsversicherung für Bauvorhaben<br>• Bauherrenhaftpflicht inklusive<br>• Schutz für Baumaschinen und -geräte<br>• Absicherung bei Baufertigstellungsgarantien<br>• Flexible Anpassung an Projektgrößen"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_branchenpolice",
               "name": "R+V-BranchenPolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-BranchenPolice</b><br><br>Branchenspezifische Versicherungslösungen für <b>verschiedene Wirtschaftszweige</b>.<br><br>• Individuelle Deckungskonzepte je Branche<br>• Abgestimmte Risikobewertung<br>• Handwerk, Handel und Dienstleistungen<br>• Produzierende Industrie und Gewerbe<br>• Beratung durch Branchenspezialisten"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_flottenpolice",
               "name": "R+V-FlottenPolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-FlottenPolice</b><br><br>Effizientes Flottenmanagement und <b>Versicherungsschutz für Fuhrparks</b>.<br><br>• Kfz-Haftpflicht und Kasko für alle Fahrzeuge<br>• Einheitliche Konditionen für die gesamte Flotte<br>• Schadenfreiheitsrabatte auf Flottenbasis<br>• Zentrales Reporting und Schadenmanagement<br>• Flexible Erweiterung bei Flottenänderungen"
             },
             {
               "id": "l3_sachwerte_absichern_kravag_logistic_police",
               "name": "KRAVAG  Logistic-Police",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>KRAVAG Logistic-Police</b><br><br>Spezialversicherung für <b>Transport- und Logistikunternehmen</b>.<br><br>• Verkehrshaftungsversicherung für Frachtführer<br>• Speditionsversicherung nach ADSp<br>• Logistikversicherung für komplexe Lieferketten<br>• Lager- und Umschlagsrisiken abgedeckt<br>• Internationale Deckungskonzepte verfügbar"
             },
             {
               "id": "l3_sachwerte_absichern_r_v_investitionsgueterkreditversicherung",
               "name": "R+V Investitionsgüterkreditversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V Investitionsgüterkreditversicherung</b><br><br>Absicherung bei <b>Lieferung und Finanzierung</b> von Investitionsgütern.<br><br>• Schutz vor Zahlungsausfall bei Anlagenbau<br>• Absicherung von Langzeitprojekten<br>• Politische und wirtschaftliche Risiken<br>• Export von Maschinen und Anlagen<br>• Begleitung komplexer Finanzierungsstrukturen"
             }
           ]
         },
@@ -561,32 +650,38 @@
             {
               "id": "l3_vermoegenswerte_absichern_r_v_gewerbepolice",
               "name": "R+V-GewerbePolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-GewerbePolice</b><br><br>Modularer Vermögensschutz für <b>kleine und mittlere Gewerbebetriebe</b>.<br><br>• Betriebshaftpflicht für unternehmerische Risiken<br>• Inhalts- und Elektronikversicherung<br>• Erweiterbar um Cyber- und Rechtsschutz<br>• Warenkreditversicherung für Forderungsschutz<br>• Flexibel anpassbar an Ihre Geschäftstätigkeit"
             },
             {
               "id": "l3_vermoegenswerte_absichern_r_v_unternehmenspolice",
               "name": "R+V-UnternehmensPolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-UnternehmensPolice</b><br><br>Umfassender Vermögensschutz für <b>mittelständische Unternehmen</b>.<br><br>• Alle wesentlichen Unternehmensrisiken abgedeckt<br>• Haftpflicht, Sach- und Vermögensschäden<br>• D&O-Schutz für Management und Aufsichtsrat<br>• Cyber- und Kriminalitätsversicherung<br>• Individuelle Deckungssummen und Selbstbehalte"
             },
             {
               "id": "l3_vermoegenswerte_absichern_r_v_agrarpolice",
               "name": "R+V-AgrarPolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-AgrarPolice</b><br><br>Spezialisierter Vermögensschutz für <b>landwirtschaftliche Betriebe</b>.<br><br>• Absicherung landwirtschaftlicher Erträge<br>• Schutz für Tierbestände und Ernten<br>• Haftpflicht für Agrarbetriebe<br>• Maschinenversicherung für Landtechnik<br>• Gebäudeschutz für Höfe und Stallungen"
             },
             {
               "id": "l3_vermoegenswerte_absichern_dz_privatbank_termfix_versicherung",
               "name": "DZ PRIVATBANK TermFix Versicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>DZ PRIVATBANK TermFix Versicherung</b><br><br>Absicherung Ihrer <b>Vermögensnachfolge</b> bei vorzeitigem Ableben.<br><br>• Schutz von Finanzierungen im Todesfall<br>• Sicherung des Familienvermögens<br>• Flexible Versicherungssummen wählbar<br>• Ergänzung zur Vermögensplanung<br>• Steueroptimierte Gestaltungsmöglichkeiten"
             },
             {
               "id": "l3_vermoegenswerte_absichern_r_v_medizinerpolice",
               "name": "R+V-MedizinerPolice",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-MedizinerPolice</b><br><br>Vermögensschutz speziell für <b>Ärzte und Heilberufe</b>.<br><br>• Berufshaftpflicht mit hohen Deckungssummen<br>• Schutz des Praxisinventars und der Patientendaten<br>• Absicherung bei Praxisausfall<br>• Vermögensschaden-Haftpflicht inklusive<br>• Rechtsschutz für medizinrechtliche Fragen"
             },
             {
               "id": "l3_vermoegenswerte_absichern_r_v_vertrauensschadenversicherung",
               "name": "R+V-Vertrauensschadenversicherung",
-              "finanzhaus": "absicherung"
+              "finanzhaus": "absicherung",
+              "tooltip": "<b>R+V-Vertrauensschadenversicherung</b><br><br>Schutz des Unternehmensvermögens vor <b>Schäden durch Vertrauenspersonen</b>.<br><br>• Absicherung gegen Unterschlagung und Betrug<br>• Schutz bei Veruntreuung durch Mitarbeiter<br>• Externe Vertrauenspersonen einschließbar<br>• Vermögensschäden durch Dritte abgedeckt<br>• Schnelle Schadensabwicklung und Prävention"
             }
           ]
         }
@@ -606,32 +701,38 @@
             {
               "id": "l3_mitarbeiter_binden_r_v_risiko_unfallpolice_gruppe",
               "name": "R+V-Risiko-UnfallPolice Gruppe",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>R+V-Risiko-UnfallPolice Gruppe</b><br><br>Kollektive Unfallversicherung als <b>attraktiver Mitarbeiterbenefit</b>.<br><br>• Absicherung der gesamten Belegschaft<br>• Schutz bei Unfällen im Beruf und in der Freizeit<br>• Invaliditätsleistungen und Todesfallschutz<br>• Günstige Gruppenkonditionen<br>• Wertschätzung und Fürsorge für Ihre Mitarbeiter"
             },
             {
               "id": "l3_mitarbeiter_binden_lebensarbeitszeitkonten_altersteilzeitkonten",
               "name": "Lebensarbeitszeitkonten/ Altersteilzeitkonten",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>Lebensarbeitszeitkonten / Altersteilzeitkonten</b><br><br>Flexible Arbeitszeitmodelle für <b>Work-Life-Balance</b> und Vorruhestand.<br><br>• Ansparung von Zeitguthaben und Entgelt<br>• Finanzierung von Auszeiten und Sabbaticals<br>• Gleitender Übergang in den Ruhestand<br>• Insolvenzschutz der angesparten Werte<br>• Attraktives Instrument zur Mitarbeiterbindung"
             },
             {
               "id": "l3_mitarbeiter_binden_gesundheitskonzept_profil",
               "name": "Gesundheitskonzept PROFIL",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>Gesundheitskonzept PROFIL</b><br><br>Betriebliches Gesundheitsmanagement für <b>leistungsfähige Mitarbeiter</b>.<br><br>• Gesundheitsvorsorge und Präventionsmaßnahmen<br>• Ergonomie-Beratung am Arbeitsplatz<br>• Stressmanagement und psychische Gesundheit<br>• Reduktion von Krankenständen<br>• Steigerung der Arbeitgeberattraktivität"
             },
             {
               "id": "l3_mitarbeiter_binden_gesundheitskonzept_agil",
               "name": "Gesundheitskonzept AGIL",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>Gesundheitskonzept AGIL</b><br><br>Dynamisches Gesundheitsprogramm für <b>agile Unternehmen</b>.<br><br>• Flexible Gesundheitsleistungen nach Mitarbeiterwahl<br>• Fitness- und Sportangebote<br>• Mentale Gesundheit und Resilienz<br>• Digitale Gesundheitsplattform<br>• Messbare Erfolge durch Gesundheitsreporting"
             },
             {
               "id": "l3_mitarbeiter_binden_bav_loesungen_fuer_den_mitarbeiter",
               "name": "baV-Lösungen für den Mitarbeiter",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>baV-Lösungen für den Mitarbeiter</b><br><br>Betriebliche Altersvorsorge als <b>wertvoller Zusatzbenefit</b>.<br><br>• Entgeltumwandlung mit Steuer- und Sozialabgabenersparnis<br>• Arbeitgeberzuschuss zur Altersvorsorge<br>• Verschiedene Durchführungswege wählbar<br>• Erhöhung der Mitarbeiterbindung<br>• Einfache Verwaltung durch den Arbeitgeber"
             },
             {
               "id": "l3_mitarbeiter_binden_givve_karte",
               "name": "givve Karte",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>givve Karte</b><br><br>Steuerfreie Sachbezüge als <b>flexible Mitarbeiterprämie</b>.<br><br>• Monatlich bis zu 50 Euro steuerfrei<br>• Einsatz bei zahlreichen Akzeptanzstellen<br>• Einfache Aufladung und Verwaltung<br>• Alternative zur klassischen Gehaltserhöhung<br>• Motivationssteigerung und Wertschätzung"
             }
           ]
         },
@@ -643,67 +744,80 @@
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_r_v_firmenrente",
               "name": "R+V-Firmenrente",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>R+V-Firmenrente</b><br><br>Die moderne betriebliche Altersvorsorge für <b>Arbeitgeber und Belegschaft</b>.<br><br>• Einfache Einrichtung und Administration<br>• Attraktive Renditeaussichten für Mitarbeiter<br>• Arbeitgeberzuschuss steuerlich absetzbar<br>• Flexible Beitragsgestaltung<br>• Portabilität bei Arbeitgeberwechsel"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_bav_rahmenvertrag",
               "name": "bAV-Rahmenvertrag",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>bAV-Rahmenvertrag</b><br><br>Einheitliche Versorgungsregelung für <b>alle Mitarbeiter</b> Ihres Unternehmens.<br><br>• Standardisierte Versorgungsbedingungen<br>• Geringerer Verwaltungsaufwand<br>• Günstige Gruppenkonditionen<br>• Klare Kommunikation an die Belegschaft<br>• Rechtssichere Ausgestaltung"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_r_v_direktversicherung",
               "name": "R+V-Direktversicherung",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>R+V-Direktversicherung</b><br><br>Der klassische Durchführungsweg für <b>unkomplizierte betriebliche Vorsorge</b>.<br><br>• Arbeitgeber schließt Versicherung für Mitarbeiter ab<br>• Steuer- und sozialabgabenfreie Entgeltumwandlung<br>• Garantierte Mindestleistungen<br>• Unverfallbarkeit ab dem ersten Beitrag<br>• Einfache Portabilität bei Jobwechsel"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_r_v_pensionskasse",
               "name": "R+V-Pensionskasse",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>R+V-Pensionskasse</b><br><br>Betriebliche Altersvorsorge über <b>eigenständige Versorgungseinrichtung</b>.<br><br>• Bilanzneutrale Auslagerung der Versorgung<br>• Steuervorteile für Arbeitgeber und Arbeitnehmer<br>• Professionelles Vermögensmanagement<br>• Lebenslange Rentenzahlung garantiert<br>• Kombination mit Arbeitgeberzuschuss"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_r_v_pensionsfonds",
               "name": "R+V-Pensionsfonds",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>R+V-Pensionsfonds</b><br><br>Kapitalmarktorientierte Altersvorsorge mit <b>höheren Renditechancen</b>.<br><br>• Höhere Aktienquote für Vermögensaufbau<br>• Flexiblere Anlagevorschriften<br>• Auslagerung von Pensionsverpflichtungen möglich<br>• Kombination aus Garantie und Partizipation<br>• Attraktiv für jüngere Mitarbeiter"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_unterstuetzungskasse_mit_r_v_rueckdeckungsversicherung",
               "name": "Unterstützungskasse mit R+V-Rückdeckungsversicherung",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>Unterstützungskasse mit R+V-Rückdeckungsversicherung</b><br><br>Flexible Versorgung für <b>Führungskräfte und Gesellschafter</b>.<br><br>• Keine gesetzlichen Beitragsgrenzen<br>• Dotierung als Betriebsausgabe abzugsfähig<br>• Rückdeckungsversicherung zur Absicherung<br>• Bilanzneutrale Gestaltung möglich<br>• Individuelle Leistungszusagen"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_pensionszusage_mit_r_v_rueckdeckungsversicherung",
               "name": "Pensionszusage mit R+V-Rückdeckungsversicherung",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>Pensionszusage mit R+V-Rückdeckungsversicherung</b><br><br>Direkte Versorgungszusage für <b>Geschäftsführer und leitende Angestellte</b>.<br><br>• Hohe Versorgungsleistungen ohne Beitragsgrenzen<br>• Rückdeckungsversicherung zur Finanzierung<br>• Bildung von Pensionsrückstellungen<br>• Steuerliche Vorteile für das Unternehmen<br>• Absicherung der Hinterbliebenen"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_ui_dynacom_classic_fuer_mitarbeiter",
               "name": "UI Dynacom Classic für Mitarbeiter",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>UI Dynacom Classic für Mitarbeiter</b><br><br>Fondsgebundene Altersvorsorge mit <b>Kapitalmarktchancen</b>.<br><br>• Investition in professionell gemanagte Fonds<br>• Flexible Beitragsgestaltung<br>• Kombinierbar mit Garantiebausteinen<br>• Transparentes Reporting für Mitarbeiter<br>• Attraktive Renditeaussichten"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_bavl",
               "name": "bAVL",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>bAVL</b><br><br>Die betriebliche Altersvorsorge <b>light</b> für einfache Umsetzung.<br><br>• Standardisiertes Versorgungswerk<br>• Geringe Implementierungskosten<br>• Schnelle Einführung im Unternehmen<br>• Rechtssichere Dokumentation<br>• Ideal für kleine und mittlere Unternehmen"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_bav_branchenloesungen_apothekenrente_metallrente_reiserente_klinikrente",
               "name": "bAV Branchenlösungen  - Apothekenrente, MetallRente, ReiseRente, KlinikRente",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>bAV Branchenlösungen</b><br><br>Tarifvertraglich vereinbarte Altersvorsorge für <b>spezifische Branchen</b>.<br><br>• Apothekenrente für Apothekenmitarbeiter<br>• MetallRente für die Metall- und Elektroindustrie<br>• ReiseRente für die Tourismusbranche<br>• KlinikRente für das Gesundheitswesen<br>• Erfüllung tarifvertraglicher Pflichten"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_ui_ggf_versorgung_inkl_bav_indexinvest",
               "name": "UI GGF-Versorgung, inkl. bAV-Indexinvest",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>UI GGF-Versorgung inkl. bAV-Indexinvest</b><br><br>Maßgeschneiderte Altersvorsorge für <b>Gesellschafter-Geschäftsführer</b>.<br><br>• Steueroptimierte Versorgungsgestaltung<br>• bAV-Indexinvest mit Kapitalmarktpartizipation<br>• Berücksichtigung der GGF-spezifischen Anforderungen<br>• Flexible Beitragsgestaltung<br>• Kombination aus Sicherheit und Rendite"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_ui_absicherung_auslagerung_von_pensionsverpflichtungen",
               "name": "UI Absicherung / Auslagerung von Pensionsverpflichtungen",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>UI Absicherung / Auslagerung von Pensionsverpflichtungen</b><br><br>Übertragung bestehender Pensionszusagen zur <b>Bilanzentlastung</b>.<br><br>• Auslagerung auf Pensionsfonds oder CTA<br>• Reduzierung von Pensionsrückstellungen<br>• Sicherung der Versorgungsansprüche<br>• Verbesserung der Bilanzkennzahlen<br>• Professionelles Asset Management"
             },
             {
               "id": "l3_betriebliche_altersvorsorge_anbieten_lebensarbeitszeitkonten_altersteilzeitkonten",
               "name": "Lebensarbeitszeitkonten/ Altersteilzeitkonten",
-              "finanzhaus": "vorsorge"
+              "finanzhaus": "vorsorge",
+              "tooltip": "<b>Lebensarbeitszeitkonten / Altersteilzeitkonten</b><br><br>Arbeitszeitmodelle für <b>flexible Lebensgestaltung</b> Ihrer Mitarbeiter.<br><br>• Ansparung von Zeit und Entgelt<br>• Freistellung vor dem Rentenalter<br>• Finanzierung von Altersteilzeit<br>• Insolvenzgesichertes Wertguthaben<br>• Steigerung der Arbeitgeberattraktivität"
             }
           ]
         }
@@ -723,52 +837,62 @@
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_depot_b",
               "name": "Depot B",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>Depot B</b><br><br>Das Bankdepot für <b>professionelle Wertpapierverwahrung</b>.<br><br>• Sichere Verwahrung aller Wertpapierarten<br>• Übersichtliche Depotauszüge und Reporting<br>• Dividenden- und Zinsgutschriften<br>• Anbindung an alle deutschen Börsenplätze<br>• Flexible Order-Möglichkeiten"
             },
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_union_depot",
               "name": "Union Depot",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>Union Depot</b><br><br>Das Fondsdepot für <b>Investmentfonds der Union Investment</b>.<br><br>• Zugang zum gesamten Union-Fondsuniversum<br>• Fondssparpläne ab kleinen Beträgen<br>• Übersichtliche Performance-Darstellung<br>• Automatische Wiederanlage von Ausschüttungen<br>• Online-Zugang und App-Verwaltung"
             },
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_fonds_gemaess_hausmeinung",
               "name": "Fonds (gemäß Hausmeinung)",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>Fonds (gemäß Hausmeinung)</b><br><br>Ausgewählte Investmentfonds basierend auf <b>genossenschaftlicher Anlagestrategie</b>.<br><br>• Fondsselektion durch Experten der VR-Banken<br>• Diversifikation über Aktien, Renten und Mischfonds<br>• Regelmäßige Überprüfung und Anpassung<br>• Berücksichtigung von Risiko und Rendite<br>• Nachhaltigkeitsaspekte integriert"
             },
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_langfristige_betriebliche_vermoegensanlage_fonds_gemaess_hausmeinung",
               "name": "Langfristige betriebliche Vermögensanlage  - Fonds (gemäß Hausmeinung)",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>Langfristige betriebliche Vermögensanlage</b><br><br>Strategischer Vermögensaufbau für <b>betriebliche Rücklagen</b>.<br><br>• Langfristige Anlagehorizonte ab 5 Jahren<br>• Mischfonds für stabiles Wachstum<br>• Aktienfonds für höhere Renditechancen<br>• Regelmäßige Strategieüberprüfung<br>• Abstimmung auf Unternehmensplanung"
             },
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_renten_aktien_ihs_strukturierte_produkte_zertifikate",
               "name": "Renten/Aktien/IHS/Strukturierte Produkte (Zertifikate)",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>Renten/Aktien/IHS/Strukturierte Produkte</b><br><br>Direktanlagen und strukturierte Produkte für <b>individuelle Anlagestrategien</b>.<br><br>• Anleihen erstklassiger Emittenten<br>• Aktien und Aktienkörbe<br>• Inhaberschuldverschreibungen (IHS)<br>• Zertifikate mit verschiedenen Auszahlungsprofilen<br>• Maßgeschneiderte Risiko-Rendite-Profile"
             },
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_dz_bank_m_a_einwerbung_von_wachstums_und_eigenkapital_strategischen_partnern",
               "name": "DZ BANK M&A Einwerbung von Wachstums- und Eigenkapital, strategischen Partnern",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>DZ BANK M&A Einwerbung von Wachstums- und Eigenkapital</b><br><br>Professionelle Kapitalbeschaffung durch <b>strategische Investoren</b>.<br><br>• Identifikation passender Kapitalgeber<br>• Strukturierung der Beteiligungsform<br>• Verhandlungsführung mit Investoren<br>• Due-Diligence-Begleitung<br>• Langfristige strategische Partnerschaften"
             },
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_tagesgeld_termingeld",
               "name": "Tagesgeld/Termingeld",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>Tagesgeld/Termingeld</b><br><br>Sichere Geldanlage für <b>betriebliche Rücklagen</b>.<br><br>• Tagesgeld für jederzeitige Verfügbarkeit<br>• Termingeld für planbare Laufzeiten<br>• Attraktive Konditionen für Firmenkunden<br>• Sicherheit durch Einlagensicherung<br>• Flexible Anlagebeträge ohne Mindestgrenze"
             },
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_dz_privatbank_vermoegensverwaltung",
               "name": "DZ PRIVATBANK Vermögensverwaltung",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>DZ PRIVATBANK Vermögensverwaltung</b><br><br>Professionelles Portfoliomanagement durch <b>erfahrene Vermögensverwalter</b>.<br><br>• Individuelle Anlagestrategie nach Ihren Zielen<br>• Aktives Management durch Experten<br>• Laufende Überwachung und Anpassung<br>• Transparentes Reporting<br>• Zugang zu exklusiven Anlagemöglichkeiten"
             },
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_dz_privatbank_beratungsdepot",
               "name": "DZ PRIVATBANK Beratungsdepot",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>DZ PRIVATBANK Beratungsdepot</b><br><br>Exklusive Anlageberatung für <b>vermögende Firmenkunden</b>.<br><br>• Persönlicher Ansprechpartner für Ihr Depot<br>• Individuelle Anlageempfehlungen<br>• Zugang zu Research und Analysen<br>• Breites Produktuniversum<br>• Regelmäßige Strategiegespräche"
             },
             {
               "id": "l3_vermoegen_ek_aufbauen_und_anlegen_firmenkundeninvest_vermoegensverwaltungsloesung",
               "name": "FirmenkundenInvest Vermögensverwaltungslösung",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>FirmenkundenInvest Vermögensverwaltung</b><br><br>Professionelle Vermögensverwaltung speziell für <b>Firmenkunden</b>.<br><br>• Anlagestrategie abgestimmt auf Unternehmensziele<br>• Verschiedene Risikoklassen wählbar<br>• Kontinuierliche Portfoliooptimierung<br>• Regelmäßiges Reporting für Geschäftsführung<br>• Berücksichtigung bilanzieller Anforderungen"
             }
           ]
         },
@@ -780,12 +904,14 @@
             {
               "id": "l3_vermoegen_ek_verwenden_union_depot_zielfondsinvestment_mit_auszahlplan",
               "name": "Union Depot - Zielfondsinvestment mit Auszahlplan",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>Union Depot - Zielfondsinvestment mit Auszahlplan</b><br><br>Strukturierte Vermögensentnahme durch <b>regelmäßige Auszahlungen</b>.<br><br>• Planbare monatliche oder quartalsweise Entnahmen<br>• Erhalt des Kapitalstocks bei moderaten Auszahlungen<br>• Flexible Anpassung der Auszahlungshöhe<br>• Professionelles Fondsmanagement im Hintergrund<br>• Ideal für Rücklagenverwendung und Ruhestandsplanung"
             },
             {
               "id": "l3_vermoegen_ek_verwenden_dz_bank_m_a_beratung_bei_unternehmenszukaeufen",
               "name": "DZ BANK M&A Beratung bei Unternehmenszukäufen",
-              "finanzhaus": "vermoegen"
+              "finanzhaus": "vermoegen",
+              "tooltip": "<b>DZ BANK M&A Beratung bei Unternehmenszukäufen</b><br><br>Strategische Begleitung bei <b>Akquisitionen und Beteiligungen</b>.<br><br>• Identifikation geeigneter Übernahmeziele<br>• Unternehmensbewertung und Due Diligence<br>• Verhandlungsführung und Vertragsgestaltung<br>• Strukturierung der Kaufpreisfinanzierung<br>• Post-Merger-Integration-Unterstützung"
             }
           ]
         }
@@ -805,42 +931,50 @@
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_auslandszahlungsverkehr",
               "name": "Auslandszahlungsverkehr",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Auslandszahlungsverkehr</b><br><br>Sichere und effiziente <b>internationale Zahlungsabwicklung</b>.<br><br>• SWIFT-Überweisungen weltweit<br>• Zahlungen in allen gängigen Währungen<br>• Schnelle Ausführung durch Korrespondenzbankennetz<br>• Transparente Gebühren und Kurse<br>• Beratung zu Zahlungswegen und -konditionen"
             },
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_firmenkreditkarte",
               "name": "Firmenkreditkarte",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Firmenkreditkarte</b><br><br>Internationale Zahlungsmittel für <b>weltweite Geschäftstätigkeit</b>.<br><br>• Akzeptanz in über 200 Ländern<br>• Zahlung in Landeswährung ohne Bargeld<br>• Umfangreiche Reiseversicherungen inklusive<br>• Zentrale Abrechnung und Kostenkontrolle<br>• Attraktive Wechselkurse"
             },
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_internationales_cash_management_konto_im_ausland_fuehren",
               "name": "Internationales Cash Management - Konto im Ausland führen",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Internationales Cash Management</b><br><br>Kontoführung und Liquiditätssteuerung in <b>ausländischen Märkten</b>.<br><br>• Konten bei Partnerbanken im Ausland<br>• Lokale Zahlungsverkehrsabwicklung<br>• Zentrales Reporting aller Auslandskonten<br>• Optimierung der Fremdwährungsliquidität<br>• Beratung zu länderspezifischen Anforderungen"
             },
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_bargeldver_und_entsorgung_in_oesterreich_schweiz",
               "name": "Bargeldver- und entsorgung in Österreich & Schweiz",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Bargeldver- und -entsorgung in Österreich & Schweiz</b><br><br>Professionelle Bargeldlogistik für <b>grenznahe Geschäftsstandorte</b>.<br><br>• Wertgesicherter Transport in CHF und EUR<br>• Versorgung von Filialen und Niederlassungen<br>• Entsorgung und Zählung von Tageseinnahmen<br>• Flexible Abholrhythmen<br>• Grenzüberschreitende Abwicklung aus einer Hand"
             },
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_fremdwaehrungskonto",
               "name": "Fremdwährungskonto",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Fremdwährungskonto</b><br><br>Kontoführung in <b>ausländischer Währung</b> für internationales Geschäft.<br><br>• Konten in USD, GBP, CHF und weiteren Währungen<br>• Vermeidung von Währungsumrechnungen<br>• Empfang und Versand in Originalwährung<br>• Nutzung günstiger Wechselkurse<br>• Natural Hedging bei regelmäßigen Fremdwährungsumsätzen"
             },
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_dokumentaeres_auslandsgeschaeft_akkreditiv_garantie_inkasso",
               "name": "Dokumentäres Auslandsgeschäft  -Akkreditiv, Garantie, Inkasso",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Dokumentäres Auslandsgeschäft</b><br><br>Sichere Abwicklung von <b>Import- und Exportgeschäften</b>.<br><br>• Dokumentenakkreditive (Letter of Credit)<br>• Stand-by-Akkreditive und Bankgarantien<br>• Dokumenteninkasso gegen Zahlung oder Akzept<br>• Absicherung von Lieferanten- und Abnehmerrisiken<br>• Beratung zu länderspezifischen Usancen"
             },
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_warentransportversicherung",
               "name": "Warentransportversicherung",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Warentransportversicherung</b><br><br>Absicherung Ihrer Waren auf <b>internationalen Transportwegen</b>.<br><br>• Schutz bei See-, Luft- und Landtransport<br>• Allgefahrendeckung oder benannte Risiken<br>• Abdeckung von Umschlag und Zwischenlagerung<br>• Anpassung an Incoterms-Regelungen<br>• Schnelle Schadensregulierung weltweit"
             },
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_abwickeln_lagerversicherung",
               "name": "Lagerversicherung",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Lagerversicherung</b><br><br>Schutz für Ihre Waren in <b>ausländischen Lagern</b>.<br><br>• Absicherung bei Diebstahl und Beschädigung<br>• Deckung für eigene und fremde Lager<br>• Feuer-, Wasser- und Naturgefahren<br>• Flexible Versicherungssummen<br>• Internationale Deckungskonzepte"
             }
           ]
         },
@@ -852,17 +986,20 @@
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_finanzieren_kontokorrentkredit_in_fremdwaehrung",
               "name": "Kontokorrentkredit in Fremdwährung",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Kontokorrentkredit in Fremdwährung</b><br><br>Flexible Kreditlinie in <b>internationaler Währung</b> für Ihr Auslandsgeschäft.<br><br>• Verfügbarkeit in allen gängigen Handelswährungen<br>• Finanzierung von Import- und Exportgeschäften<br>• Matching mit Fremdwährungserlösen<br>• Flexible Inanspruchnahme nach Bedarf<br>• Reduzierung von Währungsrisiken"
             },
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_finanzieren_darlehen_in_fremdwaehrung",
               "name": "Darlehen in Fremdwährung",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Darlehen in Fremdwährung</b><br><br>Langfristige Finanzierung in <b>ausländischer Währung</b>.<br><br>• Finanzierung internationaler Investitionen<br>• Nutzung von Zinsvorteilen in Fremdwährungen<br>• Abstimmung auf Währungseinnahmen<br>• Absicherungsmöglichkeiten verfügbar<br>• Flexible Laufzeiten und Tilgungsstrukturen"
             },
             {
               "id": "l3_warengeschaefte_und_dienstleistungen_finanzieren_aussenhandels_und_exportfinanzierung",
               "name": "Außenhandels- und Exportfinanzierung",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Außenhandels- und Exportfinanzierung</b><br><br>Maßgeschneiderte Finanzierungslösungen für <b>internationalen Handel</b>.<br><br>• Bestellerkredite für ausländische Abnehmer<br>• Lieferantenkredite und Forfaitierung<br>• Exportkreditversicherung (Euler Hermes)<br>• Akkreditivfinanzierung<br>• Beratung zu Finanzierungsstrukturen"
             }
           ]
         },
@@ -874,27 +1011,32 @@
             {
               "id": "l3_waehrungsschwankungen_absichern_devisenkassageschaeft",
               "name": "Devisenkassageschäft",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Devisenkassageschäft</b><br><br>Sofortiger Währungsumtausch zu <b>aktuellen Marktkursen</b>.<br><br>• Umtausch aller gängigen Währungen<br>• Abwicklung innerhalb von zwei Bankarbeitstagen<br>• Attraktive Kurse für Firmenkunden<br>• Online-Kursinformation und -abschluss<br>• Beratung zu optimalen Umtauschzeitpunkten"
             },
             {
               "id": "l3_waehrungsschwankungen_absichern_devisentermingeschaefte_kurssicherung",
               "name": "Devisentermingeschäfte (Kurssicherung)",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Devisentermingeschäfte</b><br><br>Fixierung von Wechselkursen für <b>zukünftige Zahlungen</b>.<br><br>• Planungssicherheit durch feste Kurse<br>• Absicherung von Import- und Exporterlösen<br>• Laufzeiten von Tagen bis zu mehreren Jahren<br>• Schutz vor ungünstigen Kursentwicklungen<br>• Kalkulierbare Margen im Auslandsgeschäft"
             },
             {
               "id": "l3_waehrungsschwankungen_absichern_devisenoption_kurssicherung",
               "name": "Devisenoption (Kurssicherung)",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Devisenoption</b><br><br>Flexible Kurssicherung mit <b>Partizipation an günstigen Entwicklungen</b>.<br><br>• Recht, aber nicht Pflicht zum Umtausch<br>• Absicherung gegen ungünstige Kurse<br>• Teilnahme an positiven Kursbewegungen<br>• Verschiedene Optionstypen verfügbar<br>• Individuelle Strike-Preise wählbar"
             },
             {
               "id": "l3_waehrungsschwankungen_absichern_partizipationsstrategien",
               "name": "Partizipationsstrategien",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Partizipationsstrategien</b><br><br>Kombinierte Absicherungsstrukturen für <b>optimiertes Währungsmanagement</b>.<br><br>• Kombination von Termingeschäften und Optionen<br>• Teilweise Absicherung mit Upside-Potenzial<br>• Kostenneutrale Strukturen möglich<br>• Individuelle Risiko-Ertrags-Profile<br>• Professionelle Strukturierung durch Experten"
             },
             {
               "id": "l3_waehrungsschwankungen_absichern_zinsderivate",
               "name": "Zinsderivate",
-              "finanzhaus": "ausland"
+              "finanzhaus": "ausland",
+              "tooltip": "<b>Zinsderivate</b><br><br>Absicherung gegen <b>Zinsschwankungen in Fremdwährungen</b>.<br><br>• Cross-Currency-Swaps für kombinierte Absicherung<br>• Zinsswaps in Fremdwährungen<br>• Optimierung von Finanzierungskosten<br>• Professionelles Zinsmanagement international<br>• Beratung zu Marktentwicklungen"
             }
           ]
         }
@@ -914,22 +1056,26 @@
             {
               "id": "l3_existenzgruendung_finanzieren_kautionsversicherung_fuer_existenzgruender",
               "name": "Kautionsversicherung für Existenzgründer",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>Kautionsversicherung für Existenzgründer</b><br><br>Bürgschaften ohne Liquiditätsbindung für <b>junge Unternehmen</b>.<br><br>• Mietkautionen für Geschäftsräume<br>• Anzahlungsbürgschaften für erste Aufträge<br>• Keine Barkaution erforderlich<br>• Schonung des Startkapitals<br>• Schnelle Ausstellung für Gründer"
             },
             {
               "id": "l3_existenzgruendung_finanzieren_foerderdarlehen_existenzgruendung",
               "name": "Förderdarlehen Existenzgründung",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>Förderdarlehen Existenzgründung</b><br><br>Zinsgünstige Kredite aus <b>öffentlichen Förderprogrammen</b> für Gründer.<br><br>• KfW-StartGeld und ERP-Gründerkredit<br>• Landesförderprogramme und Bürgschaftsbanken<br>• Tilgungsfreie Anlaufjahre<br>• Günstige Zinssätze unter Marktniveau<br>• Beratung zur optimalen Fördermittelkombination"
             },
             {
               "id": "l3_existenzgruendung_finanzieren_darlehen",
               "name": "Darlehen",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>Darlehen</b><br><br>Klassische Finanzierung für <b>Gründungsinvestitionen</b>.<br><br>• Anschaffung von Betriebsmitteln und Ausstattung<br>• Finanzierung von Übernahmepreisen<br>• Flexible Laufzeiten und Tilgungsmodelle<br>• Kombinierbar mit Fördermitteln<br>• Persönliche Beratung für Gründer"
             },
             {
               "id": "l3_existenzgruendung_finanzieren_dz_privatbank_luxcredit",
               "name": "DZ PRIVATBANK Luxcredit",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>DZ PRIVATBANK Luxcredit</b><br><br>Depotbesicherter Kredit zur <b>Finanzierung der Gründung</b>.<br><br>• Nutzung vorhandener Wertpapierbestände<br>• Keine Veräußerung der Kapitalanlage nötig<br>• Günstige Konditionen durch Besicherung<br>• Schnelle Verfügbarkeit für Gründungskosten<br>• Erhalt der Vermögensstruktur"
             }
           ]
         },
@@ -941,57 +1087,68 @@
             {
               "id": "l3_unternehmensnachfolge_regeln_vr_nachfolgeberatung_unternehmensbewertung",
               "name": "VR NachfolgeBeratung Unternehmensbewertung",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>VR NachfolgeBeratung Unternehmensbewertung</b><br><br>Professionelle Ermittlung des <b>Unternehmenswertes</b> für die Nachfolge.<br><br>• Anerkannte Bewertungsverfahren (DCF, Multiplikatoren)<br>• Berücksichtigung von Branchenspezifika<br>• Grundlage für Kaufpreisverhandlungen<br>• Steuerliche Bewertungsanforderungen<br>• Gutachterliche Dokumentation"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_vr_nachfolgeberatung_m_a_beratung",
               "name": "VR NachfolgeBeratung M&A-Beratung",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>VR NachfolgeBeratung M&A-Beratung</b><br><br>Umfassende Begleitung beim <b>Unternehmensverkauf</b>.<br><br>• Suche nach geeigneten Nachfolgern oder Käufern<br>• Erstellung von Verkaufsunterlagen<br>• Koordination des Verkaufsprozesses<br>• Verhandlungsführung und Vertragsgestaltung<br>• Diskretion und Vertraulichkeit"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_dz_bank_m_a_beratung",
               "name": "DZ BANK M&A-Beratung",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>DZ BANK M&A-Beratung</b><br><br>Kapitalmarktnahe Transaktionsberatung für <b>größere Nachfolgelösungen</b>.<br><br>• Betreuung komplexer Transaktionsstrukturen<br>• Zugang zu nationalen und internationalen Investoren<br>• Due-Diligence-Koordination<br>• Strukturierung von Management-Buy-outs<br>• Erfahrung aus zahlreichen Transaktionen"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_dz_privatbank_vermoegensplanung_und_strukturierung",
               "name": "DZ PRIVATBANK Vermögensplanung und -strukturierung",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>DZ PRIVATBANK Vermögensplanung und -strukturierung</b><br><br>Ganzheitliche Planung des <b>Privatvermögens nach der Nachfolge</b>.<br><br>• Strukturierung des Verkaufserlöses<br>• Steueroptimierte Vermögensanlage<br>• Absicherung des Lebensstandards<br>• Generationenübergreifende Planung<br>• Abstimmung mit Steuerberatern und Anwälten"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_dz_privatbank_stiftungsmanagement_stiftungsgruendung",
               "name": "DZ PRIVATBANK Stiftungsmanagement / Stiftungsgründung",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>DZ PRIVATBANK Stiftungsmanagement</b><br><br>Gründung und Verwaltung von <b>Stiftungen im Nachfolgekontext</b>.<br><br>• Familienstiftungen zur Vermögenssicherung<br>• Gemeinnützige Stiftungen für gesellschaftliches Engagement<br>• Professionelle Stiftungsverwaltung<br>• Steuerliche Optimierung durch Stiftungsstrukturen<br>• Beratung zu Stiftungsrecht und -satzung"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_vrep_nachfolgebegleitung",
               "name": "VREP Nachfolgebegleitung",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>VREP Nachfolgebegleitung</b><br><br>Aktive Unterstützung im <b>Nachfolgeprozess</b> durch erfahrene Partner.<br><br>• Begleitung der Übergabephase<br>• Coaching von Übergebern und Nachfolgern<br>• Moderation bei Interessenkonflikten<br>• Unterstützung bei strategischen Entscheidungen<br>• Netzwerk zu Spezialisten und Beratern"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_vrep_gesellschafterwechsel",
               "name": "VREP Gesellschafterwechsel",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>VREP Gesellschafterwechsel</b><br><br>Professionelle Begleitung beim <b>Ein- und Austritt von Gesellschaftern</b>.<br><br>• Bewertung von Gesellschaftsanteilen<br>• Strukturierung der Anteilsübertragung<br>• Finanzierung des Gesellschafterwechsels<br>• Berücksichtigung von Gesellschafterverträgen<br>• Steueroptimierte Gestaltung"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_vrep_unternehmensnachfolge",
               "name": "VREP Unternehmensnachfolge",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>VREP Unternehmensnachfolge</b><br><br>Ganzheitliche Lösung für die <b>erfolgreiche Unternehmensübergabe</b>.<br><br>• Strategische Nachfolgeplanung<br>• Identifikation geeigneter Nachfolger<br>• Finanzierung der Übernahme<br>• Beteiligung als Brückenfinanzierung möglich<br>• Langfristige Partnerschaft auf Augenhöhe"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_ggf_versorgung_inkl_bav_indexinvest",
               "name": "GGF-Versorgung, inkl. bAV-Indexinvest",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>GGF-Versorgung inkl. bAV-Indexinvest</b><br><br>Altersversorgung für <b>Gesellschafter-Geschäftsführer</b> im Nachfolgekontext.<br><br>• Steueroptimierte Versorgungszusagen<br>• bAV-Indexinvest mit Renditechancen<br>• Berücksichtigung bei der Unternehmensbewertung<br>• Absicherung der Altersversorgung vor Verkauf<br>• Flexible Gestaltungsmöglichkeiten"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_absicherung_auslagerung_von_pensionsverpflichtungen",
               "name": "Absicherung / Auslagerung von Pensionsverpflichtungen",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>Absicherung / Auslagerung von Pensionsverpflichtungen</b><br><br>Übertragung bestehender Zusagen für <b>saubere Unternehmensübergabe</b>.<br><br>• Auslagerung auf Pensionsfonds oder CTA<br>• Entlastung der Unternehmensbilanz<br>• Sicherung der Versorgungsansprüche<br>• Vereinfachung der Kaufpreisfindung<br>• Professionelles Asset Management"
             },
             {
               "id": "l3_unternehmensnachfolge_regeln_venture_capital_produkte",
               "name": "Venture Capital Produkte",
-              "finanzhaus": "gruendung"
+              "finanzhaus": "gruendung",
+              "tooltip": "<b>Venture Capital Produkte</b><br><br>Beteiligungskapital für <b>innovative Nachfolgelösungen</b>.<br><br>• Finanzierung von Management-Buy-ins<br>• Wachstumskapital für Nachfolger<br>• Minderheitsbeteiligungen zur Überbrückung<br>• Partnerschaftliche Zusammenarbeit<br>• Exit-Orientierung nach Konsolidierung"
             }
           ]
         }
@@ -1011,7 +1168,8 @@
             {
               "id": "l3_girokonto_bezahlen_zahlungen_abwickeln",
               "name": "Zahlungen abwickeln",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Zahlungen abwickeln</b><br><br>Komfortable Kontoführung für <b>private Finanzen</b> des Unternehmers.<br><br>• Girokonto mit attraktiven Konditionen<br>• Online-Banking und Mobile Banking<br>• Debit- und Kreditkarten für den Alltag<br>• Daueraufträge und Lastschriftmanagement<br>• Persönlicher Ansprechpartner in der Bank"
             }
           ]
         },
@@ -1023,17 +1181,20 @@
             {
               "id": "l3_versicherung_schuetzen_einkommen_und_familie_absichern",
               "name": "Einkommen und Familie absichern",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Einkommen und Familie absichern</b><br><br>Umfassender Schutz für das <b>Privatvermögen des Unternehmers</b>.<br><br>• Berufsunfähigkeitsversicherung<br>• Risikolebensversicherung für Hinterbliebene<br>• Unfallversicherung privat<br>• Private Haftpflichtversicherung<br>• Rechtsschutz für private Angelegenheiten"
             },
             {
               "id": "l3_versicherung_schuetzen_sachwerte_absichern",
               "name": "Sachwerte absichern",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Sachwerte absichern</b><br><br>Schutz für <b>private Vermögenswerte</b> des Unternehmers.<br><br>• Wohngebäudeversicherung<br>• Hausratversicherung<br>• Kfz-Versicherung privat<br>• Kunstversicherung und Wertsachen<br>• Elementarschadenabsicherung"
             },
             {
               "id": "l3_versicherung_schuetzen_gesundheit_absichern",
               "name": "Gesundheit absichern",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Gesundheit absichern</b><br><br>Optimale Gesundheitsversorgung für <b>Unternehmer und Familie</b>.<br><br>• Private Krankenversicherung<br>• Krankenzusatzversicherungen<br>• Pflegeversicherung<br>• Auslandskrankenversicherung<br>• Zahnzusatzversicherung"
             }
           ]
         },
@@ -1045,32 +1206,38 @@
             {
               "id": "l3_geldanlage_und_sparen_vermoegen_ansparen",
               "name": "Vermögen ansparen",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Vermögen ansparen</b><br><br>Systematischer Vermögensaufbau für <b>private Ziele</b>.<br><br>• Fondssparpläne für langfristigen Aufbau<br>• Vermögenswirksame Leistungen<br>• Bausparverträge<br>• Regelmäßige Einzahlungen nach Plan<br>• Flexible Anpassung an Lebenssituationen"
             },
             {
               "id": "l3_geldanlage_und_sparen_vermoegen_anlegen",
               "name": "Vermögen anlegen",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Vermögen anlegen</b><br><br>Professionelle Geldanlage für <b>private Vermögensbestände</b>.<br><br>• Wertpapierdepot mit Beratung<br>• Investmentfonds nach Anlagestrategie<br>• Anleihen und Aktien<br>• Vermögensverwaltung für größere Beträge<br>• Nachhaltige Anlageoptionen"
             },
             {
               "id": "l3_geldanlage_und_sparen_vermoegen_optimieren",
               "name": "Vermögen optimieren",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Vermögen optimieren</b><br><br>Regelmäßige Überprüfung und <b>Anpassung der Anlagestrategie</b>.<br><br>• Depot-Check und Rebalancing<br>• Steueroptimierung der Kapitalerträge<br>• Kostenreduzierung durch Produktwechsel<br>• Anpassung an Marktentwicklungen<br>• Abstimmung mit Gesamtvermögensplanung"
             },
             {
               "id": "l3_geldanlage_und_sparen_vermoegen_verwenden",
               "name": "Vermögen verwenden",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Vermögen verwenden</b><br><br>Strukturierte Entnahme für <b>Ruhestand und Lebensziele</b>.<br><br>• Auszahlpläne aus Fondsbeständen<br>• Sofortrenten aus Kapitalvermögen<br>• Finanzierung größerer Anschaffungen<br>• Kapitalerhalt bei moderaten Entnahmen<br>• Steuereffiziente Auszahlungsstrategien"
             },
             {
               "id": "l3_geldanlage_und_sparen_vermoegen_vererben_verschenken",
               "name": "Vermögen vererben/ verschenken",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Vermögen vererben / verschenken</b><br><br>Optimale Übertragung an die <b>nächste Generation</b>.<br><br>• Schenkungsstrategien mit Freibeträgen<br>• Testamentsgestaltung und Erbfolge<br>• Stiftungslösungen für Vermögenssicherung<br>• Generationenberatung<br>• Abstimmung mit Steuerberatern"
             },
             {
               "id": "l3_geldanlage_und_sparen_reserven_haben",
               "name": "Reserven haben",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Reserven haben</b><br><br>Liquide Rücklagen für <b>unvorhergesehene Situationen</b>.<br><br>• Tagesgeldkonto für sofortige Verfügbarkeit<br>• Festgeld für planbare Reserven<br>• Notgroschen-Strategie<br>• Sicherheit durch Einlagensicherung<br>• Trennung von Anlage- und Reservevermögen"
             }
           ]
         },
@@ -1082,7 +1249,8 @@
             {
               "id": "l3_kredit_finanzieren_wuensche_finanzieren",
               "name": "Wünsche finanzieren",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Wünsche finanzieren</b><br><br>Flexible Kredite für <b>private Anschaffungen</b>.<br><br>• Ratenkredite für Konsumwünsche<br>• Autofinanzierung und Leasing<br>• Modernisierungskredite<br>• Flexible Laufzeiten und Raten<br>• Sondertilgungsoptionen"
             }
           ]
         },
@@ -1094,12 +1262,14 @@
             {
               "id": "l3_zukunft_und_vorsorgen_fuer_das_alter_vorsorgen",
               "name": "Für das Alter vorsorgen",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Für das Alter vorsorgen</b><br><br>Umfassende Altersvorsorge für <b>finanzielle Unabhängigkeit im Ruhestand</b>.<br><br>• Private Rentenversicherung<br>• Riester-Rente und Rürup-Rente<br>• Fondsgebundene Lebensversicherung<br>• Betriebliche Altersvorsorge als Unternehmer<br>• Individuelle Vorsorgeanalyse"
             },
             {
               "id": "l3_zukunft_und_vorsorgen_fuer_die_kinder_vorsorgen",
               "name": "Für die Kinder vorsorgen",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Für die Kinder vorsorgen</b><br><br>Finanzielle Absicherung und Vermögensaufbau für <b>die nächste Generation</b>.<br><br>• Junior-Depot für langfristigen Vermögensaufbau<br>• Ausbildungsversicherung<br>• Kindersparpläne<br>• Schenkungsstrategien nutzen<br>• Absicherung bei Krankheit und Unfall"
             }
           ]
         },
@@ -1111,17 +1281,20 @@
             {
               "id": "l3_immobilien_wohnen_wohneingentum_erwerben_finanzieren",
               "name": "Wohneingentum erwerben/ finanzieren",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Wohneigentum erwerben / finanzieren</b><br><br>Maßgeschneiderte Baufinanzierung für <b>die eigenen vier Wände</b>.<br><br>• Annuitätendarlehen mit Festzinsbindung<br>• KfW-Förderkredite integrierbar<br>• Flexible Sondertilgungsrechte<br>• Beratung zur optimalen Finanzierungsstruktur<br>• Berücksichtigung der Unternehmersituation"
             },
             {
               "id": "l3_immobilien_wohnen_modernisieren_und_renovieren",
               "name": "Modernisieren und Renovieren",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Modernisieren und Renovieren</b><br><br>Finanzierung für <b>Werterhalt und Wertsteigerung</b> Ihrer Immobilie.<br><br>• Modernisierungskredite für Sanierungen<br>• Energetische Maßnahmen mit Fördermitteln<br>• Flexible Beträge und Laufzeiten<br>• Kombination mit bestehender Finanzierung<br>• Beratung zu Förderprogrammen"
             },
             {
               "id": "l3_immobilien_wohnen_anschlussfinanzierung_sichern",
               "name": "Anschlussfinanzierung sichern",
-              "finanzhaus": "privat_finanz"
+              "finanzhaus": "privat_finanz",
+              "tooltip": "<b>Anschlussfinanzierung sichern</b><br><br>Rechtzeitige Sicherung günstiger Konditionen für die <b>Prolongation</b>.<br><br>• Forward-Darlehen bis 5 Jahre im Voraus<br>• Zinssicherung zu aktuellen Konditionen<br>• Planungssicherheit für die Zukunft<br>• Umschuldung von anderen Banken möglich<br>• Konditionsvergleich und Beratung"
             }
           ]
         }

@@ -53,15 +53,59 @@ export class AppComponent {
 
   // State - Multi-Select Filter
   activeCategories = signal<Set<CategoryId>>(new Set());
-  hoveredNode = signal<Node | null>(null);  // Für Tooltip
+  hoveredNode = signal<Node | null>(null);  // Für Hover-Tooltip (nur L0-L2)
   hoveredPathNode = signal<Node | null>(null);  // Für Pfad-Highlighting und Unblur
   hoveredCategories = signal<CategoryId[]>([]);
+  selectedInfoNode = signal<Node | null>(null);  // Für Click-Tooltip (L3+)
+  private justClickedNode = false;  // Flag um handleBackgroundClick zu ignorieren
+  private backgroundMouseDownPos: { x: number; y: number } | null = null;  // Position beim mousedown auf Hintergrund
+
+  // Doppelklick-Erkennung (muss manuell sein, weil Drag-Handler native Events überschreibt)
+  private lastClickTime = 0;
+  private lastClickNodeId: string | null = null;
+  private readonly DOUBLE_CLICK_THRESHOLD = 300;  // ms
+  private pendingClickTimeout: ReturnType<typeof setTimeout> | null = null;
+  private pendingClickData: { node: Node; level: number; parent: Node | null; root: Node } | null = null;
+
+  // Gespeicherter Zustand vor Fokus-Modus (für Wiederherstellung)
+  private expandedBeforeFocus: Set<string> | null = null;
+
+  // Computed: Bildschirm-Position des Info-Panels (reaktiv!)
+  infoPanelPosition = computed(() => {
+    const node = this.selectedInfoNode();
+    if (!node) return null;
+
+    const forcePos = this.forcePositions().get(node.id);
+    if (!forcePos) return null;
+
+    const zoom = this.zoomLevel();
+    const pan = this.panOffset();
+
+    // Viewport-Mitte (Ursprung des mindmap__center)
+    const viewportCenterX = window.innerWidth / 2;
+    const viewportCenterY = window.innerHeight / 2;
+
+    // Node-Position auf dem Bildschirm:
+    // 1. forcePos ist im Force-Koordinatensystem (Ursprung = Zentrum)
+    // 2. Zoom skaliert die Force-Koordinaten
+    // 3. Pan ist in Pixel-Koordinaten (nicht skaliert)
+    const nodeScreenX = viewportCenterX + forcePos.x * zoom + pan.x;
+    const nodeScreenY = viewportCenterY + forcePos.y * zoom + pan.y;
+
+    return { x: nodeScreenX, y: nodeScreenY };
+  });
   tooltipPosition = signal<{ x: number; y: number; showBelow: boolean } | null>(null);
   finanzhausVisible = signal<boolean>(true);
 
   // Focus Mode (Lupenfunktion) - generisch für alle Level
-  // root speichert immer den Level-1-Vorfahren für die Sichtbarkeitslogik
-  focusedNode = signal<{ node: Node; parent: Node; root: Node; level: number } | null>(null);
+  // Multi-Fokus: Array von fokussierten Nodes (nicht im localStorage gespeichert!)
+  focusedNodes = signal<Array<{ node: Node; parent: Node; root: Node; level: number }>>([]);
+
+  // Kompatibilität: Gibt den ersten fokussierten Node zurück
+  focusedNode = computed(() => {
+    const nodes = this.focusedNodes();
+    return nodes.length > 0 ? nodes[0] : null;
+  });
 
   // Pan State (Drag & Drop)
   isPanning = signal<boolean>(false);
@@ -92,6 +136,10 @@ export class AppComponent {
 
   // Gespeicherter Zustand vor dem Filtern
   private savedExpandedNodes: Set<string> | null = null;
+
+  // Gespeicherter Zoom/Pan vor dem Fokus-Modus
+  private savedZoomLevel: number | null = null;
+  private savedPanOffset: { x: number; y: number } | null = null;
 
   // localStorage Key für Persistenz (dynamisch pro Datenmodus)
   private readonly STORAGE_KEY_PREFIX = 'finanzhaus-view-state';
@@ -180,7 +228,19 @@ export class AppComponent {
   private forceLayoutEffect = effect(() => {
     const root = this.rootNode();
     const expanded = this.expandedNodes();
+    const focused = this.focusedNodes();  // Track focusedNodes damit der Effect auch darauf reagiert
+
+    console.log('[forceLayoutEffect] expanded:', expanded.size, 'focused:', focused.length);
+
     this.forceLayout.updateNodes(root, expanded);
+    console.log('[forceLayoutEffect] updateNodes done');
+
+    // Im Fokus-Modus: Layout berechnen NACH updateNodes
+    // (damit die nodeMap synchron ist und Positionen nicht überschrieben werden)
+    if (focused.length > 0) {
+      console.log('[forceLayoutEffect] calling calculateFocusModeLayout');
+      this.calculateFocusModeLayout();
+    }
 
     // Beratung-Modus: Automatische Kreisanordnung beim ersten Laden
     if (this.needsBeratungInitialArrangement && root.children && root.children.length > 0) {
@@ -304,7 +364,9 @@ export class AppComponent {
     // State zurücksetzen für neue Daten
     this.expandedNodes.set(new Set());
     this.activeCategories.set(new Set());
-    this.focusedNode.set(null);
+    this.focusedNodes.set([]);
+    this.selectedInfoNode.set(null);
+    this.tooltipPosition.set(null);
     this.panOffset.set({ x: 0, y: 0 });
     this.zoomLevel.set(1);
     this.forceLayout.resetUserPositions();
@@ -545,54 +607,38 @@ export class AppComponent {
 
   handleNodeClick(node: Node, level: number | string, parent: Node | null, root: Node) {
     const numLevel = Number(level);
+    console.log('=== SINGLE CLICK ===', { nodeId: node.id, level: numLevel });
 
-    const focused = this.focusedNode();
+    // Bei Klick auf L0-L2: Offenen Info-Tooltip schließen
+    if (numLevel < 3 && this.selectedInfoNode()) {
+      this.selectedInfoNode.set(null);
+      this.tooltipPosition.set(null);
+    }
 
-    // Im Fokus-Modus
-    if (focused) {
-      const role = this.getZoomRole(node);
+    // Level 3+: Info-Tooltip öffnen/schließen
+    if (numLevel >= 3) {
+      this.justClickedNode = true;
 
-      // Klick auf Level 0 oder Level 1 → Fokus verlassen
-      if (numLevel <= 1) {
-        this.exitFocusMode();
-        return;
-      }
-
-      // Klick auf den fokussierten Node selbst → Fokus verlassen (ohne zu springen)
-      if (role === 'focused') {
-        this.exitFocusMode();
-        return;
-      }
-
-      // Klick auf einen scharfen Node (Vorfahre oder Nachkomme) → neuer Fokus
-      if (role === 'ancestor' || role === 'descendant') {
-        const newParent = this.findParentOfNode(this.rootNode(), node);
-        if (newParent) {
-          this.focusedNode.set({ node, parent: newParent, root, level: numLevel });
-
-          // Nodes expandieren damit Kinder sichtbar sind
-          const expanded = new Set(this.expandedNodes());
-          expanded.add(node.id);
-          this.expandedNodes.set(expanded);
-        }
-        return;
-      }
-
-      // Klick auf geblurrten Node → Fokus auf diesen Node setzen
-      if (numLevel >= 2) {
-        const newParent = this.findParentOfNode(this.rootNode(), node);
-        if (newParent) {
-          this.focusedNode.set({ node, parent: newParent, root, level: numLevel });
-
-          const expanded = new Set(this.expandedNodes());
-          expanded.add(node.id);
-          this.expandedNodes.set(expanded);
-        }
+      if (this.selectedInfoNode()?.id === node.id) {
+        this.selectedInfoNode.set(null);
+      } else {
+        this.selectedInfoNode.set(node);
       }
       return;
     }
 
-    // Normal-Modus (kein Fokus aktiv)
+    // Level 0-2: Expand/Collapse
+    this.executeNodeClick(node, numLevel);
+  }
+
+  // Tatsächliche Click-Logik
+  private executeNodeClick(node: Node, numLevel: number): void {
+    // Im Fokus-Modus: L0/L1/L2 können NICHT ein-/ausgeklappt werden
+    if (this.isInFocusMode() && numLevel <= 2) {
+      console.log('[executeNodeClick] IGNORED - focus mode active, level:', numLevel);
+      return;
+    }
+
     if (numLevel === 0) {
       if (this.expandedNodes().size > 0) {
         // Etwas ist expandiert → alles einklappen + Filter löschen
@@ -606,8 +652,8 @@ export class AppComponent {
       return;
     }
 
-    if (numLevel === 1) {
-      // Level 1: Toggle expand
+    if (numLevel === 1 || numLevel === 2) {
+      // Level 1 und 2: Toggle expand (ohne Fokus-Logik)
       if (this.expandedNodes().has(node.id)) {
         // Mit Animation schließen
         this.collapseNodeWithAnimation(node);
@@ -620,15 +666,53 @@ export class AppComponent {
         this.expandNodeAndChildren(node, currentSet);
         this.expandedNodes.set(currentSet);
       }
-    } else if (numLevel >= 2 && parent) {
-      // Fokus-Modus aktivieren - Expanded-State bleibt wie vom Nutzer gewählt
-      this.focusedNode.set({ node, parent, root, level: numLevel });
-
-      // Nur den fokussierten Node selbst expandieren (für seine Kinder)
-      const expanded = new Set(this.expandedNodes());
-      expanded.add(node.id);
-      this.expandedNodes.set(expanded);
     }
+  }
+
+  // Doppelklick-Handler für Fokus-Modus
+  handleNodeDoubleClick(event: MouseEvent, node: Node, level: number, parent: Node | null, root: Node): void {
+    console.log('=== DOUBLE CLICK ===', { nodeId: node.id, level });
+    event.stopPropagation();
+    event.preventDefault();
+
+    const numLevel = Number(level);
+
+    // Level 0: Fokus beenden (falls aktiv)
+    if (numLevel === 0) {
+      if (this.isInFocusMode()) {
+        this.exitFocusMode();
+      }
+      return;
+    }
+
+    // Level 1+: Fokus-Logik
+    const actualParent = parent || this.findParentOfNode(this.rootNode(), node);
+    if (!actualParent && numLevel > 1) return;
+
+    // Normaler Doppelklick
+    if (this.isNodeInFocus(node) && this.focusedNodes().length === 1) {
+      // Doppelklick auf einzigen fokussierten Node → Fokus beenden
+      console.log('[handleNodeDoubleClick] exit focus mode');
+      this.exitFocusMode();
+      return;
+    }
+
+    // Expanded-Zustand speichern VOR dem Fokussieren (nur beim ersten Mal)
+    if (!this.isInFocusMode()) {
+      this.expandedBeforeFocus = new Set(this.expandedNodes());
+      console.log('[handleNodeDoubleClick] saved expandedBeforeFocus:', this.expandedBeforeFocus.size);
+    }
+
+    // ERST expandieren damit Kinder in nodeMap sind BEVOR Fokus gesetzt wird!
+    console.log('[handleNodeDoubleClick] expanding node:', node.id);
+    const expanded = new Set(this.expandedNodes());
+    expanded.add(node.id);
+    this.expandedNodes.set(expanded);
+    console.log('[handleNodeDoubleClick] expandedNodes set, now setting focus');
+
+    // DANN Fokus setzen - der effect läuft mit bereits expandierten Kindern
+    this.setFocusedNodeSingle(node, actualParent || this.rootNode(), root, numLevel);
+    console.log('[handleNodeDoubleClick] DONE');
   }
 
   // Hilfsmethode: Findet den Parent eines Nodes
@@ -694,6 +778,13 @@ export class AppComponent {
     const nodesToCollapse = new Set<string>();
     this.collectNodeAndChildren(node, nodesToCollapse);
 
+    // Falls Info-Tooltip zu einem der kollabierenden Nodes gehört, schließen
+    const selectedInfo = this.selectedInfoNode();
+    if (selectedInfo && nodesToCollapse.has(selectedInfo.id)) {
+      this.selectedInfoNode.set(null);
+      this.tooltipPosition.set(null);
+    }
+
     // Markiere sie als "collapsing" für die Animation
     const currentCollapsing = new Set(this.collapsingNodes());
     for (const id of nodesToCollapse) {
@@ -756,8 +847,27 @@ export class AppComponent {
   }
 
   handleBackgroundClick(event: MouseEvent) {
-    if ((event.target as HTMLElement).classList.contains('mindmap-container')) {
-      // Optional behavior
+    // Wenn gerade ein Node geklickt wurde, ignorieren
+    if (this.justClickedNode) {
+      this.justClickedNode = false;
+      return;
+    }
+
+    // Prüfe ob es ein Drag war (Maus bewegt seit mousedown)
+    if (this.backgroundMouseDownPos) {
+      const dx = event.clientX - this.backgroundMouseDownPos.x;
+      const dy = event.clientY - this.backgroundMouseDownPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance > 5) {
+        // War ein Drag, nicht schließen
+        return;
+      }
+    }
+
+    // War ein Click auf Hintergrund → Panel schließen
+    if (this.selectedInfoNode()) {
+      this.selectedInfoNode.set(null);
     }
   }
 
@@ -768,6 +878,8 @@ export class AppComponent {
       this.savedExpandedNodes = null;
     }
     this.activeCategories.set(new Set());
+    this.selectedInfoNode.set(null);
+    this.tooltipPosition.set(null);
     this.animatePanTo(0, 0);
   }
 
@@ -788,7 +900,9 @@ export class AppComponent {
 
     // 4. State und View zurücksetzen
     this.activeCategories.set(new Set());
-    this.focusedNode.set(null);
+    this.focusedNodes.set([]);
+    this.selectedInfoNode.set(null);
+    this.tooltipPosition.set(null);
 
     // 5. Beratung-Modus: Direkt die korrekten expandedNodes setzen und Kreisanordnung anwenden
     if (this.dataMode() === 'beratung') {
@@ -916,6 +1030,9 @@ export class AppComponent {
   onPanStart(event: MouseEvent) {
     if (event.button !== 0) return;
 
+    // Speichere Position für Click vs Drag Erkennung
+    this.backgroundMouseDownPos = { x: event.clientX, y: event.clientY };
+
     this.isPanning.set(true);
     this.panStart = {
       x: event.clientX - this.panOffset().x,
@@ -1024,8 +1141,11 @@ export class AppComponent {
         if (this.dragContext.level === 1 && this.hasCollisionWithChildren(draggedNode)) {
           // Kollision! Position zurücksetzen
           this.forceLayout.resetNodePosition(draggedNode.id);
+        } else if (this.isInFocusMode()) {
+          // Im Fokus-Modus: Nur Fixierung lösen, NICHT speichern (temporär)
+          this.forceLayout.unfixNode(draggedNode.id);
         } else {
-          // Keine Kollision - Position speichern
+          // Normal-Modus: Position permanent speichern
           this.forceLayout.releaseNode(draggedNode.id);
           this.saveStateToStorage();
         }
@@ -1096,7 +1216,7 @@ export class AppComponent {
     if (event.button !== 0) return; // Nur linke Maustaste
 
     event.stopPropagation(); // Verhindert Pan
-    event.preventDefault();
+    // KEIN preventDefault() - das blockiert dblclick!
 
     const nodePos = this.forceLayout.getPosition(node.id);
     if (!nodePos) return;
@@ -1150,22 +1270,71 @@ export class AppComponent {
   onGlobalMouseUp(event: MouseEvent) {
     // Zuerst Drag prüfen
     const draggedNode = this.draggingNode();
+
     if (draggedNode && this.dragContext) {
       if (this.dragMoved) {
         // Drag wurde durchgeführt
-        // Level 1 Kollisionserkennung: Prüfe ob Level 1 auf Level 2 liegt
         if (this.dragContext.level === 1 && this.hasCollisionWithChildren(draggedNode)) {
-          // Kollision! Position zurücksetzen
           this.forceLayout.resetNodePosition(draggedNode.id);
+        } else if (this.isInFocusMode()) {
+          // Im Fokus-Modus: Nur Fixierung lösen, NICHT speichern (temporär)
+          this.forceLayout.unfixNode(draggedNode.id);
         } else {
-          // Keine Kollision - Position speichern
+          // Normal-Modus: Position permanent speichern
           this.forceLayout.releaseNode(draggedNode.id);
           this.saveStateToStorage();
         }
       } else {
-        // Kein Drag - war ein Klick → nur Fixierung lösen (keine Änderungen!)
+        // Kein Drag - war ein Klick
+        // Doppelklick-Erkennung mit verzögertem Einzelklick
+        const now = Date.now();
+        const isDoubleClick = (
+          this.lastClickNodeId === draggedNode.id &&
+          (now - this.lastClickTime) < this.DOUBLE_CLICK_THRESHOLD
+        );
+
+        this.lastClickTime = now;
+        this.lastClickNodeId = draggedNode.id;
+
         this.forceLayout.unfixNode(draggedNode.id);
-        this.handleNodeClick(draggedNode, this.dragContext.level, this.dragContext.parent, this.dragContext.root);
+
+        if (isDoubleClick) {
+          // Doppelklick erkannt! Pending Einzelklick abbrechen
+          if (this.pendingClickTimeout) {
+            clearTimeout(this.pendingClickTimeout);
+            this.pendingClickTimeout = null;
+            this.pendingClickData = null;
+          }
+          console.log('=== DOUBLE CLICK DETECTED ===', { nodeId: draggedNode.id, level: this.dragContext.level });
+          this.handleNodeDoubleClick(
+            event,
+            draggedNode,
+            this.dragContext.level,
+            this.dragContext.parent,
+            this.dragContext.root
+          );
+        } else {
+          // Erster Klick - verzögern um auf möglichen Doppelklick zu warten
+          this.pendingClickData = {
+            node: draggedNode,
+            level: this.dragContext.level,
+            parent: this.dragContext.parent,
+            root: this.dragContext.root
+          };
+          this.pendingClickTimeout = setTimeout(() => {
+            if (this.pendingClickData) {
+              console.log('=== SINGLE CLICK (delayed) ===', { nodeId: this.pendingClickData.node.id });
+              this.handleNodeClick(
+                this.pendingClickData.node,
+                this.pendingClickData.level,
+                this.pendingClickData.parent,
+                this.pendingClickData.root
+              );
+              this.pendingClickData = null;
+            }
+            this.pendingClickTimeout = null;
+          }, this.DOUBLE_CLICK_THRESHOLD);
+        }
       }
 
       this.draggingNode.set(null);
@@ -1242,6 +1411,8 @@ export class AppComponent {
   /**
    * Ordnet Level 3 Kinder eines Level 2 Nodes kreisförmig an.
    * Wird vom Button oder Rechtsklick aufgerufen.
+   * Im Fokus-Modus: Halbkreis rechts / Kreis mit Lücke links (temporär).
+   * Im Normal-Modus: Voller Kreis (permanent gespeichert).
    */
   arrangeChildrenCircular(node: Node, event?: Event): void {
     if (!node.children || node.children.length === 0) {
@@ -1253,19 +1424,33 @@ export class AppComponent {
       event.stopPropagation();
     }
 
+    console.log('[arrangeChildrenCircular] node:', node.id, 'children:', node.children.length);
+
     // Node muss expandiert sein damit Kinder sichtbar sind
-    const expanded = new Set(this.expandedNodes());
-    expanded.add(node.id);
-    this.expandedNodes.set(expanded);
+    // NUR setzen wenn noch nicht expandiert (verhindert Endlosschleife im effect)
+    if (!this.expandedNodes().has(node.id)) {
+      console.log('[arrangeChildrenCircular] expanding node:', node.id);
+      const expanded = new Set(this.expandedNodes());
+      expanded.add(node.id);
+      this.expandedNodes.set(expanded);
+    }
 
     // Kinder-IDs sammeln
     const childIds = node.children.map(child => child.id);
+    console.log('[arrangeChildrenCircular] childIds:', childIds);
 
-    // Kreisförmig anordnen
-    this.forceLayout.arrangeChildrenCircular(node.id, childIds);
-
-    // Speichern
-    this.saveStateToStorage();
+    if (this.isInFocusMode()) {
+      // Fokus-Modus: Halbkreis rechts / Kreis mit Lücke links (temporär)
+      console.log('[arrangeChildrenCircular] FOCUS MODE - calling arrangeChildrenCircularFocusMode');
+      this.forceLayout.arrangeChildrenCircularFocusMode(node.id, childIds);
+      // NICHT speichern - Fokus-Modus ist temporär!
+    } else {
+      // Normal-Modus: Voller Kreis (permanent)
+      console.log('[arrangeChildrenCircular] NORMAL MODE - calling arrangeChildrenCircular');
+      this.forceLayout.arrangeChildrenCircular(node.id, childIds);
+      this.saveStateToStorage();
+    }
+    console.log('[arrangeChildrenCircular] DONE');
   }
 
   /**
@@ -1334,9 +1519,29 @@ export class AppComponent {
 
   // --- Focus Mode Helpers ---
 
-  // Verlässt den Fokus-Modus und expandiert bei aktivem Filter die passenden Nodes
+  // Verlässt den Fokus-Modus und setzt Positionen zurück
   private exitFocusMode(): void {
-    this.focusedNode.set(null);
+    console.log('[exitFocusMode] exiting...');
+    this.focusedNodes.set([]);
+
+    // Positionen auf Original zurücksetzen (mit Animation durch CSS transition)
+    this.forceLayout.resetToOriginalPositions();
+
+    // Gespeicherten Zoom/Pan wiederherstellen (mit Animation)
+    if (this.savedZoomLevel !== null && this.savedPanOffset !== null) {
+      this.isAnimatingPan.set(true);
+      this.zoomLevel.set(this.savedZoomLevel);
+      this.panOffset.set(this.savedPanOffset);
+
+      // Animation beenden nach Transition
+      setTimeout(() => {
+        this.isAnimatingPan.set(false);
+      }, 500);
+
+      // Gespeicherte Werte zurücksetzen
+      this.savedZoomLevel = null;
+      this.savedPanOffset = null;
+    }
 
     // Wenn Filter aktiv: Passende Nodes expandieren
     const activeCategories = this.activeCategories();
@@ -1351,7 +1556,15 @@ export class AppComponent {
 
       // View auf passende Nodes zentrieren
       setTimeout(() => this.centerOnFilteredNodes(), 100);
+    } else if (this.expandedBeforeFocus) {
+      // Kein Filter aktiv: Gespeicherten expanded-Zustand wiederherstellen
+      console.log('[exitFocusMode] restoring expandedBeforeFocus:', this.expandedBeforeFocus.size);
+      this.expandedNodes.set(this.expandedBeforeFocus);
     }
+
+    // Gespeicherten expanded-Zustand zurücksetzen
+    this.expandedBeforeFocus = null;
+    console.log('[exitFocusMode] DONE');
   }
 
   isInFocusMode(): boolean {
@@ -1361,6 +1574,28 @@ export class AppComponent {
   isFocusedNode(node: Node): boolean {
     const focused = this.focusedNode();
     return focused !== null && focused.node.id === node.id;
+  }
+
+  // Multi-Fokus Hilfsmethoden
+  isNodeInFocus(node: Node): boolean {
+    return this.focusedNodes().some(f => f.node.id === node.id);
+  }
+
+  private toggleNodeFocus(node: Node, parent: Node, root: Node, level: number): void {
+    const current = this.focusedNodes();
+    const existingIndex = current.findIndex(f => f.node.id === node.id);
+
+    if (existingIndex >= 0) {
+      // Node entfernen
+      this.focusedNodes.set(current.filter((_, i) => i !== existingIndex));
+    } else {
+      // Node hinzufügen
+      this.focusedNodes.set([...current, { node, parent, root, level }]);
+    }
+  }
+
+  private setFocusedNodeSingle(node: Node, parent: Node, root: Node, level: number): void {
+    this.focusedNodes.set([{ node, parent, root, level }]);
   }
 
   isFocusedParent(node: Node): boolean {
@@ -1717,6 +1952,10 @@ export class AppComponent {
     // Level 0 (Root): Nie blurren
     if (numLevel === 0) return false;
 
+    // L3+ mit offenem Info-Tooltip: Nie blurren (highlighted)
+    const selectedInfo = this.selectedInfoNode();
+    if (selectedInfo && node.id === selectedInfo.id) return false;
+
     // Hover-Pfad: Node und alle Vorfahren sind scharf
     if (this.isOnHoveredPath(node)) return false;
 
@@ -1726,39 +1965,35 @@ export class AppComponent {
     // Wenn über L1 gehovert wird: Alle Nachkommen dieses L1 sind scharf
     if (this.isDescendantOfHoveredL1(node)) return false;
 
-    // Im Fokus-Modus
+    // Im Multi-Fokus-Modus
     if (this.isInFocusMode()) {
-      const focused = this.focusedNode();
-      if (!focused) return false;
+      const focusedList = this.focusedNodes();
+      if (focusedList.length === 0) return false;
 
-      // Der fokussierte Node selbst ist IMMER scharf (auch ohne passende Kategorie)
-      if (node.id === focused.node.id) return false;
+      // Fokussierte Nodes: nie blurren
+      if (this.isNodeInFocus(node)) return false;
 
-      // Prüfe ob Node auf Fokus-Pfad liegt
-      const isAncestor = this.isAncestorOfFocused(node);
-      const isDescendant = this.isDescendantOfFocused(node);
-      const isOnFocusPath = isAncestor || isDescendant;
-
-      // Wenn kein Filter aktiv: Standard Fokus-Verhalten
-      if (activeCategories.size === 0) {
-        return !isOnFocusPath;
+      // Vorfahren eines fokussierten Nodes: nie blurren
+      for (const f of focusedList) {
+        const path = this.findPathToNode(this.rootNode(), f.node.id);
+        if (path && path.includes(node.id)) return false;
       }
 
-      // Filter + Fokus kombiniert:
-      // Nicht auf Fokus-Pfad → immer blur
-      if (!isOnFocusPath) return true;
-
-      // Auf Fokus-Pfad: Prüfe Kategorie
-      const hasCategory = node.categoryIds.some(id => activeCategories.has(id));
-      const hasMatchingChildren = this.hasAnyCategoryMatch(node, activeCategories);
-
-      // Vorfahren: Scharf wenn sie passende Nachkommen haben (Pfad zum Match)
-      if (isAncestor) {
-        return !hasCategory && !hasMatchingChildren;
+      // Direkte Kinder eines fokussierten Nodes: nie blurren
+      for (const f of focusedList) {
+        if (f.node.children?.some(c => c.id === node.id)) return false;
       }
 
-      // Nachkommen: Scharf wenn sie selbst passen oder passende Kinder haben
-      return !hasCategory && !hasMatchingChildren;
+      // Wenn Filter aktiv: Zusätzliche Prüfung
+      if (activeCategories.size > 0) {
+        const hasCategory = node.categoryIds.some(id => activeCategories.has(id));
+        const hasMatchingChildren = this.hasAnyCategoryMatch(node, activeCategories);
+        // Blur wenn keine passende Kategorie
+        if (!hasCategory && !hasMatchingChildren) return true;
+      }
+
+      // Alle anderen: blurren
+      return true;
     }
 
     // Normaler Modus mit Filter (kein Fokus)
@@ -1783,7 +2018,7 @@ export class AppComponent {
 
   // --- Hover & Tooltip Event Handler ---
 
-  onNodeMouseEnter(event: MouseEvent, node: Node) {
+  onNodeMouseEnter(event: MouseEvent, node: Node, level: number = 0) {
     // Pfad-Highlighting für Linien und Unblur
     this.hoveredPathNode.set(node);
 
@@ -1791,7 +2026,8 @@ export class AppComponent {
       this.hoveredCategories.set(node.categoryIds);
     }
 
-    if (!node.tooltip) return;
+    // L3+ zeigt Tooltip nur per Click, nicht per Hover
+    if (level >= 3 || !node.tooltip) return;
 
     this.hoveredNode.set(node);
 
@@ -1817,8 +2053,12 @@ export class AppComponent {
     this.hoveredNode.set(null);
     this.hoveredPathNode.set(null);
     this.hoveredCategories.set([]);
-    this.tooltipPosition.set(null);
+    // Tooltip-Position nur löschen wenn kein Info-Tooltip offen ist
+    if (!this.selectedInfoNode()) {
+      this.tooltipPosition.set(null);
+    }
   }
+
 
   // Prüft ob ein Node auf dem Pfad vom gehoverten Node bis Level 0 liegt
   isOnHoveredPath(node: Node): boolean {
@@ -1867,6 +2107,143 @@ export class AppComponent {
 
     // Prüfe ob der Node ein Nachkomme dieses L1 ist
     return pathToNode[1] === l1Id;
+  }
+
+  // --- Fokus-Modus Layout-Berechnung ---
+
+  private calculateFocusModeLayout(): void {
+    const focused = this.focusedNodes();
+    if (focused.length === 0) return;
+
+    // Zoom/Pan speichern beim ersten Fokussieren
+    if (this.savedZoomLevel === null) {
+      this.savedZoomLevel = this.zoomLevel();
+      this.savedPanOffset = { ...this.panOffset() };
+    }
+
+    const positions = new Map<string, { x: number; y: number }>();
+    const rootNode = this.rootNode();
+    const focusInfo = focused[0];
+
+    // Kinder-Radius berechnen (bestimmt den Mindestabstand L1↔L2)
+    const childCount = focusInfo.node.children?.length || 0;
+    const CHILD_RADIUS = this.calculateChildRadius(childCount);
+
+    // Abstände
+    const L1_TO_FOCUS_SPACING = Math.max(400, CHILD_RADIUS + 180);
+    const L0_TO_L1_SPACING = 350;
+
+    // L0 Position (links vom Fokus)
+    const l0X = -(L0_TO_L1_SPACING + L1_TO_FOCUS_SPACING);
+    positions.set(rootNode.id, { x: l0X, y: 0 });
+
+    // Fokussiertes Element in der Mitte (x=0)
+    const focusX = 0;
+    const focusY = 0;
+    positions.set(focusInfo.node.id, { x: focusX, y: focusY });
+
+    // Eltern-Kette nach links
+    const path = this.findPathToNode(rootNode, focusInfo.node.id);
+
+    if (focusInfo.level === 1) {
+      // L1 fokussiert: L1 ist in der Mitte, L0 links davon
+    } else if (focusInfo.level === 2 && path && path.length >= 2) {
+      // L2 fokussiert: L1 zwischen L0 und L2
+      positions.set(path[1], { x: -L1_TO_FOCUS_SPACING, y: focusY });
+    } else if (focusInfo.level >= 3 && path) {
+      // L3+ fokussiert
+      if (path.length >= 2) {
+        positions.set(path[1], { x: l0X + L0_TO_L1_SPACING, y: 0 });
+      }
+      if (path.length >= 3) {
+        positions.set(path[2], { x: -L1_TO_FOCUS_SPACING, y: focusY });
+      }
+    }
+
+    // Kinder-Positionen VORHER berechnen (für Kollisionsvermeidung)
+    const focusChildIds = new Set<string>();
+    if (focusInfo.node.children && focusInfo.node.children.length > 0 &&
+        this.expandedNodes().has(focusInfo.node.id)) {
+      const children = focusInfo.node.children;
+      const count = children.length;
+
+      // Kinder-Positionen berechnen (gleiche Logik wie arrangeChildrenCircularFocusMode)
+      if (count <= 5) {
+        // Halbkreis RECHTS
+        const startAngle = -Math.PI / 2;
+        const endAngle = Math.PI / 2;
+        const angleStep = count > 1 ? (endAngle - startAngle) / (count - 1) : 0;
+
+        children.forEach((child, index) => {
+          const angle = count === 1 ? 0 : startAngle + index * angleStep;
+          positions.set(child.id, {
+            x: focusX + Math.cos(angle) * CHILD_RADIUS,
+            y: focusY + Math.sin(angle) * CHILD_RADIUS
+          });
+          focusChildIds.add(child.id);
+        });
+      } else {
+        // Voller Kreis mit Lücke LINKS (160°-200°)
+        const GAP_START_DEG = 160;
+        const GAP_END_DEG = 200;
+        const gapStartRad = GAP_START_DEG * Math.PI / 180;
+        const gapSizeRad = (GAP_END_DEG - GAP_START_DEG) * Math.PI / 180;
+        const availableAngle = 2 * Math.PI - gapSizeRad;
+        const angleStep = availableAngle / count;
+
+        children.forEach((child, index) => {
+          let angle = index * angleStep;
+          if (angle >= gapStartRad) {
+            angle += gapSizeRad;
+          }
+          positions.set(child.id, {
+            x: focusX + Math.cos(angle) * CHILD_RADIUS,
+            y: focusY + Math.sin(angle) * CHILD_RADIUS
+          });
+          focusChildIds.add(child.id);
+        });
+      }
+    }
+
+    console.log('[calculateFocusModeLayout] positions (inkl. Kinder):', positions.size);
+
+    // Positionen anwenden MIT Kollisionsvermeidung für andere Nodes
+    // Jetzt sind auch die Kinder-Positionen bekannt!
+    console.log('[calculateFocusModeLayout] applying with collision avoidance');
+    this.forceLayout.applyFocusModeWithCollisionAvoidance(positions, focusChildIds);
+    console.log('[calculateFocusModeLayout] collision avoidance applied');
+
+    // Auto-Zoom
+    this.applyInitialFocusZoom(l0X, CHILD_RADIUS);
+    console.log('[calculateFocusModeLayout] DONE');
+  }
+
+  // Einmaliger Auto-Zoom für Fokus-Modus
+  private applyInitialFocusZoom(l0X: number, childRadius: number): void {
+    const leftEdge = l0X - 80;
+    const rightEdge = childRadius + 100;
+    const totalWidth = rightEdge - leftEdge;
+    const viewportWidth = window.innerWidth * 0.85;
+
+    let newZoom = viewportWidth / totalWidth;
+    newZoom = Math.max(0.25, Math.min(1.0, newZoom));
+
+    const centerX = (leftEdge + rightEdge) / 2;
+    const panX = -centerX * newZoom;
+
+    this.zoomLevel.set(newZoom);
+    this.panOffset.set({ x: panX, y: 0 });
+  }
+
+  // Berechnet den Radius für Kinder basierend auf der Anzahl
+  private calculateChildRadius(childCount: number): number {
+    if (childCount === 0) return 100;
+    if (childCount <= 5) {
+      return 140 + childCount * 30;
+    } else {
+      const minCircumference = childCount * 90;
+      return Math.max(200, minCircumference / (2 * Math.PI));
+    }
   }
 
   // Prüft ob eine Verbindungslinie hervorgehoben werden soll (von Parent zu Child)

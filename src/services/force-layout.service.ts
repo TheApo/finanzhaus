@@ -379,6 +379,210 @@ export class ForceLayoutService {
   }
 
   /**
+   * Setzt Positionen für mehrere Nodes gleichzeitig (für Fokus-Modus).
+   * Level 0 wird nicht verschoben.
+   */
+  setMultiplePositions(positions: Map<string, { x: number; y: number }>): void {
+    positions.forEach((pos, nodeId) => {
+      const node = this.nodeMap.get(nodeId);
+      if (node) {
+        node.x = pos.x;
+        node.y = pos.y;
+      }
+    });
+    this.updatePositionSignal();
+  }
+
+  /**
+   * Setzt Positionen TEMPORÄR (ohne in userPositions zu speichern).
+   * Für Fokus-Modus - Positionen gehen beim Defokussieren verloren.
+   */
+  setMultiplePositionsTemporary(positions: Map<string, { x: number; y: number }>): void {
+    positions.forEach((pos, nodeId) => {
+      const node = this.nodeMap.get(nodeId);
+      if (node) {
+        node.x = pos.x;
+        node.y = pos.y;
+        // NICHT in userPositions speichern!
+      }
+    });
+    this.updatePositionSignal();
+  }
+
+  /**
+   * Fokus-Modus: Fixiert bestimmte Nodes und lässt andere ausweichen (D3 Kollisionsvermeidung).
+   * @param fixedPositions - Positionen der Fokus-Elemente (werden fixiert)
+   * @param focusChildIds - IDs der Fokus-Kinder (werden später kreisförmig angeordnet)
+   */
+  applyFocusModeWithCollisionAvoidance(
+    fixedPositions: Map<string, { x: number; y: number }>,
+    focusChildIds: Set<string>
+  ): void {
+    console.log('[applyFocusModeWithCollisionAvoidance] fixedPositions:', fixedPositions.size, 'focusChildIds:', focusChildIds.size);
+
+    // Sammle alle fixierten Node-IDs
+    const fixedNodeIds = new Set<string>(fixedPositions.keys());
+    focusChildIds.forEach(id => fixedNodeIds.add(id));
+
+    // 1. Fokus-Elemente fixieren
+    fixedPositions.forEach((pos, nodeId) => {
+      const node = this.nodeMap.get(nodeId);
+      if (node) {
+        node.x = pos.x;
+        node.y = pos.y;
+        node.fx = pos.x;  // Fixieren für Simulation
+        node.fy = pos.y;
+      }
+    });
+
+    // 2. Fokus-Kinder temporär auch fixieren (werden später kreisförmig angeordnet)
+    focusChildIds.forEach(childId => {
+      const node = this.nodeMap.get(childId);
+      if (node) {
+        node.fx = node.x;
+        node.fy = node.y;
+      }
+    });
+
+    // 3. D3 Simulation starten für Kollisionsvermeidung
+    // Größerer Radius für fixierte Nodes damit andere weggeschoben werden
+    const simulation = forceSimulation<LayoutNode>(this.layoutNodes)
+      .alphaDecay(0.05)  // Langsamer abklingen
+      .velocityDecay(0.3)
+      .force('collide', forceCollide<LayoutNode>()
+        .radius(d => {
+          const baseRadius = CONFIG.COLLISION_RADII[Math.min(d.level, 4)] || 65;
+          // Fixierte Nodes bekommen größeren Radius um andere wegzuschieben
+          if (fixedNodeIds.has(d.id)) {
+            return baseRadius + 80;
+          }
+          return baseRadius + 20;
+        })
+        .strength(1.0)
+        .iterations(5)
+      );
+
+    // Simulation laufen lassen (synchron, mehr Iterationen)
+    simulation.tick(100);
+    simulation.stop();
+    console.log('[applyFocusModeWithCollisionAvoidance] simulation done');
+
+    // 4. Fixierungen aufheben (außer L0)
+    for (const node of this.layoutNodes) {
+      if (node.level > 0) {
+        node.fx = undefined;
+        node.fy = undefined;
+      }
+    }
+
+    this.updatePositionSignal();
+  }
+
+  /**
+   * Fokus-Modus: Kinder kreisförmig anordnen mit Lücke LINKS.
+   * ≤5 Kinder: Halbkreis RECHTS
+   * >5 Kinder: Voller Kreis mit Lücke bei 180° (links)
+   * Speichert NICHT in userPositions (temporär).
+   */
+  arrangeChildrenCircularFocusMode(parentId: string, childIds: string[]): void {
+    console.log('[arrangeChildrenCircularFocusMode] parentId:', parentId, 'childIds:', childIds.length);
+    const parent = this.nodeMap.get(parentId);
+    if (!parent || parent.x === undefined || parent.y === undefined) {
+      console.log('[arrangeChildrenCircularFocusMode] ABORT - parent not found or no position', parent);
+      return;
+    }
+    if (childIds.length === 0) {
+      console.log('[arrangeChildrenCircularFocusMode] ABORT - no children');
+      return;
+    }
+
+    const parentX = parent.x;
+    const parentY = parent.y;
+    const count = childIds.length;
+    console.log('[arrangeChildrenCircularFocusMode] parent pos:', parentX, parentY, 'count:', count);
+
+    // Radius berechnen
+    const childLevel = Math.min(parent.level + 1, 4);
+    const childRadius = CONFIG.COLLISION_RADII[childLevel] || 65;
+    const parentRadius = CONFIG.COLLISION_RADII[parent.level] || 100;
+
+    let radius: number;
+    if (count <= 5) {
+      radius = parentRadius + childRadius + 40 + count * 25;
+    } else {
+      // Voller Kreis: Jedes Kind braucht ca. 90px Umfang
+      const minCircumference = count * 90;
+      radius = Math.max(parentRadius + childRadius + 60, minCircumference / (2 * Math.PI));
+    }
+
+    if (count <= 5) {
+      // ≤5 Kinder: Halbkreis RECHTS (von oben nach unten: -90° bis +90°)
+      const startAngle = -Math.PI / 2;  // -90° = oben
+      const endAngle = Math.PI / 2;     // +90° = unten
+      const angleStep = count > 1 ? (endAngle - startAngle) / (count - 1) : 0;
+
+      childIds.forEach((childId, index) => {
+        const node = this.nodeMap.get(childId);
+        if (!node) return;
+
+        const angle = count === 1 ? 0 : startAngle + index * angleStep;
+        node.x = parentX + Math.cos(angle) * radius;
+        node.y = parentY + Math.sin(angle) * radius;
+        // NICHT in userPositions speichern!
+      });
+    } else {
+      // >5 Kinder: Voller Kreis mit Lücke LINKS (bei 160°-200°)
+      const GAP_START_DEG = 160;
+      const GAP_END_DEG = 200;
+      const gapStartRad = GAP_START_DEG * Math.PI / 180;
+      const gapEndRad = GAP_END_DEG * Math.PI / 180;
+      const gapSizeRad = gapEndRad - gapStartRad;
+
+      const availableAngle = 2 * Math.PI - gapSizeRad;
+      const angleStep = availableAngle / count;
+
+      childIds.forEach((childId, index) => {
+        const node = this.nodeMap.get(childId);
+        if (!node) return;
+
+        // Start bei 0° (rechts), im Uhrzeigersinn
+        let angle = index * angleStep;
+
+        // Wenn wir in den Lückenbereich kommen: überspringe die Lücke
+        if (angle >= gapStartRad) {
+          angle += gapSizeRad;
+        }
+
+        node.x = parentX + Math.cos(angle) * radius;
+        node.y = parentY + Math.sin(angle) * radius;
+        // NICHT in userPositions speichern!
+      });
+    }
+
+    this.updatePositionSignal();
+  }
+
+  /**
+   * Setzt alle Nodes auf ihre ursprünglichen Positionen zurück.
+   * Verwendet userPositions falls vorhanden, sonst idealPositions.
+   */
+  resetToOriginalPositions(): void {
+    for (const node of this.layoutNodes) {
+      if (node.level === 0) continue;
+
+      const userPos = this.userPositions.get(node.id);
+      if (userPos) {
+        node.x = userPos.x;
+        node.y = userPos.y;
+      } else {
+        node.x = node.idealX;
+        node.y = node.idealY;
+      }
+    }
+    this.updatePositionSignal();
+  }
+
+  /**
    * Ordnet Kinder-Nodes kreisförmig um einen Parent an.
    * Verwendet konzentrische Ringe wenn zu viele Kinder für einen Ring.
    * Positioniert auch Enkel-Nodes so, dass sie vom Großeltern-Node weg zeigen.

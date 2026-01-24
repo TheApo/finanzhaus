@@ -250,10 +250,26 @@
           parentInBranch: false
         }"
       ></ng-container>
+
     </div>
   </div>
 
-  <!-- Tooltip (rendered outside MindMap hierarchy) -->
+  <!-- Info-Panel für L3+ Nodes (außerhalb MindMap, immer oben) -->
+  @if (selectedInfoNode(); as infoNode) {
+    @if (infoNode.tooltip && infoPanelPosition(); as pos) {
+      <div
+        class="info-panel"
+        [style.left.px]="pos.x"
+        [style.top.px]="pos.y"
+        (click)="$event.stopPropagation()"
+        (mousedown)="$event.stopPropagation()"
+      >
+        <div class="info-panel__content" [innerHTML]="infoNode.tooltip"></div>
+      </div>
+    }
+  }
+
+  <!-- Hover-Tooltip für L0-L2 (rendered outside MindMap hierarchy) -->
   @if (hoveredNode()?.tooltip && tooltipPosition()) {
     <div
       class="tooltip"
@@ -297,7 +313,7 @@
     >
       <!-- Verbindungslinien zu Kindern -->
       @if (((+level) === 0 || isExpanded || isThisFocused || isThisParent || isThisInBranch) && node.children?.length) {
-        <svg class="connections" [class.connections--level-0]="(+level) === 0" [class.connections--level-1]="(+level) === 1">
+        <svg class="connections" [class.connections--level-0]="(+level) === 0" [class.connections--level-1]="(+level) === 1" [class.connections--level-2]="(+level) === 2">
           @for (child of node.children; track child.id) {
             @let forceChildPos = getForcePosition(child);
             @let forceNodePos = getForcePosition(node);
@@ -314,6 +330,7 @@
       }
 
       <!-- Der Node selbst -->
+      @let isInfoSelected = selectedInfoNode()?.id === node.id;
       <div
         class="node"
         [ngClass]="[
@@ -322,14 +339,16 @@
           isNodeDimmed(node, (+level), parentNode?.id) ? 'node--dimmed' : '',
           shouldBlurNode(node, (+level), parentNode) ? 'node--blurred' : '',
           isFocusedNode(node) ? 'node--focused' : '',
+          isNodeInFocus(node) ? 'node--multi-focused' : '',
           isNodeDragging(node) ? 'node--dragging' : '',
-          canDragNode(+level) ? 'node--draggable' : ''
+          canDragNode(+level) ? 'node--draggable' : '',
+          isInfoSelected ? 'node--info-selected' : ''
         ]"
-        (click)="(+level) >= 1 ? null : handleNodeClick(node, (+level), parentNode, rootNode)"
+        (click)="(+level) >= 1 ? $event.stopPropagation() : handleNodeClick(node, (+level), parentNode, rootNode)"
         (mousedown)="(+level) >= 1 ? onNodeDragStart($event, node, (+level), parentNode, rootNode) : null"
         (touchstart)="(+level) >= 1 ? onNodeTouchStart($event, node, (+level), parentNode, rootNode) : null"
         (contextmenu)="onNodeContextMenu($event, node, (+level))"
-        (mouseenter)="onNodeMouseEnter($event, node)"
+        (mouseenter)="onNodeMouseEnter($event, node, +level)"
         (mouseleave)="onNodeMouseLeave()"
       >
         <div class="node__circle">
@@ -339,8 +358,8 @@
         </div>
         <span class="node__label no-select">{{ node.label }}</span>
 
-        <!-- Circular Arrange Button - erscheint bei expandiertem Level 1 oder fokussiertem Level 2 Node mit Kindern -->
-        @if ((((+level) === 1 && isExpanded) || ((+level) === 2 && isFocusedNode(node))) && node.children?.length) {
+        <!-- Circular Arrange Button - erscheint bei expandiertem oder fokussiertem Level 1/2 Node mit Kindern -->
+        @if (((+level) === 1 || (+level) === 2) && (isExpanded || isThisFocused) && node.children?.length) {
           <button
             class="node__arrange-btn no-select"
             (click)="arrangeChildrenCircular(node, $event)"

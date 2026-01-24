@@ -44,8 +44,8 @@ const dataByModeAndLanguage: Record<DataMode, Record<Language, FinanzData>> = {
     en: beratungDataEn as unknown as FinanzData
   },
   produkte: {
-    de: produkteDataDe,
-    en: produkteDataEn
+    de: produkteDataDe as unknown as FinanzData,
+    en: produkteDataEn as unknown as FinanzData
   }
 };
 

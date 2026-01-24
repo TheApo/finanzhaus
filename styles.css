@@ -1262,6 +1262,26 @@ app-root {
     0 8px 30px rgba(0, 0, 0, 0.15);     /* Bestehender Schatten */
 }
 
+/* Multi-Fokus Highlight */
+.node--multi-focused .node__circle {
+  box-shadow:
+    0 0 0 2px var(--color-highlight),
+    0 0 0 4px var(--color-white),
+    0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* L3+ Node mit offenem Info-Panel - hervorgehoben */
+.node--info-selected .node__circle {
+  box-shadow:
+    0 0 0 2px var(--color-highlight),  /* Rote Außen-Umrandung */
+    0 8px 30px rgba(0, 0, 0, 0.2);      /* Stärkerer Schatten */
+}
+
+.node--info-selected {
+  filter: none !important;              /* Nie blurren wenn Info offen */
+  opacity: 1 !important;
+}
+
 /* Blur-Effekt für nicht-relevante Nodes im Fokus-Modus */
 .node--blurred {
   filter: blur(1.5px) !important;
@@ -1375,6 +1395,13 @@ app-root {
   transition: opacity 0.3s ease-out, stroke-width 0.3s ease-out;
 }
 
+/* L2 zu L3 Linien: hellgrau für bessere Label-Lesbarkeit */
+.connections--level-2 .connections__line {
+  stroke: #64748b;
+  opacity: 0.5;
+  stroke-width: 1.2;
+}
+
 /* Nur fokussierte Wrapper heben ihre Linien hervor */
 .node-wrapper--focused .connections__line {
   stroke: #1e293b;
@@ -1412,6 +1439,14 @@ app-root {
   opacity: 0.9;
 }
 
+/* L2 zu L3 Linien: hellgrau auch im Fokus-Modus */
+.mindmap__center--filtering .connections--level-2 .connections__line:not(.connections__line--blurred),
+.mindmap__center--focus-mode .connections--level-2 .connections__line:not(.connections__line--blurred) {
+  stroke: #64748b;
+  stroke-width: 2;
+  opacity: 0.6;
+}
+
 .connections__arrowhead {
   fill: currentColor;
   opacity: 0.4;
@@ -1444,7 +1479,40 @@ app-root {
 }
 
 /* --------------------------------------------------------------------------
-   Tooltip
+   Info Panel (für L3+ Click) - außerhalb MindMap, position: fixed
+   -------------------------------------------------------------------------- */
+.info-panel {
+  position: fixed;
+  z-index: 100000;
+  pointer-events: auto;
+  /* left/top zeigen auf Node-Mitte */
+  /* translateX(-50%) zentriert horizontal */
+  /* translateY(-100%) + margin-top verschiebt ÜBER den Node */
+  transform: translateX(-50%) translateY(-100%);
+  margin-top: -30px; /* Abstand zwischen Box und Node */
+}
+
+.info-panel__content {
+  background-color: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) 1.25rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-width: 280px;
+  max-width: 320px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  text-align: left;
+  animation: tooltip-appear 0.15s ease-out;
+  white-space: normal;
+}
+
+.info-panel__content b {
+  color: var(--color-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Tooltip (für Hover, L0-L2)
    -------------------------------------------------------------------------- */
 .tooltip {
   position: fixed;
