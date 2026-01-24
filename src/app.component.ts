@@ -436,33 +436,33 @@ export class AppComponent {
 
   // L1 Node ID → Piktogramm-Bild Mapping
   private l1ImageMap: Record<string, string> = {
-    'l1_zahlungsverkehr': '/assets/10_FK_Zahlungsverkehr.png',
-    'l1_finanzierung': '/assets/20_FK_Finanzierung.png',
-    'l1_versicherung': '/assets/30_FK_Versicherung.png',
-    'l1_vorsorge_und_mitarbeiterbindung': '/assets/40_FK_Vorsorge & Mitarbeiterbindung.png',
-    'l1_vermoegen_eigenkapital': '/assets/50_FK_Vermögen & Eigenkapital.png',
-    'l1_auslandsgeschaeft': '/assets/60_FK_Auslandsgeschäft.png',
-    'l1_gruendung_nachfolge': '/assets/70_FK_Gründung & Nachfolge.png'
+    'l1_zahlungsverkehr': './assets/10_FK_Zahlungsverkehr.png',
+    'l1_finanzierung': './assets/20_FK_Finanzierung.png',
+    'l1_versicherung': './assets/30_FK_Versicherung.png',
+    'l1_vorsorge_und_mitarbeiterbindung': './assets/40_FK_Vorsorge & Mitarbeiterbindung.png',
+    'l1_vermoegen_eigenkapital': './assets/50_FK_Vermögen & Eigenkapital.png',
+    'l1_auslandsgeschaeft': './assets/60_FK_Auslandsgeschäft.png',
+    'l1_gruendung_nachfolge': './assets/70_FK_Gründung & Nachfolge.png'
   };
 
   // L2 Node ID → Piktogramm-Bild Mapping
   private l2ImageMap: Record<string, string> = {
-    'l2_zahlungsverkehr_zahlungsverkehr_im_sepa_raum_abwickeln': '/assets/11_FK_Zahlungsverkehr im SEPA-Raum abwickeln.png',
-    'l2_zahlungsverkehr_liquiditaet_vorhalten_und_absichern': '/assets/12_FK_Liquidität absichern und vorhalten.png',
-    'l2_finanzierung_investitionen_finanzieren': '/assets/21_FK_Investitionen finanzieren.png',
-    'l2_finanzierung_finanzierungen_optimieren': '/assets/22_FK_Finanzierungen optimieren.png',
-    'l2_versicherung_notfall_regeln': '/assets/31_FK_Notfall regeln.png',
-    'l2_versicherung_sachwerte_absichern': '/assets/32_FK_Sachwerte absichern.png',
-    'l2_versicherung_vermoegenswerte_absichern': '/assets/33_FK_Vermögenswerte absichern.png',
-    'l2_vorsorge_und_mitarbeiterbindung_mitarbeiter_binden': '/assets/41_FK_Mitarbeiter binden.png',
-    'l2_vorsorge_und_mitarbeiterbindung_betriebliche_altersvorsorge_anbieten': '/assets/42_FK_Betriebliche Altersvorsorge anbieten.png',
-    'l2_vermoegen_eigenkapital_vermoegen_ek_aufbauen_und_anlegen': '/assets/51_FK_Vermögen EK aufbauen und anlegen.png',
-    'l2_vermoegen_eigenkapital_vermoegen_ek_verwenden': '/assets/52_FK_Vermögen EK verwenden.png',
-    'l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_abwickeln': '/assets/61_FK_Warengeschäfte und Dienstleistungen abwickeln.png',
-    'l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_finanzieren': '/assets/62_FK_Warengeschäfte und Dienstleistungen finanzieren.png',
-    'l2_auslandsgeschaeft_waehrungsschwankungen_absichern': '/assets/63_FK_Währungsschwankungen absichern.png',
-    'l2_gruendung_nachfolge_existenzgruendung_finanzieren': '/assets/71_FK_Existenzgründung_finanzieren.png',
-    'l2_gruendung_nachfolge_unternehmensnachfolge_regeln': '/assets/72_FK_Unternehmensnachfolge_regeln.png'
+    'l2_zahlungsverkehr_zahlungsverkehr_im_sepa_raum_abwickeln': './assets/11_FK_Zahlungsverkehr im SEPA-Raum abwickeln.png',
+    'l2_zahlungsverkehr_liquiditaet_vorhalten_und_absichern': './assets/12_FK_Liquidität absichern und vorhalten.png',
+    'l2_finanzierung_investitionen_finanzieren': './assets/21_FK_Investitionen finanzieren.png',
+    'l2_finanzierung_finanzierungen_optimieren': './assets/22_FK_Finanzierungen optimieren.png',
+    'l2_versicherung_notfall_regeln': './assets/31_FK_Notfall regeln.png',
+    'l2_versicherung_sachwerte_absichern': './assets/32_FK_Sachwerte absichern.png',
+    'l2_versicherung_vermoegenswerte_absichern': './assets/33_FK_Vermögenswerte absichern.png',
+    'l2_vorsorge_und_mitarbeiterbindung_mitarbeiter_binden': './assets/41_FK_Mitarbeiter binden.png',
+    'l2_vorsorge_und_mitarbeiterbindung_betriebliche_altersvorsorge_anbieten': './assets/42_FK_Betriebliche Altersvorsorge anbieten.png',
+    'l2_vermoegen_eigenkapital_vermoegen_ek_aufbauen_und_anlegen': './assets/51_FK_Vermögen EK aufbauen und anlegen.png',
+    'l2_vermoegen_eigenkapital_vermoegen_ek_verwenden': './assets/52_FK_Vermögen EK verwenden.png',
+    'l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_abwickeln': './assets/61_FK_Warengeschäfte und Dienstleistungen abwickeln.png',
+    'l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_finanzieren': './assets/62_FK_Warengeschäfte und Dienstleistungen finanzieren.png',
+    'l2_auslandsgeschaeft_waehrungsschwankungen_absichern': './assets/63_FK_Währungsschwankungen absichern.png',
+    'l2_gruendung_nachfolge_existenzgruendung_finanzieren': './assets/71_FK_Existenzgründung_finanzieren.png',
+    'l2_gruendung_nachfolge_unternehmensnachfolge_regeln': './assets/72_FK_Unternehmensnachfolge_regeln.png'
   };
 
   getL1ImagePath(nodeId: string): string | null {
