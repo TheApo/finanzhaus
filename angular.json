@@ -19,6 +19,13 @@
             "index": "./index.html",
             "browser": "./index.tsx",
             "tsConfig": "./tsconfig.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "./assets",
+                "output": "/assets"
+              }
+            ],
             "styles": ["./styles.css"]
           },
           "configurations": {

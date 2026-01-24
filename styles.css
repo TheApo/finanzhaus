@@ -737,6 +737,27 @@ app-root {
   transition: transform 0.3s ease-out;
 }
 
+/* Piktogramm-Bilder (JPG statt SVG) */
+.node__icon-image {
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.node__icon-image--l1 {
+  width: 4rem;
+  height: 4rem;
+}
+
+.node__icon-image--l2 {
+  width: 4rem;
+  height: 4rem;
+}
+
+.node__icon-image--l3 {
+  width: 3rem;
+  height: 3rem;
+}
+
 .node__label {
   position: absolute;
   top: 100%;
@@ -1550,8 +1571,8 @@ app-root {
 .finanzhaus {
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
   padding: var(--spacing-sm);
-  max-width: 340px;
-  font-size: var(--font-size-base);
+  max-width: 480px;
+  font-size: var(--font-size-sm);
   user-select: none;
 }
 
@@ -1663,13 +1684,14 @@ app-root {
   grid-template-columns: repeat(4, 1fr);
   gap: 2px;
   margin-bottom: 2px;
-  height: 5rem;
+  min-height: 140px;
 }
 
 .finanzhaus__pillar {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: var(--spacing-xs);
   text-align: center;
   line-height: 1.2;
@@ -1677,6 +1699,16 @@ app-root {
   transition: opacity var(--transition-fast);
   hyphens: auto;
   -webkit-hyphens: auto;
+}
+
+.finanzhaus__pillar--with-icons {
+  padding-top: var(--spacing-sm);
+}
+
+.finanzhaus__pillar-title {
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  margin-bottom: var(--spacing-xs);
 }
 
 .finanzhaus__pillar:hover {
@@ -1710,4 +1742,75 @@ app-root {
   background-color: var(--color-ausland);
   color: var(--color-ausland-text);
   font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Sections with Icons
+   -------------------------------------------------------------------------- */
+.finanzhaus__section--with-icons {
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.finanzhaus__section-title {
+  font-weight: 600;
+  display: block;
+  margin-bottom: var(--spacing-xs);
+}
+
+/* --------------------------------------------------------------------------
+   Icon Items (Piktogramme)
+   -------------------------------------------------------------------------- */
+.finanzhaus__icons {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.finanzhaus__icons--vertical {
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+.finanzhaus__icon-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.65rem;
+  line-height: 1.2;
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.finanzhaus__icon-item:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.02);
+}
+
+.finanzhaus__icon-item--active {
+  background-color: rgba(255, 255, 255, 0.3);
+  outline: 2px solid var(--color-white);
+  outline-offset: 1px;
+}
+
+.finanzhaus__icons--vertical .finanzhaus__icon-item {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.finanzhaus__icon-item img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.finanzhaus__icon-item span {
+  text-align: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }

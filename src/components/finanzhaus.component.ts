@@ -14,10 +14,17 @@ export class FinanzhausComponent {
 
   activeCategories = input<Set<CategoryId>>(new Set());
   hoveredCategories = input<CategoryId[]>([]);
+  selectedL2NodeIds = input<Set<string>>(new Set());
   categorySelected = output<CategoryId>();
+  l2Selected = output<{ l2Id: string; fallbackCategory: CategoryId }>();
 
   selectCategory(id: CategoryId): void {
     this.categorySelected.emit(id);
+  }
+
+  selectL2(l2Id: string, fallbackCategory: CategoryId, event: Event): void {
+    event.stopPropagation();
+    this.l2Selected.emit({ l2Id, fallbackCategory });
   }
 
   isActive(id: CategoryId): boolean {
@@ -26,6 +33,10 @@ export class FinanzhausComponent {
 
   isHovered(id: CategoryId): boolean {
     return this.hoveredCategories().includes(id);
+  }
+
+  isL2Active(l2Id: string): boolean {
+    return this.selectedL2NodeIds().has(l2Id);
   }
 
   t(key: string): string {

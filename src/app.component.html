@@ -207,7 +207,9 @@
       <app-finanzhaus
         [activeCategories]="activeCategories()"
         [hoveredCategories]="hoveredCategories()"
+        [selectedL2NodeIds]="selectedL2NodeIds()"
         (categorySelected)="toggleCategory($event)"
+        (l2Selected)="handleL2Selection($event)"
       />
     </div>
   }
@@ -352,9 +354,17 @@
         (mouseleave)="onNodeMouseLeave()"
       >
         <div class="node__circle">
-          <svg class="node__icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getNodeIconPath(node, level)" />
-          </svg>
+          @if ((+level) === 1 && getL1ImagePath(node.id)) {
+            <img class="node__icon-image node__icon-image--l1" [src]="getL1ImagePath(node.id)" [alt]="node.label" />
+          } @else if ((+level) === 2 && getL2ImagePath(node.id)) {
+            <img class="node__icon-image node__icon-image--l2" [src]="getL2ImagePath(node.id)" [alt]="node.label" />
+          } @else if ((+level) >= 3 && parentNode && getL2ImagePath(parentNode.id)) {
+            <img class="node__icon-image node__icon-image--l3" [src]="getL2ImagePath(parentNode.id)" [alt]="node.label" />
+          } @else {
+            <svg class="node__icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getNodeIconPath(node, level)" />
+            </svg>
+          }
         </div>
         <span class="node__label no-select">{{ node.label }}</span>
 

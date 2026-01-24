@@ -53,6 +53,7 @@ export class AppComponent {
 
   // State - Multi-Select Filter
   activeCategories = signal<Set<CategoryId>>(new Set());
+  selectedL2NodeIds = signal<Set<string>>(new Set());  // Für spezifische L2-Filterung aus Finanzhaus (Multi-Select)
   hoveredNode = signal<Node | null>(null);  // Für Hover-Tooltip (nur L0-L2)
   hoveredPathNode = signal<Node | null>(null);  // Für Pfad-Highlighting und Unblur
   hoveredCategories = signal<CategoryId[]>([]);
@@ -412,6 +413,45 @@ export class AppComponent {
     'building': 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z'
   };
 
+  // L1 Node ID → Piktogramm-Bild Mapping
+  private l1ImageMap: Record<string, string> = {
+    'l1_zahlungsverkehr': '/assets/10_FK_Zahlungsverkehr.png',
+    'l1_finanzierung': '/assets/20_FK_Finanzierung.png',
+    'l1_versicherung': '/assets/30_FK_Versicherung.png',
+    'l1_vorsorge_und_mitarbeiterbindung': '/assets/40_FK_Vorsorge & Mitarbeiterbindung.png',
+    'l1_vermoegen_eigenkapital': '/assets/50_FK_Vermögen & Eigenkapital.png',
+    'l1_auslandsgeschaeft': '/assets/60_FK_Auslandsgeschäft.png',
+    'l1_gruendung_nachfolge': '/assets/70_FK_Gründung & Nachfolge.png'
+  };
+
+  // L2 Node ID → Piktogramm-Bild Mapping
+  private l2ImageMap: Record<string, string> = {
+    'l2_zahlungsverkehr_zahlungsverkehr_im_sepa_raum_abwickeln': '/assets/11_FK_Zahlungsverkehr im SEPA-Raum abwickeln.png',
+    'l2_zahlungsverkehr_liquiditaet_vorhalten_und_absichern': '/assets/12_FK_Liquidität absichern und vorhalten.png',
+    'l2_finanzierung_investitionen_finanzieren': '/assets/21_FK_Investitionen finanzieren.png',
+    'l2_finanzierung_finanzierungen_optimieren': '/assets/22_FK_Finanzierungen optimieren.png',
+    'l2_versicherung_notfall_regeln': '/assets/31_FK_Notfall regeln.png',
+    'l2_versicherung_sachwerte_absichern': '/assets/32_FK_Sachwerte absichern.png',
+    'l2_versicherung_vermoegenswerte_absichern': '/assets/33_FK_Vermögenswerte absichern.png',
+    'l2_vorsorge_und_mitarbeiterbindung_mitarbeiter_binden': '/assets/41_FK_Mitarbeiter binden.png',
+    'l2_vorsorge_und_mitarbeiterbindung_betriebliche_altersvorsorge_anbieten': '/assets/42_FK_Betriebliche Altersvorsorge anbieten.png',
+    'l2_vermoegen_eigenkapital_vermoegen_ek_aufbauen_und_anlegen': '/assets/51_FK_Vermögen EK aufbauen und anlegen.png',
+    'l2_vermoegen_eigenkapital_vermoegen_ek_verwenden': '/assets/52_FK_Vermögen EK verwenden.png',
+    'l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_abwickeln': '/assets/61_FK_Warengeschäfte und Dienstleistungen abwickeln.png',
+    'l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_finanzieren': '/assets/62_FK_Warengeschäfte und Dienstleistungen finanzieren.png',
+    'l2_auslandsgeschaeft_waehrungsschwankungen_absichern': '/assets/63_FK_Währungsschwankungen absichern.png',
+    'l2_gruendung_nachfolge_existenzgruendung_finanzieren': '/assets/71_FK_Existenzgründung_finanzieren.png',
+    'l2_gruendung_nachfolge_unternehmensnachfolge_regeln': '/assets/72_FK_Unternehmensnachfolge_regeln.png'
+  };
+
+  getL1ImagePath(nodeId: string): string | null {
+    return this.l1ImageMap[nodeId] || null;
+  }
+
+  getL2ImagePath(nodeId: string): string | null {
+    return this.l2ImageMap[nodeId] || null;
+  }
+
   getIconPath(categoryId: CategoryId): string {
     return this.iconPaths[categoryId] || this.iconPaths.strategie;
   }
@@ -432,53 +472,238 @@ export class AppComponent {
   // --- Actions ---
 
   toggleCategory(catId: CategoryId) {
-    const current = new Set(this.activeCategories());
+    const currentCategories = new Set(this.activeCategories());
+    const currentL2s = new Set(this.selectedL2NodeIds());
     const inFocusMode = this.isInFocusMode();
 
-    if (current.has(catId)) {
-      // Kategorie entfernen
-      current.delete(catId);
-      this.activeCategories.set(current);
+    // Finde alle L2-Nodes die zu dieser Kategorie gehören und entferne sie
+    const l2sToRemove = this.getL2NodesForCategory(catId);
+    for (const l2Id of l2sToRemove) {
+      currentL2s.delete(l2Id);
+    }
+    this.selectedL2NodeIds.set(currentL2s);
 
-      if (current.size === 0 && !inFocusMode) {
+    if (currentCategories.has(catId)) {
+      // Kategorie entfernen
+      currentCategories.delete(catId);
+      this.activeCategories.set(currentCategories);
+
+      if (currentCategories.size === 0 && currentL2s.size === 0 && !inFocusMode) {
         // Keine Filter mehr aktiv und kein Fokus → gespeicherten Zustand wiederherstellen
         if (this.savedExpandedNodes !== null) {
           this.expandedNodes.set(new Set(this.savedExpandedNodes));
           this.savedExpandedNodes = null;
         }
-        this.animatePanTo(0, 0);
+        // Auf alle sichtbaren Nodes zentrieren
+        setTimeout(() => this.centerOnVisibleNodes(), 100);
       } else if (!inFocusMode) {
         // Noch andere Filter aktiv (kein Fokus) → auf diese zentrieren
-        setTimeout(() => this.centerOnFilteredNodes(), 100);
+        setTimeout(() => this.centerOnAllFilteredNodes(), 100);
       }
       // Im Fokus-Modus: Nur Filter ändern, nichts expandieren/zentrieren
     } else {
       // Kategorie hinzufügen
-      current.add(catId);
-      this.activeCategories.set(current);
+      currentCategories.add(catId);
+      this.activeCategories.set(currentCategories);
 
       if (inFocusMode) {
         // Im Fokus-Modus: Nur Filter setzen, auf gefilterte Fokus-Nodes zentrieren
         setTimeout(() => this.centerOnFilteredFocusNodes(), 100);
       } else {
         // Erster Filter? Zustand speichern
-        if (current.size === 1) {
+        if (currentCategories.size === 1 && currentL2s.size === 0) {
           this.savedExpandedNodes = new Set(this.expandedNodes());
         }
 
         // Alle Level 1 Nodes expandieren die passende Kinder haben
         const expanded = new Set(this.expandedNodes());
         for (const level1Node of this.mainNodes()) {
-          if (this.hasAnyCategoryMatch(level1Node, current)) {
+          if (this.hasAnyCategoryMatch(level1Node, currentCategories)) {
             this.expandNodeAndChildren(level1Node, expanded);
           }
         }
         this.expandedNodes.set(expanded);
 
         // View auf passende Nodes zentrieren
-        setTimeout(() => this.centerOnFilteredNodes(), 100);
+        setTimeout(() => this.centerOnAllFilteredNodes(), 100);
       }
     }
+  }
+
+  // Hilfsmethode: Findet alle L2-Node-IDs die DIREKTE KINDER eines L1-Nodes mit dieser Kategorie sind
+  // Wichtig: Prüft den L1-Node, nicht die L2-Nodes, damit L2s anderer Bereiche nicht betroffen sind
+  private getL2NodesForCategory(catId: CategoryId): string[] {
+    const l2Ids: string[] = [];
+    const root = this.rootNode();
+
+    // Durch alle L1-Nodes iterieren
+    if (root.children) {
+      for (const l1Node of root.children) {
+        // Prüfen ob dieser L1-Node die Kategorie hat
+        if (l1Node.categoryIds.includes(catId)) {
+          // Alle L2-Kinder dieses L1 sammeln
+          if (l1Node.children) {
+            for (const l2Node of l1Node.children) {
+              l2Ids.push(l2Node.id);
+            }
+          }
+        }
+      }
+    }
+
+    return l2Ids;
+  }
+
+  // Handler für L2-Selektion aus dem Finanzhaus
+  handleL2Selection(event: { l2Id: string; fallbackCategory: CategoryId }): void {
+    const { l2Id, fallbackCategory } = event;
+
+    // Prüfe ob der L2-Node im aktuellen Baum existiert
+    const l2Node = this.findNodeByIdRecursive(this.rootNode(), l2Id);
+
+    if (l2Node) {
+      const currentL2s = new Set(this.selectedL2NodeIds());
+      const currentCategories = new Set(this.activeCategories());
+
+      if (currentL2s.has(l2Id)) {
+        // Toggle: L2 ist bereits selektiert → entfernen
+        currentL2s.delete(l2Id);
+        this.selectedL2NodeIds.set(currentL2s);
+
+        // Wenn keine Filter mehr aktiv → Zustand wiederherstellen
+        if (currentL2s.size === 0 && currentCategories.size === 0) {
+          if (this.savedExpandedNodes !== null) {
+            this.expandedNodes.set(new Set(this.savedExpandedNodes));
+            this.savedExpandedNodes = null;
+          }
+          setTimeout(() => this.centerOnVisibleNodes(), 100);
+        } else {
+          setTimeout(() => this.centerOnAllFilteredNodes(), 100);
+        }
+        return;
+      }
+
+      // L2 hinzufügen
+      // Erster Filter? Zustand speichern
+      if (currentCategories.size === 0 && currentL2s.size === 0) {
+        this.savedExpandedNodes = new Set(this.expandedNodes());
+      }
+
+      // Prüfen ob das übergeordnete L1 (via Kategorie) selektiert ist → wenn ja, entfernen
+      // Das L2 ersetzt sozusagen das L1 für diesen Bereich
+      for (const catId of l2Node.categoryIds) {
+        if (currentCategories.has(catId)) {
+          currentCategories.delete(catId);
+        }
+      }
+      this.activeCategories.set(currentCategories);
+
+      // L2 zum Set hinzufügen
+      currentL2s.add(l2Id);
+      this.selectedL2NodeIds.set(currentL2s);
+
+      // Pfad zum L2 expandieren INKL. L2 selbst (damit Kinder sichtbar sind)
+      const path = this.findPathToNode(this.rootNode(), l2Id);
+      if (path) {
+        const expanded = new Set(this.expandedNodes());
+        for (const nodeId of path) {
+          expanded.add(nodeId);
+        }
+        this.expandedNodes.set(expanded);
+      }
+
+      // View auf alle gefilterten Nodes zentrieren
+      setTimeout(() => this.centerOnAllFilteredNodes(), 150);
+    } else {
+      // L2-Node nicht gefunden: Fallback auf L1-Kategorie
+      this.toggleCategory(fallbackCategory);
+    }
+  }
+
+  // Alle L2-Auswahl zurücksetzen
+  private clearL2Selection(): void {
+    this.selectedL2NodeIds.set(new Set());
+
+    // Wenn auch keine L1-Kategorien mehr aktiv: Zustand wiederherstellen
+    if (this.activeCategories().size === 0) {
+      if (this.savedExpandedNodes !== null) {
+        this.expandedNodes.set(new Set(this.savedExpandedNodes));
+        this.savedExpandedNodes = null;
+      }
+      setTimeout(() => this.centerOnVisibleNodes(), 100);
+    } else {
+      // Noch L1-Kategorien aktiv: auf diese zentrieren
+      setTimeout(() => this.centerOnAllFilteredNodes(), 100);
+    }
+  }
+
+  // View auf L2-Node und dessen sichtbare Elemente zentrieren
+  private centerOnL2Node(l2Id: string): void {
+    const positions = this.forcePositions();
+    const l2Node = this.findNodeByIdRecursive(this.rootNode(), l2Id);
+    if (!l2Node) return;
+
+    // Alle sichtbaren Node-Positionen sammeln:
+    // 1. Pfad zum L2 (L0, L1)
+    // 2. L2 selbst
+    // 3. Alle Kinder des L2
+    const visiblePositions: { x: number; y: number }[] = [];
+
+    // Pfad zum L2-Node (L0 und L1)
+    const path = this.findPathToNode(this.rootNode(), l2Id);
+    if (path) {
+      for (const nodeId of path) {
+        const pos = positions.get(nodeId);
+        if (pos) visiblePositions.push(pos);
+      }
+    }
+
+    // Kinder des L2-Nodes rekursiv sammeln
+    const collectChildren = (node: Node) => {
+      const pos = positions.get(node.id);
+      if (pos) visiblePositions.push(pos);
+
+      if (node.children) {
+        for (const child of node.children) {
+          collectChildren(child);
+        }
+      }
+    };
+
+    if (l2Node.children) {
+      for (const child of l2Node.children) {
+        collectChildren(child);
+      }
+    }
+
+    if (visiblePositions.length === 0) return;
+
+    // Zentrier- und Zoom-Funktion aufrufen
+    this.centerAndZoomToFit(visiblePositions);
+  }
+
+  // Hilfsmethode: Findet einen Node rekursiv im Baum
+  private findNodeByIdRecursive(node: Node, targetId: string): Node | null {
+    if (node.id === targetId) {
+      return node;
+    }
+    if (node.children) {
+      for (const child of node.children) {
+        const found = this.findNodeByIdRecursive(child, targetId);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  // Hilfsmethode: Prüft ob ein Node ein Nachkomme eines anderen ist
+  private isDescendantOf(node: Node, ancestor: Node): boolean {
+    if (!ancestor.children) return false;
+    for (const child of ancestor.children) {
+      if (child.id === node.id) return true;
+      if (this.isDescendantOf(node, child)) return true;
+    }
+    return false;
   }
 
   // Zentriert die View auf gefilterte Nodes im Fokus-Pfad
@@ -541,7 +766,7 @@ export class AppComponent {
     this.animatePanTo(-centerX, -centerY);
   }
 
-  // Zentriert die View auf alle Nodes die zum Filter passen
+  // Zentriert die View auf alle Nodes die zum Filter passen (nur L1-Kategorien)
   private centerOnFilteredNodes(): void {
     const positions = this.forcePositions();
     const categories = this.activeCategories();
@@ -575,26 +800,206 @@ export class AppComponent {
 
     if (matchingPositions.length === 0) return;
 
-    // Bounding Box berechnen
+    // Zentrier- und Zoom-Funktion aufrufen
+    this.centerAndZoomToFit(matchingPositions);
+  }
+
+  /**
+   * Zentriert die View auf alle Nodes die durch L1-Kategorien ODER L2-IDs gefiltert sind.
+   * Kombiniert beide Filter-Typen für Multi-Select.
+   */
+  private centerOnAllFilteredNodes(): void {
+    const positions = this.forcePositions();
+    const categories = this.activeCategories();
+    const selectedL2Ids = this.selectedL2NodeIds();
+
+    if (positions.size === 0) return;
+    if (categories.size === 0 && selectedL2Ids.size === 0) return;
+
+    const matchingPositions: { x: number; y: number }[] = [];
+
+    // Sammle alle Nodes die durch L1-Kategorien passen
+    const collectByCategory = (node: Node) => {
+      const pos = positions.get(node.id);
+      if (!pos) return;
+
+      const isMatch = node.categoryIds.some(id => categories.has(id));
+      const hasMatchingChildren = this.hasAnyCategoryMatch(node, categories);
+
+      if (isMatch || hasMatchingChildren) {
+        matchingPositions.push(pos);
+      }
+
+      if (node.children) {
+        for (const child of node.children) {
+          collectByCategory(child);
+        }
+      }
+    };
+
+    // Sammle alle Nodes die durch L2-IDs passen (L2 selbst + Pfad + Kinder)
+    const collectByL2 = (l2Id: string) => {
+      const l2Node = this.findNodeByIdRecursive(this.rootNode(), l2Id);
+      if (!l2Node) return;
+
+      // Pfad zum L2 (inkl. L2 selbst)
+      const path = this.findPathToNode(this.rootNode(), l2Id);
+      if (path) {
+        for (const nodeId of path) {
+          const pos = positions.get(nodeId);
+          if (pos) matchingPositions.push(pos);
+        }
+      }
+
+      // Kinder des L2 rekursiv
+      const collectChildren = (node: Node) => {
+        if (node.children) {
+          for (const child of node.children) {
+            const pos = positions.get(child.id);
+            if (pos) matchingPositions.push(pos);
+            collectChildren(child);
+          }
+        }
+      };
+      collectChildren(l2Node);
+    };
+
+    // L1-Kategorien sammeln
+    if (categories.size > 0) {
+      collectByCategory(this.rootNode());
+    }
+
+    // L2-IDs sammeln
+    for (const l2Id of selectedL2Ids) {
+      collectByL2(l2Id);
+    }
+
+    if (matchingPositions.length === 0) return;
+
+    this.centerAndZoomToFit(matchingPositions);
+  }
+
+  /**
+   * Zentriert die View auf alle aktuell sichtbaren Nodes.
+   * Sammelt alle Nodes die expandiert/sichtbar sind und ruft centerAndZoomToFit auf.
+   */
+  private centerOnVisibleNodes(): void {
+    const positions = this.forcePositions();
+    const expanded = this.expandedNodes();
+    const visiblePositions: { x: number; y: number }[] = [];
+
+    // Alle sichtbaren Nodes sammeln (rekursiv)
+    // level: 0 = Root, 1 = L1, 2 = L2, etc.
+    const collectVisible = (node: Node, level: number, parentExpanded: boolean) => {
+      // Node ist sichtbar wenn:
+      // - Level 0 oder 1 (immer sichtbar)
+      // - Oder Parent ist expandiert
+      const isVisible = level <= 1 || parentExpanded;
+
+      if (isVisible) {
+        const pos = positions.get(node.id);
+        if (pos) visiblePositions.push(pos);
+      }
+
+      // Kinder durchlaufen wenn dieser Node expandiert ist
+      if (node.children) {
+        const thisNodeExpanded = expanded.has(node.id);
+        for (const child of node.children) {
+          collectVisible(child, level + 1, thisNodeExpanded);
+        }
+      }
+    };
+
+    // Von Root starten
+    const root = this.rootNode();
+    collectVisible(root, 0, true);
+
+    if (visiblePositions.length === 0) return;
+
+    this.centerAndZoomToFit(visiblePositions);
+  }
+
+  /**
+   * Zentriert die View auf die gegebenen Positionen und passt den Zoom an,
+   * sodass alle Positionen sichtbar sind.
+   *
+   * Koordinatensystem-Logik:
+   * nodeScreenX = viewportCenterX + forcePos.x * zoom + pan.x
+   *
+   * Um einen Punkt (centerX, centerY) in der Viewport-Mitte zu haben:
+   * pan.x = -centerX * zoom
+   * pan.y = -centerY * zoom
+   */
+  private centerAndZoomToFit(positions: { x: number; y: number }[]): void {
+    if (positions.length === 0) return;
+
+    // Bounding Box berechnen (im Force-Koordinatensystem)
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
 
-    for (const pos of matchingPositions) {
+    for (const pos of positions) {
       minX = Math.min(minX, pos.x);
       maxX = Math.max(maxX, pos.x);
       minY = Math.min(minY, pos.y);
       maxY = Math.max(maxY, pos.y);
     }
 
-    // Mittelpunkt berechnen
+    // Mittelpunkt im Force-Koordinatensystem
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
 
-    // View mit Animation zentrieren
-    this.animatePanTo(-centerX, -centerY);
+    // Bounding-Box-Größe (mit Padding für Node-Größen, ca. 100px pro Seite)
+    const NODE_PADDING = 100;
+    const boxWidth = (maxX - minX) + NODE_PADDING * 2;
+    const boxHeight = (maxY - minY) + NODE_PADDING * 2;
+
+    // Viewport-Größe (mit Margin für UI-Elemente wie Finanzhaus, Toolbar)
+    const VIEWPORT_MARGIN = 0.80; // 80% des Viewports nutzen
+    const viewportWidth = window.innerWidth * VIEWPORT_MARGIN;
+    const viewportHeight = window.innerHeight * VIEWPORT_MARGIN;
+
+    // Benötigten Zoom berechnen, sodass die Bounding-Box in den Viewport passt
+    let newZoom: number;
+
+    if (boxWidth <= 0 || boxHeight <= 0) {
+      // Einzelner Punkt oder sehr kleine Box: Zoom 1 verwenden
+      newZoom = 1;
+    } else {
+      const zoomX = viewportWidth / boxWidth;
+      const zoomY = viewportHeight / boxHeight;
+      newZoom = Math.min(zoomX, zoomY);
+    }
+
+    // Zoom auf Grenzen beschränken
+    newZoom = Math.max(this.ZOOM_MIN, Math.min(this.ZOOM_MAX, newZoom));
+
+    // Nicht weiter reinzoomen als nötig (max 1.0 für Filter-Ansicht)
+    newZoom = Math.min(newZoom, 1.0);
+
+    // Pan berechnen: Um centerX/centerY in der Viewport-Mitte zu haben
+    // Formel: nodeScreenX = viewportCenterX + forcePos.x * zoom + pan.x
+    // Für centerX in Mitte: viewportCenterX = viewportCenterX + centerX * zoom + pan.x
+    // => pan.x = -centerX * zoom
+    const panX = -centerX * newZoom;
+    const panY = -centerY * newZoom;
+
+    // Mit Animation anwenden
+    this.animateZoomAndPanTo(newZoom, panX, panY);
   }
 
-  // Animiert das Pannen zu einer Position
+  // Animiert Zoom und Pan gleichzeitig
+  private animateZoomAndPanTo(zoom: number, panX: number, panY: number): void {
+    this.isAnimatingPan.set(true);
+    this.zoomLevel.set(zoom);
+    this.panOffset.set({ x: panX, y: panY });
+
+    // Animation dauert 400ms (entspricht CSS transition)
+    setTimeout(() => {
+      this.isAnimatingPan.set(false);
+    }, 400);
+  }
+
+  // Animiert das Pannen zu einer Position (ohne Zoom-Änderung)
   private animatePanTo(x: number, y: number): void {
     this.isAnimatingPan.set(true);
     this.panOffset.set({ x, y });
@@ -1948,6 +2353,7 @@ export class AppComponent {
   shouldBlurNode(node: Node, level: number | string, parentNode?: Node | null): boolean {
     const numLevel = Number(level);
     const activeCategories = this.activeCategories();
+    const selectedL2Ids = this.selectedL2NodeIds();
 
     // Level 0 (Root): Nie blurren
     if (numLevel === 0) return false;
@@ -1964,6 +2370,38 @@ export class AppComponent {
 
     // Wenn über L1 gehovert wird: Alle Nachkommen dieses L1 sind scharf
     if (this.isDescendantOfHoveredL1(node)) return false;
+
+    // Multi-Select Filter aktiv (L1-Kategorien und/oder L2-IDs)
+    const hasL1Filter = activeCategories.size > 0;
+    const hasL2Filter = selectedL2Ids.size > 0;
+
+    if (hasL1Filter || hasL2Filter) {
+      // Prüfe ob Node durch L2-Filter sichtbar ist
+      if (hasL2Filter) {
+        for (const l2Id of selectedL2Ids) {
+          // L2 selbst: nie blurren
+          if (node.id === l2Id) return false;
+
+          // Pfad zum L2: nie blurren
+          const pathToL2 = this.findPathToNode(this.rootNode(), l2Id);
+          if (pathToL2 && pathToL2.includes(node.id)) return false;
+
+          // Kinder des L2: nie blurren
+          const l2Node = this.findNodeByIdRecursive(this.rootNode(), l2Id);
+          if (l2Node && this.isDescendantOf(node, l2Node)) return false;
+        }
+      }
+
+      // Prüfe ob Node durch L1-Kategorie-Filter sichtbar ist
+      if (hasL1Filter) {
+        const hasCategory = node.categoryIds.some(id => activeCategories.has(id));
+        const hasMatchingChildren = this.hasAnyCategoryMatch(node, activeCategories);
+        if (hasCategory || hasMatchingChildren) return false;
+      }
+
+      // Weder durch L1 noch durch L2 sichtbar: blurren
+      return true;
+    }
 
     // Im Multi-Fokus-Modus
     if (this.isInFocusMode()) {
