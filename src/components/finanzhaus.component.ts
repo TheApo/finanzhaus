@@ -15,6 +15,7 @@ export class FinanzhausComponent {
   activeCategories = input<Set<CategoryId>>(new Set());
   hoveredCategories = input<CategoryId[]>([]);
   selectedL2NodeIds = input<Set<string>>(new Set());
+  hoveredL2NodeId = input<string | null>(null);
   categorySelected = output<CategoryId>();
   l2Selected = output<{ l2Id: string; fallbackCategory: CategoryId }>();
 
@@ -37,6 +38,10 @@ export class FinanzhausComponent {
 
   isL2Active(l2Id: string): boolean {
     return this.selectedL2NodeIds().has(l2Id);
+  }
+
+  isL2Hovered(l2Id: string): boolean {
+    return this.hoveredL2NodeId() === l2Id;
   }
 
   t(key: string): string {

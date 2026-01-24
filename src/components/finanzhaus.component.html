@@ -32,6 +32,7 @@
       <div
         class="finanzhaus__icon-item"
         [class.finanzhaus__icon-item--active]="isL2Active('l2_gruendung_nachfolge_existenzgruendung_finanzieren')"
+        [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_gruendung_nachfolge_existenzgruendung_finanzieren')"
         (click)="selectL2('l2_gruendung_nachfolge_existenzgruendung_finanzieren', 'gruendung', $event)"
       >
         <img src="/assets/71_FK_Existenzgründung_finanzieren.png" alt="Existenzgründung" />
@@ -40,6 +41,7 @@
       <div
         class="finanzhaus__icon-item"
         [class.finanzhaus__icon-item--active]="isL2Active('l2_gruendung_nachfolge_unternehmensnachfolge_regeln')"
+        [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_gruendung_nachfolge_unternehmensnachfolge_regeln')"
         (click)="selectL2('l2_gruendung_nachfolge_unternehmensnachfolge_regeln', 'gruendung', $event)"
       >
         <img src="/assets/72_FK_Unternehmensnachfolge_regeln.png" alt="Nachfolge" />
@@ -62,6 +64,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_versicherung_notfall_regeln')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_versicherung_notfall_regeln')"
           (click)="selectL2('l2_versicherung_notfall_regeln', 'absicherung', $event)"
         >
           <img src="/assets/31_FK_Notfall regeln.png" alt="Notfall" />
@@ -70,6 +73,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_versicherung_sachwerte_absichern')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_versicherung_sachwerte_absichern')"
           (click)="selectL2('l2_versicherung_sachwerte_absichern', 'absicherung', $event)"
         >
           <img src="/assets/32_FK_Sachwerte absichern.png" alt="Sachwerte" />
@@ -78,6 +82,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_versicherung_vermoegenswerte_absichern')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_versicherung_vermoegenswerte_absichern')"
           (click)="selectL2('l2_versicherung_vermoegenswerte_absichern', 'absicherung', $event)"
         >
           <img src="/assets/33_FK_Vermögenswerte absichern.png" alt="Vermögenswerte" />
@@ -98,6 +103,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_vorsorge_und_mitarbeiterbindung_mitarbeiter_binden')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_vorsorge_und_mitarbeiterbindung_mitarbeiter_binden')"
           (click)="selectL2('l2_vorsorge_und_mitarbeiterbindung_mitarbeiter_binden', 'vorsorge', $event)"
         >
           <img src="/assets/41_FK_Mitarbeiter binden.png" alt="Mitarbeiter" />
@@ -106,6 +112,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_vorsorge_und_mitarbeiterbindung_betriebliche_altersvorsorge_anbieten')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_vorsorge_und_mitarbeiterbindung_betriebliche_altersvorsorge_anbieten')"
           (click)="selectL2('l2_vorsorge_und_mitarbeiterbindung_betriebliche_altersvorsorge_anbieten', 'vorsorge', $event)"
         >
           <img src="/assets/42_FK_Betriebliche Altersvorsorge anbieten.png" alt="Altersvorsorge" />
@@ -126,6 +133,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_vermoegen_eigenkapital_vermoegen_ek_aufbauen_und_anlegen')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_vermoegen_eigenkapital_vermoegen_ek_aufbauen_und_anlegen')"
           (click)="selectL2('l2_vermoegen_eigenkapital_vermoegen_ek_aufbauen_und_anlegen', 'vermoegen', $event)"
         >
           <img src="/assets/51_FK_Vermögen EK aufbauen und anlegen.png" alt="Aufbauen" />
@@ -134,6 +142,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_vermoegen_eigenkapital_vermoegen_ek_verwenden')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_vermoegen_eigenkapital_vermoegen_ek_verwenden')"
           (click)="selectL2('l2_vermoegen_eigenkapital_vermoegen_ek_verwenden', 'vermoegen', $event)"
         >
           <img src="/assets/52_FK_Vermögen EK verwenden.png" alt="Verwenden" />
@@ -154,6 +163,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_abwickeln')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_abwickeln')"
           (click)="selectL2('l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_abwickeln', 'ausland', $event)"
         >
           <img src="/assets/61_FK_Warengeschäfte und Dienstleistungen abwickeln.png" alt="Abwickeln" />
@@ -162,6 +172,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_finanzieren')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_finanzieren')"
           (click)="selectL2('l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_finanzieren', 'ausland', $event)"
         >
           <img src="/assets/62_FK_Warengeschäfte und Dienstleistungen finanzieren.png" alt="Finanzieren" />
@@ -170,6 +181,7 @@
         <div
           class="finanzhaus__icon-item"
           [class.finanzhaus__icon-item--active]="isL2Active('l2_auslandsgeschaeft_waehrungsschwankungen_absichern')"
+          [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_auslandsgeschaeft_waehrungsschwankungen_absichern')"
           (click)="selectL2('l2_auslandsgeschaeft_waehrungsschwankungen_absichern', 'ausland', $event)"
         >
           <img src="/assets/63_FK_Währungsschwankungen absichern.png" alt="Währung" />
@@ -191,6 +203,7 @@
       <div
         class="finanzhaus__icon-item"
         [class.finanzhaus__icon-item--active]="isL2Active('l2_finanzierung_investitionen_finanzieren')"
+        [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_finanzierung_investitionen_finanzieren')"
         (click)="selectL2('l2_finanzierung_investitionen_finanzieren', 'finanzierung', $event)"
       >
         <img src="/assets/21_FK_Investitionen finanzieren.png" alt="Investitionen" />
@@ -199,6 +212,7 @@
       <div
         class="finanzhaus__icon-item"
         [class.finanzhaus__icon-item--active]="isL2Active('l2_finanzierung_finanzierungen_optimieren')"
+        [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_finanzierung_finanzierungen_optimieren')"
         (click)="selectL2('l2_finanzierung_finanzierungen_optimieren', 'finanzierung', $event)"
       >
         <img src="/assets/22_FK_Finanzierungen optimieren.png" alt="Optimieren" />
@@ -219,6 +233,7 @@
       <div
         class="finanzhaus__icon-item"
         [class.finanzhaus__icon-item--active]="isL2Active('l2_zahlungsverkehr_zahlungsverkehr_im_sepa_raum_abwickeln')"
+        [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_zahlungsverkehr_zahlungsverkehr_im_sepa_raum_abwickeln')"
         (click)="selectL2('l2_zahlungsverkehr_zahlungsverkehr_im_sepa_raum_abwickeln', 'zahlungsverkehr', $event)"
       >
         <img src="/assets/11_FK_Zahlungsverkehr im SEPA-Raum abwickeln.png" alt="SEPA" />
@@ -227,6 +242,7 @@
       <div
         class="finanzhaus__icon-item"
         [class.finanzhaus__icon-item--active]="isL2Active('l2_zahlungsverkehr_liquiditaet_vorhalten_und_absichern')"
+        [class.finanzhaus__icon-item--hovered]="isL2Hovered('l2_zahlungsverkehr_liquiditaet_vorhalten_und_absichern')"
         (click)="selectL2('l2_zahlungsverkehr_liquiditaet_vorhalten_und_absichern', 'zahlungsverkehr', $event)"
       >
         <img src="/assets/12_FK_Liquidität absichern und vorhalten.png" alt="Liquidität" />

@@ -57,7 +57,28 @@ export class AppComponent {
   hoveredNode = signal<Node | null>(null);  // Für Hover-Tooltip (nur L0-L2)
   hoveredPathNode = signal<Node | null>(null);  // Für Pfad-Highlighting und Unblur
   hoveredCategories = signal<CategoryId[]>([]);
+  hoveredL2NodeId = signal<string | null>(null);  // Für L2-Highlight im Finanzhaus
   selectedInfoNode = signal<Node | null>(null);  // Für Click-Tooltip (L3+)
+
+  // L2-IDs die im Finanzhaus existieren (für Hover-Highlight)
+  private readonly FINANZHAUS_L2_IDS = new Set([
+    'l2_gruendung_nachfolge_existenzgruendung_finanzieren',
+    'l2_gruendung_nachfolge_unternehmensnachfolge_regeln',
+    'l2_versicherung_notfall_regeln',
+    'l2_versicherung_sachwerte_absichern',
+    'l2_versicherung_vermoegenswerte_absichern',
+    'l2_vorsorge_und_mitarbeiterbindung_mitarbeiter_binden',
+    'l2_vorsorge_und_mitarbeiterbindung_betriebliche_altersvorsorge_anbieten',
+    'l2_vermoegen_eigenkapital_vermoegen_ek_aufbauen_und_anlegen',
+    'l2_vermoegen_eigenkapital_vermoegen_ek_verwenden',
+    'l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_abwickeln',
+    'l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_finanzieren',
+    'l2_auslandsgeschaeft_waehrungsschwankungen_absichern',
+    'l2_finanzierung_investitionen_finanzieren',
+    'l2_finanzierung_finanzierungen_optimieren',
+    'l2_zahlungsverkehr_zahlungsverkehr_im_sepa_raum_abwickeln',
+    'l2_zahlungsverkehr_liquiditaet_vorhalten_und_absichern',
+  ]);
   private justClickedNode = false;  // Flag um handleBackgroundClick zu ignorieren
   private backgroundMouseDownPos: { x: number; y: number } | null = null;  // Position beim mousedown auf Hintergrund
 
@@ -2460,8 +2481,28 @@ export class AppComponent {
     // Pfad-Highlighting für Linien und Unblur
     this.hoveredPathNode.set(node);
 
-    if (this.activeCategories().size === 0) {
-      this.hoveredCategories.set(node.categoryIds);
+    // L2 im Finanzhaus highlighten (wenn vorhanden), sonst L1-Kategorien
+    let l2IdToHighlight: string | null = null;
+
+    if (level === 2 && this.FINANZHAUS_L2_IDS.has(node.id)) {
+      // Direkt auf L2: dieses L2 highlighten
+      l2IdToHighlight = node.id;
+    } else if (level >= 3) {
+      // L3+: L2-Parent im Pfad finden (path[2] ist L2)
+      const path = this.findPathToNode(this.rootNode(), node.id);
+      if (path && path.length >= 3 && this.FINANZHAUS_L2_IDS.has(path[2])) {
+        l2IdToHighlight = path[2];
+      }
+    }
+
+    if (l2IdToHighlight) {
+      this.hoveredL2NodeId.set(l2IdToHighlight);
+      this.hoveredCategories.set([]);  // L1-Highlight deaktivieren
+    } else {
+      this.hoveredL2NodeId.set(null);
+      if (this.activeCategories().size === 0) {
+        this.hoveredCategories.set(node.categoryIds);
+      }
     }
 
     // L3+ zeigt Tooltip nur per Click, nicht per Hover
@@ -2491,6 +2532,7 @@ export class AppComponent {
     this.hoveredNode.set(null);
     this.hoveredPathNode.set(null);
     this.hoveredCategories.set([]);
+    this.hoveredL2NodeId.set(null);
     // Tooltip-Position nur löschen wenn kein Info-Tooltip offen ist
     if (!this.selectedInfoNode()) {
       this.tooltipPosition.set(null);

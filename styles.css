@@ -1792,7 +1792,13 @@ app-root {
 
 .finanzhaus__icon-item--active {
   background-color: rgba(255, 255, 255, 0.3);
-  outline: 2px solid var(--color-white);
+  outline: 2px solid var(--color-highlight);
+  outline-offset: 1px;
+}
+
+.finanzhaus__icon-item--hovered {
+  background-color: rgba(255, 255, 255, 0.2);
+  outline: 2px dashed var(--color-highlight);
   outline-offset: 1px;
 }
 
