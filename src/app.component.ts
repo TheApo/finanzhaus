@@ -291,6 +291,8 @@ export class AppComponent {
     // Im Fokus-Modus: Layout berechnen NACH updateNodes
     // (damit die nodeMap synchron ist und Positionen nicht überschrieben werden)
     if (focused.length > 0) {
+      // WICHTIG: Simulation stoppen damit sie die Fokus-Positionen nicht überschreibt!
+      this.forceLayout.stopSimulation();
       this.calculateFocusModeLayout();
     }
 
@@ -1191,6 +1193,14 @@ export class AppComponent {
     // ERST expandieren damit Kinder in nodeMap sind BEVOR Fokus gesetzt wird!
     const expanded = new Set(this.expandedNodes());
     expanded.add(node.id);
+
+    // Bei L1-Fokus: L3 nicht anzeigen (L2 Kinder nicht expandieren)
+    if (numLevel === 1 && node.children) {
+      for (const l2Child of node.children) {
+        expanded.delete(l2Child.id);
+      }
+    }
+
     this.expandedNodes.set(expanded);
 
     // Strg+Doppelklick im Fokus-Modus → zum Multi-Fokus hinzufügen
@@ -2049,21 +2059,14 @@ export class AppComponent {
     // Positionen auf Original zurücksetzen (mit Animation durch CSS transition)
     this.forceLayout.resetToOriginalPositions();
 
-    // Gespeicherten Zoom/Pan wiederherstellen (mit Animation)
-    if (this.savedZoomLevel !== null && this.savedPanOffset !== null) {
-      this.isAnimatingPan.set(true);
-      this.zoomLevel.set(this.savedZoomLevel);
-      this.panOffset.set(this.savedPanOffset);
+    // Gespeicherte Werte zurücksetzen
+    this.savedZoomLevel = null;
+    this.savedPanOffset = null;
 
-      // Animation beenden nach Transition
-      setTimeout(() => {
-        this.isAnimatingPan.set(false);
-      }, 500);
-
-      // Gespeicherte Werte zurücksetzen
-      this.savedZoomLevel = null;
-      this.savedPanOffset = null;
-    }
+    // Nach kurzer Verzögerung (damit Positionen angewendet sind): Zoom auf alle sichtbaren Nodes
+    setTimeout(() => {
+      this.zoomToFitAllVisibleNodes();
+    }, 100);
 
     // Wenn Filter aktiv: Passende Nodes expandieren
     const activeCategories = this.activeCategories();
@@ -2085,6 +2088,87 @@ export class AppComponent {
 
     // Gespeicherten expanded-Zustand zurücksetzen
     this.expandedBeforeFocus = null;
+  }
+
+  // Zoomt und zentriert auf alle SICHTBAREN Nodes (nur L0, L1, expandierte L2)
+  private zoomToFitAllVisibleNodes(): void {
+    const positions = this.forceLayout.nodePositions();
+    if (positions.size === 0) return;
+
+    const expandedIds = this.expandedNodes();
+    const rootNode = this.rootNode();
+
+    // Sammle nur die IDs der tatsächlich sichtbaren Nodes
+    const visibleNodeIds = new Set<string>();
+
+    // L0 ist immer sichtbar
+    visibleNodeIds.add(rootNode.id);
+
+    // L1 Nodes sind immer sichtbar
+    if (rootNode.children) {
+      rootNode.children.forEach(l1 => {
+        visibleNodeIds.add(l1.id);
+
+        // L2 nur wenn L1 expandiert
+        if (expandedIds.has(l1.id) && l1.children) {
+          l1.children.forEach(l2 => {
+            visibleNodeIds.add(l2.id);
+
+            // L3 nur wenn L2 expandiert
+            if (expandedIds.has(l2.id) && l2.children) {
+              l2.children.forEach(l3 => visibleNodeIds.add(l3.id));
+            }
+          });
+        }
+      });
+    }
+
+    // Bounding Box nur für sichtbare Nodes
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    visibleNodeIds.forEach(nodeId => {
+      const pos = positions.get(nodeId);
+      if (pos) {
+        minX = Math.min(minX, pos.x);
+        maxX = Math.max(maxX, pos.x);
+        minY = Math.min(minY, pos.y);
+        maxY = Math.max(maxY, pos.y);
+      }
+    });
+
+    if (minX === Infinity) return;
+
+    // Kleines Padding
+    const padding = 100;
+    minX -= padding;
+    maxX += padding;
+    minY -= padding;
+    maxY += padding;
+
+    // Zoom berechnen
+    const totalWidth = maxX - minX;
+    const totalHeight = maxY - minY;
+    const viewportWidth = window.innerWidth * 0.9;
+    const viewportHeight = window.innerHeight * 0.9;
+
+    const zoomX = viewportWidth / totalWidth;
+    const zoomY = viewportHeight / totalHeight;
+    let newZoom = Math.min(zoomX, zoomY);
+    newZoom = Math.max(0.3, Math.min(1.5, newZoom));
+
+    // View zentrieren
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+
+    // Mit Animation anwenden
+    this.isAnimatingPan.set(true);
+    this.zoomLevel.set(newZoom);
+    this.panOffset.set({ x: -centerX * newZoom, y: -centerY * newZoom });
+
+    setTimeout(() => {
+      this.isAnimatingPan.set(false);
+    }, 500);
   }
 
   isInFocusMode(): boolean {
@@ -2711,6 +2795,8 @@ export class AppComponent {
 
   private calculateFocusModeLayout(): void {
     const focused = this.focusedNodes();
+    console.log('=== calculateFocusModeLayout ===');
+    console.log('focused:', focused.map(f => ({ id: f.node.id, level: f.level, hasChildren: !!f.node.children })));
     if (focused.length === 0) return;
 
     // Zoom/Pan speichern beim ersten Fokussieren
@@ -2742,14 +2828,19 @@ export class AppComponent {
     ));
     const PARENT_SPACING = Math.max(350, maxChildRadius + 150);
 
-    // SCHRITT 5: Gemeinsame Vorfahren positionieren (horizontal links, y=0)
-    sharedAncestorIds.forEach((nodeId, index) => {
-      const level = index;
-      const x = -PARENT_SPACING * (Math.min(maxFocusLevel, 3) - level);
-      positions.set(nodeId, { x, y: 0 });
+    // SCHRITT 5: L0 positionieren (Zentrum)
+    const l0X = -PARENT_SPACING * (Math.min(maxFocusLevel, 3));
+    positions.set(rootNode.id, { x: l0X, y: 0 });
+
+    // SCHRITT 6: Fokus-Pfad L1 Nodes identifizieren
+    const focusPathL1Ids = new Set<string>();
+    pathsWithFocus.forEach(({ path }) => {
+      if (path.length >= 2) {
+        focusPathL1Ids.add(path[1]); // L1 ist an Index 1
+      }
     });
 
-    // SCHRITT 6: Fokussierte Nodes und ihre einzigartigen Vorfahren positionieren
+    // SCHRITT 7: Fokus-Pfad positionieren (L1 → fokussiertes L2 → Kinder)
     focused.forEach((f, index) => {
       const focusY = verticalPositions[index];
       const focusX = 0;
@@ -2760,22 +2851,201 @@ export class AppComponent {
       // Nicht-gemeinsame Vorfahren auf gleicher Y-Position
       const path = pathsWithFocus[index].path;
       path.forEach((nodeId, pathIndex) => {
-        if (!sharedAncestorIds.includes(nodeId) && nodeId !== f.node.id) {
+        if (nodeId !== rootNode.id && nodeId !== f.node.id) {
           const level = pathIndex;
-          const x = -PARENT_SPACING * (f.level - level);
+          const x = l0X + PARENT_SPACING * level;
           positions.set(nodeId, { x, y: focusY });
         }
       });
 
-      // Kinder positionieren
+      // Kinder des fokussierten Nodes positionieren
       this.positionChildrenForFocus(f, focusX, focusY, positions, focusChildIds);
     });
 
-    // SCHRITT 7: Kollisionsvermeidung anwenden
-    this.forceLayout.applyFocusModeWithCollisionAvoidance(positions, focusChildIds);
+    console.log('Nach positionChildrenForFocus:');
+    console.log('focusChildIds:', [...focusChildIds]);
+    console.log('positions keys:', [...positions.keys()]);
+    focusChildIds.forEach(id => {
+      const pos = positions.get(id);
+      console.log(`  ${id}: (${pos?.x.toFixed(1)}, ${pos?.y.toFixed(1)})`);
+    });
 
-    // SCHRITT 8: Auto-Zoom (Multi-Fokus berücksichtigen)
+    // SCHRITT 8: L2-Geschwister des fokussierten Nodes positionieren
+    // Erste fokussierte Node: Geschwister oben, Zweite: unten
+    const focusedNodeIds = new Set(focused.map(f => f.node.id));
+    this.positionFocusSiblings(rootNode, focusPathL1Ids, focusedNodeIds, positions, focused, verticalPositions, maxChildRadius);
+
+    // SCHRITT 9: Nicht-fokussierte L1 im Halbkreis links von L0 positionieren
+    this.positionBlurredL1InSemicircle(rootNode, focusPathL1Ids, positions, l0X, PARENT_SPACING);
+
+    // SCHRITT 10: Positionen anwenden (VOR D3, damit D3 darauf aufbauen kann)
+    this.forceLayout.setMultiplePositionsTemporary(positions);
+
+    // SCHRITT 11: D3 Kollisionsvermeidung für alle Nodes (außer Fokus-Pfad)
+    const focusPathIds = new Set<string>([rootNode.id]);
+    pathsWithFocus.forEach(({ path }) => path.forEach(id => focusPathIds.add(id)));
+    focused.forEach(f => focusPathIds.add(f.node.id));
+    focusChildIds.forEach(id => focusPathIds.add(id));
+
+    this.forceLayout.applyFocusModeWithCollisionAvoidance(positions, focusPathIds, null);
+
+    // SCHRITT 12: Auto-Zoom NACH allem - nutze die positions Map (fokussierte Elemente wurden nicht von D3 bewegt)
     this.applyMultiFocusZoom(positions, focused);
+  }
+
+  // L2-Geschwister des fokussierten Nodes positionieren
+  // Erste fokussierte Node: Geschwister oben, Zweite: unten
+  private positionFocusSiblings(
+    rootNode: Node,
+    focusPathL1Ids: Set<string>,
+    focusedNodeIds: Set<string>,
+    positions: Map<string, { x: number; y: number }>,
+    focused: Array<{ node: Node; parent: Node; root: Node; level: number }>,
+    verticalPositions: number[],
+    maxChildRadius: number
+  ): void {
+    if (!rootNode.children) return;
+
+    // Für jeden fokussierten Node seine Geschwister positionieren
+    focused.forEach((f, focusIndex) => {
+      // Finde L1 Parent des fokussierten Nodes
+      const path = this.findPathToNode(rootNode, f.node.id);
+      if (!path || path.length < 2) return;
+
+      const l1Id = path[1];
+      const l1Node = rootNode.children?.find(c => c.id === l1Id);
+      if (!l1Node || !l1Node.children) return;
+
+      // L1 Position holen
+      const l1Pos = positions.get(l1Node.id);
+      if (!l1Pos) return;
+
+      // Finde L2-Geschwister (nicht fokussiert)
+      const siblings = l1Node.children.filter(l2 => !focusedNodeIds.has(l2.id));
+      if (siblings.length === 0) return;
+
+      // Richtung: Erste fokussierte Node → oben, Zweite → unten
+      const direction = focusIndex % 2 === 0 ? -1 : 1; // -1 = oben, +1 = unten
+
+      // Geschwister in einem Bogen positionieren
+      const siblingRadius = 350;
+      // Oben: -60° bis -120°, Unten: +60° bis +120°
+      const baseAngle = direction * Math.PI / 2; // -90° oder +90°
+      const startAngle = baseAngle - Math.PI / 6;  // ±30° Spread
+      const endAngle = baseAngle + Math.PI / 6;
+      const angleRange = endAngle - startAngle;
+      const angleStep = siblings.length > 1 ? angleRange / (siblings.length - 1) : 0;
+
+      siblings.forEach((sibling, index) => {
+        const angle = siblings.length === 1 ? baseAngle : startAngle + index * angleStep;
+        const x = l1Pos.x + Math.cos(angle) * siblingRadius;
+        const y = l1Pos.y + Math.sin(angle) * siblingRadius;
+        positions.set(sibling.id, { x, y });
+
+        // L3 Kinder noch weiter in gleicher Richtung
+        if (sibling.children && this.expandedNodes().has(sibling.id)) {
+          const l3Radius = siblingRadius + 250;
+          const l3Children = sibling.children;
+          const l3Spread = Math.min(0.4, l3Children.length * 0.1);
+          const l3Start = angle - l3Spread / 2;
+          const l3Step = l3Children.length > 1 ? l3Spread / (l3Children.length - 1) : 0;
+
+          l3Children.forEach((l3Child, l3Index) => {
+            const l3Angle = l3Children.length === 1 ? angle : l3Start + l3Index * l3Step;
+            positions.set(l3Child.id, {
+              x: l1Pos.x + Math.cos(l3Angle) * l3Radius,
+              y: l1Pos.y + Math.sin(l3Angle) * l3Radius
+            });
+          });
+        }
+      });
+    });
+  }
+
+  // Nicht-fokussierte L1 im Halbkreis links von L0 positionieren
+  // WICHTIG: L2/L3 werden in GLEICHER Richtung wie L1 platziert (keine Linienkreuzungen möglich)
+  private positionBlurredL1InSemicircle(
+    rootNode: Node,
+    focusPathL1Ids: Set<string>,
+    positions: Map<string, { x: number; y: number }>,
+    l0X: number,
+    parentSpacing: number
+  ): void {
+    if (!rootNode.children) return;
+
+    // Finde alle nicht-fokussierten L1 Nodes
+    const blurredL1Nodes = rootNode.children.filter(l1 => !focusPathL1Ids.has(l1.id));
+    if (blurredL1Nodes.length === 0) return;
+
+    const l0Y = 0;
+
+    // Zähle alle Nodes die platziert werden müssen (L1 + deren expandierte L2)
+    let totalSlots = 0;
+    const l1Slots: Array<{ l1: Node; l2Count: number; startSlot: number }> = [];
+
+    blurredL1Nodes.forEach(l1Node => {
+      const startSlot = totalSlots;
+      totalSlots++; // L1 selbst
+
+      // Expandierte L2 Kinder zählen
+      let l2Count = 0;
+      if (l1Node.children && this.expandedNodes().has(l1Node.id)) {
+        l2Count = l1Node.children.length;
+        totalSlots += l2Count;
+      }
+
+      l1Slots.push({ l1: l1Node, l2Count, startSlot });
+    });
+
+    // 180° Halbkreis links aufteilen
+    const totalAngle = Math.PI;
+    const anglePerSlot = totalAngle / Math.max(totalSlots, 1);
+    const startAngle = Math.PI / 2 + anglePerSlot / 2; // Start unten-links
+
+    // Radien - je höher das Level, desto weiter weg von L0
+    const L1_RADIUS = 350;
+    const L2_RADIUS = 650;
+    const L3_RADIUS = 900;
+
+    l1Slots.forEach(({ l1, l2Count, startSlot }) => {
+      // L1 Position - in der Mitte seiner L2 Kinder (falls vorhanden)
+      const l1SlotIndex = startSlot + Math.floor(l2Count / 2);
+      const l1Angle = startAngle + l1SlotIndex * anglePerSlot;
+
+      const l1X = l0X + Math.cos(l1Angle) * L1_RADIUS;
+      const l1Y = l0Y + Math.sin(l1Angle) * L1_RADIUS;
+      positions.set(l1.id, { x: l1X, y: l1Y });
+
+      // L2 Kinder - jedes bekommt seinen eigenen Slot
+      if (l1.children && this.expandedNodes().has(l1.id)) {
+        l1.children.forEach((l2Node, l2Index) => {
+          // L2 Slot ist nach dem L1
+          const l2SlotIndex = startSlot + l2Index;
+          // Wenn L1 in der Mitte ist, verteilen wir L2 drumherum
+          const l2Angle = startAngle + l2SlotIndex * anglePerSlot;
+
+          const l2X = l0X + Math.cos(l2Angle) * L2_RADIUS;
+          const l2Y = l0Y + Math.sin(l2Angle) * L2_RADIUS;
+          positions.set(l2Node.id, { x: l2X, y: l2Y });
+
+          // L3 Kinder - im gleichen Winkel wie L2, nur weiter draußen
+          if (l2Node.children && this.expandedNodes().has(l2Node.id)) {
+            const l3Children = l2Node.children;
+            // Kleine Winkelvariation für L3, zentriert um L2-Winkel
+            const l3Spread = Math.min(anglePerSlot * 0.8, l3Children.length * 0.08);
+            const l3Start = l2Angle - l3Spread / 2;
+            const l3Step = l3Children.length > 1 ? l3Spread / (l3Children.length - 1) : 0;
+
+            l3Children.forEach((l3Node, l3Index) => {
+              const l3Angle = l3Children.length === 1 ? l2Angle : l3Start + l3Index * l3Step;
+              const l3X = l0X + Math.cos(l3Angle) * L3_RADIUS;
+              const l3Y = l0Y + Math.sin(l3Angle) * L3_RADIUS;
+              positions.set(l3Node.id, { x: l3X, y: l3Y });
+            });
+          }
+        });
+      }
+    });
   }
 
   // Gemeinsame Vorfahren finden (in allen Pfaden enthalten)
@@ -2836,12 +3106,23 @@ export class AppComponent {
     positions: Map<string, { x: number; y: number }>,
     focusChildIds: Set<string>
   ): void {
-    if (!focusInfo.node.children || focusInfo.node.children.length === 0) return;
-    if (!this.expandedNodes().has(focusInfo.node.id)) return;
+    console.log('=== positionChildrenForFocus ===');
+    console.log('focusInfo.node.id:', focusInfo.node.id);
+    console.log('focusInfo.level:', focusInfo.level);
+    console.log('focusInfo.node.children:', focusInfo.node.children?.map(c => c.id));
+    console.log('focusX:', focusX, 'focusY:', focusY);
+
+    // Fokussierte Nodes zeigen IMMER ihre Kinder - kein expandedNodes Check nötig
+    if (!focusInfo.node.children || focusInfo.node.children.length === 0) {
+      console.log('EARLY RETURN: keine Kinder!');
+      return;
+    }
 
     const children = focusInfo.node.children;
     const count = children.length;
     const CHILD_RADIUS = this.calculateChildRadius(count);
+
+    console.log('count:', count, 'CHILD_RADIUS:', CHILD_RADIUS);
 
     if (count <= 5) {
       // Halbkreis rechts
@@ -2851,10 +3132,12 @@ export class AppComponent {
 
       children.forEach((child, i) => {
         const angle = count === 1 ? 0 : startAngle + i * angleStep;
-        positions.set(child.id, {
+        const pos = {
           x: focusX + Math.cos(angle) * CHILD_RADIUS,
           y: focusY + Math.sin(angle) * CHILD_RADIUS
-        });
+        };
+        console.log(`Kind ${i} (${child.id}): angle=${(angle * 180 / Math.PI).toFixed(1)}°, pos=(${pos.x.toFixed(1)}, ${pos.y.toFixed(1)})`);
+        positions.set(child.id, pos);
         focusChildIds.add(child.id);
       });
     } else {
@@ -2877,28 +3160,43 @@ export class AppComponent {
     }
   }
 
-  // Auto-Zoom für Multi-Fokus
+  // Auto-Zoom für Multi-Fokus - NUR fokussierte Nodes und deren Kinder (NICHT den Pfad!)
   private applyMultiFocusZoom(
     positions: Map<string, { x: number; y: number }>,
     focused: Array<{ node: Node; level: number }>
   ): void {
-    // Bounding Box berechnen
+    // NUR fokussierte Nodes und deren Kinder - NICHT L0/L1!
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
 
-    positions.forEach(pos => {
-      minX = Math.min(minX, pos.x);
-      maxX = Math.max(maxX, pos.x);
-      minY = Math.min(minY, pos.y);
-      maxY = Math.max(maxY, pos.y);
+    focused.forEach(f => {
+      // Fokussierter Node selbst
+      const focusPos = positions.get(f.node.id);
+      if (focusPos) {
+        minX = Math.min(minX, focusPos.x);
+        maxX = Math.max(maxX, focusPos.x);
+        minY = Math.min(minY, focusPos.y);
+        maxY = Math.max(maxY, focusPos.y);
+      }
+
+      // Dessen Kinder - fokussierte Nodes zeigen IMMER ihre Kinder
+      if (f.node.children) {
+        f.node.children.forEach(child => {
+          const childPos = positions.get(child.id);
+          if (childPos) {
+            minX = Math.min(minX, childPos.x);
+            maxX = Math.max(maxX, childPos.x);
+            minY = Math.min(minY, childPos.y);
+            maxY = Math.max(maxY, childPos.y);
+          }
+        });
+      }
     });
 
-    // Padding für Kinder-Radien
-    const maxChildRadius = Math.max(
-      ...focused.map(f => this.calculateChildRadius(f.node.children?.length || 0))
-    );
-    const padding = maxChildRadius + 150;
+    if (minX === Infinity) return;
 
+    // Kleines Padding für Labels
+    const padding = 120;
     minX -= padding;
     maxX += padding;
     minY -= padding;
@@ -2913,11 +3211,16 @@ export class AppComponent {
     const zoomX = viewportWidth / totalWidth;
     const zoomY = viewportHeight / totalHeight;
     let newZoom = Math.min(zoomX, zoomY);
-    newZoom = Math.max(0.15, Math.min(1.0, newZoom));  // Clamp: 0.15 - 1.0
+    newZoom = Math.max(0.3, Math.min(1.2, newZoom));  // Clamp: 0.3 - 1.2
 
-    // View zentrieren
-    const centerX = (minX + maxX) / 2;
+    // Fokussiertes Element bei ~75% von links (mehr rechts im Viewport)
     const centerY = (minY + maxY) / 2;
+
+    // Fokussiertes Element ist bei x≈0, Kinder bei positiven x-Werten (rechts davon)
+    // Um fokussiertes Element RECHTS zu haben: centerX muss LINKS davon sein (kleinerer/negativerer Wert)
+    // Je kleiner centerX, desto weiter rechts erscheint das fokussierte Element
+    const boundingWidth = maxX - minX;
+    const centerX = minX + boundingWidth * 0.0;  // Zentriere ganz links -> fokussiertes Element erscheint weit rechts (~75-80%)
 
     this.zoomLevel.set(newZoom);
     this.panOffset.set({ x: -centerX * newZoom, y: -centerY * newZoom });
@@ -2927,15 +3230,18 @@ export class AppComponent {
   private calculateChildRadius(childCount: number): number {
     if (childCount === 0) return 80;
     if (childCount <= 3) {
-      // Wenige Kinder: kompakter Radius
-      return 100 + childCount * 20;  // 120-160px
-    } else if (childCount <= 6) {
-      // Mittlere Anzahl: moderater Radius
-      return 130 + childCount * 15;  // 190-220px
+      // Wenige Kinder: fester Radius
+      return 160;
+    } else if (childCount <= 5) {
+      // Mittlere Anzahl: fester Radius
+      return 205;
+    } else if (childCount <= 8) {
+      // Mehr als 5 Kinder: +30px größerer Radius
+      return 160 + childCount * 15;  // 250-280px
     } else {
-      // Viele Kinder: Umfang-basiert
+      // Viele Kinder (9+): Umfang-basiert mit größerem Mindestradius
       const minCircumference = childCount * 75;
-      return Math.max(200, minCircumference / (2 * Math.PI));
+      return Math.max(280, minCircumference / (2 * Math.PI));
     }
   }
 

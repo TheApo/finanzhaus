@@ -317,6 +317,17 @@ export class ForceLayoutService {
     this.simulation.alpha(0.3).restart();
   }
 
+  /**
+   * Stoppt die laufende Simulation (für Fokus-Modus).
+   * Verhindert dass die Simulation Positionen überschreibt.
+   */
+  stopSimulation(): void {
+    if (this.simulation) {
+      this.simulation.stop();
+      this._isSettling.set(false);
+    }
+  }
+
   destroy(): void {
     if (this.simulation) {
       this.simulation.stop();
@@ -413,10 +424,12 @@ export class ForceLayoutService {
    * Fokus-Modus: Fixiert bestimmte Nodes und lässt andere ausweichen (D3 Kollisionsvermeidung).
    * @param fixedPositions - Positionen der Fokus-Elemente (werden fixiert)
    * @param focusChildIds - IDs der Fokus-Kinder (werden später kreisförmig angeordnet)
+   * @param clearSector - Freier Winkelsektor von L0 aus (optional)
    */
   applyFocusModeWithCollisionAvoidance(
     fixedPositions: Map<string, { x: number; y: number }>,
-    focusChildIds: Set<string>
+    focusChildIds: Set<string>,
+    clearSector?: { startAngle: number; endAngle: number; l0X: number; l0Y: number } | null
   ): void {
     // Sammle alle fixierten Node-IDs
     const fixedNodeIds = new Set<string>(fixedPositions.keys());
@@ -442,7 +455,12 @@ export class ForceLayoutService {
       }
     });
 
-    // 3. D3 Simulation starten für Kollisionsvermeidung
+    // 3. Nodes aus dem freien Sektor herausschieben (VOR der D3 Simulation)
+    if (clearSector) {
+      this.pushNodesOutOfClearSector(fixedNodeIds, clearSector);
+    }
+
+    // 4. D3 Simulation starten für Kollisionsvermeidung
     // Größerer Radius für fixierte Nodes damit andere weggeschoben werden
     const simulation = forceSimulation<LayoutNode>(this.layoutNodes)
       .alphaDecay(0.05)  // Langsamer abklingen
@@ -464,7 +482,7 @@ export class ForceLayoutService {
     simulation.tick(150);
     simulation.stop();
 
-    // 4. Fixierungen aufheben (außer L0)
+    // 5. Fixierungen aufheben (außer L0)
     for (const node of this.layoutNodes) {
       if (node.level > 0) {
         node.fx = undefined;
@@ -473,6 +491,34 @@ export class ForceLayoutService {
     }
 
     this.updatePositionSignal();
+  }
+
+  /**
+   * Schiebt alle nicht-fokussierten Nodes nach links von L0.
+   * So können ihre Linien den Fokus-Bereich nicht kreuzen.
+   */
+  private pushNodesOutOfClearSector(
+    fixedNodeIds: Set<string>,
+    clearSector: { startAngle: number; endAngle: number; l0X: number; l0Y: number }
+  ): void {
+    const { l0X, l0Y } = clearSector;
+
+    // Alle nicht-fokussierten Nodes nach links von L0 verschieben
+    const leftOfL0 = l0X - 200;  // 200px links von L0
+
+    for (const node of this.layoutNodes) {
+      // Nur nicht-fixierte Nodes verschieben
+      if (fixedNodeIds.has(node.id)) continue;
+      if (node.level === 0) continue;  // L0 nicht verschieben
+      if (node.x === undefined || node.y === undefined) continue;
+
+      // Nur Nodes die rechts von L0 sind, nach links schieben
+      if (node.x > l0X - 100) {
+        // Behalte relative Y-Position, aber schiebe X nach links
+        const distanceFromL0 = Math.abs(node.x - l0X);
+        node.x = leftOfL0 - distanceFromL0 * 0.5;  // Weiter links
+      }
+    }
   }
 
   /**
@@ -1354,5 +1400,156 @@ export class ForceLayoutService {
     }
 
     this._nodePositions.set(positions);
+  }
+
+  // ============================================================
+  // Linien-Kreuzungsvermeidung
+  // ============================================================
+
+  /**
+   * Löst Linien-Kreuzungen durch iterative Node-Verschiebung auf.
+   *
+   * @param positions - Map von Node-IDs zu {x, y} Positionen
+   * @param edges - Array von Kanten [{from: nodeId, to: nodeId}]
+   * @param protectedNodes - Set von Node-IDs deren Position nicht geändert werden darf
+   * @param lineThickness - Virtuelle Linien-Dicke für Kollisionserkennung (default: 0)
+   */
+  resolveLineCrossings(
+    positions: Map<string, { x: number; y: number }>,
+    edges: Array<{ from: string; to: string }>,
+    protectedNodes: Set<string>,
+    lineThickness: number = 0
+  ): void {
+    const MAX_ITERATIONS = 50;
+    const MIN_SEPARATION = 30;
+
+    for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
+      const crossings = this.findAllCrossings(positions, edges, lineThickness);
+
+      if (crossings.length === 0) break;
+
+      // Erste Kreuzung auflösen
+      const crossing = crossings[0];
+      this.resolveCrossing(positions, crossing, protectedNodes, MIN_SEPARATION);
+    }
+  }
+
+  private findAllCrossings(
+    positions: Map<string, { x: number; y: number }>,
+    edges: Array<{ from: string; to: string }>,
+    lineThickness: number
+  ): Array<{ edge1: { from: string; to: string }; edge2: { from: string; to: string } }> {
+    const crossings: Array<{ edge1: { from: string; to: string }; edge2: { from: string; to: string } }> = [];
+
+    for (let i = 0; i < edges.length; i++) {
+      for (let j = i + 1; j < edges.length; j++) {
+        const e1 = edges[i];
+        const e2 = edges[j];
+
+        // Kanten die einen Endpunkt teilen können sich nicht kreuzen
+        if (e1.from === e2.from || e1.from === e2.to ||
+            e1.to === e2.from || e1.to === e2.to) continue;
+
+        const p1 = positions.get(e1.from);
+        const p2 = positions.get(e1.to);
+        const p3 = positions.get(e2.from);
+        const p4 = positions.get(e2.to);
+
+        if (!p1 || !p2 || !p3 || !p4) continue;
+
+        if (this.doLinesIntersect(p1, p2, p3, p4, lineThickness)) {
+          crossings.push({ edge1: e1, edge2: e2 });
+        }
+      }
+    }
+
+    return crossings;
+  }
+
+  private doLinesIntersect(
+    A: { x: number; y: number },
+    B: { x: number; y: number },
+    C: { x: number; y: number },
+    D: { x: number; y: number },
+    thickness: number
+  ): boolean {
+    // Standard-Kreuzungstest (Cross-Product-Methode)
+    const o1 = this.lineOrientation(A, B, C);
+    const o2 = this.lineOrientation(A, B, D);
+    const o3 = this.lineOrientation(C, D, A);
+    const o4 = this.lineOrientation(C, D, B);
+
+    if ((o1 * o2 < 0) && (o3 * o4 < 0)) return true;
+
+    // Optional: Mit Linien-Dicke prüfen (Punkt-zu-Linie Abstand)
+    if (thickness > 0) {
+      const dist1 = this.pointToSegmentDistance(A, C, D);
+      const dist2 = this.pointToSegmentDistance(B, C, D);
+      const dist3 = this.pointToSegmentDistance(C, A, B);
+      const dist4 = this.pointToSegmentDistance(D, A, B);
+
+      if (Math.min(dist1, dist2, dist3, dist4) < thickness) return true;
+    }
+
+    return false;
+  }
+
+  private lineOrientation(P: { x: number; y: number }, Q: { x: number; y: number }, R: { x: number; y: number }): number {
+    return (Q.y - P.y) * (R.x - Q.x) - (Q.x - P.x) * (R.y - Q.y);
+  }
+
+  private pointToSegmentDistance(
+    P: { x: number; y: number },
+    A: { x: number; y: number },
+    B: { x: number; y: number }
+  ): number {
+    const dx = B.x - A.x;
+    const dy = B.y - A.y;
+    const lenSq = dx * dx + dy * dy;
+
+    if (lenSq === 0) {
+      return Math.hypot(P.x - A.x, P.y - A.y);
+    }
+
+    let t = ((P.x - A.x) * dx + (P.y - A.y) * dy) / lenSq;
+    t = Math.max(0, Math.min(1, t));
+
+    const projX = A.x + t * dx;
+    const projY = A.y + t * dy;
+
+    return Math.hypot(P.x - projX, P.y - projY);
+  }
+
+  private resolveCrossing(
+    positions: Map<string, { x: number; y: number }>,
+    crossing: { edge1: { from: string; to: string }; edge2: { from: string; to: string } },
+    protectedNodes: Set<string>,
+    minSeparation: number
+  ): void {
+    const { edge1, edge2 } = crossing;
+
+    // Finde bewegbare Endpunkte (Kinder, nicht protected)
+    const movable1 = !protectedNodes.has(edge1.to) ? edge1.to : null;
+    const movable2 = !protectedNodes.has(edge2.to) ? edge2.to : null;
+
+    if (!movable1 && !movable2) return; // Beide protected, nichts zu tun
+
+    const pos1 = positions.get(edge1.to);
+    const pos2 = positions.get(edge2.to);
+
+    if (!pos1 || !pos2) return;
+
+    // Y-Swap Strategie: Tausche Y-Positionen der Kinder
+    if (movable1 && movable2) {
+      const tempY = pos1.y;
+      pos1.y = pos2.y;
+      pos2.y = tempY;
+    } else if (movable1) {
+      // Nur movable1 verschieben: Push in Richtung weg von edge2
+      pos1.y += pos1.y > pos2.y ? minSeparation : -minSeparation;
+    } else if (movable2) {
+      // Nur movable2 verschieben
+      pos2.y += pos2.y > pos1.y ? minSeparation : -minSeparation;
+    }
   }
 }
