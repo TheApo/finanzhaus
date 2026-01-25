@@ -286,15 +286,11 @@ export class AppComponent {
     const expanded = this.expandedNodes();
     const focused = this.focusedNodes();  // Track focusedNodes damit der Effect auch darauf reagiert
 
-    console.log('[forceLayoutEffect] expanded:', expanded.size, 'focused:', focused.length);
-
     this.forceLayout.updateNodes(root, expanded);
-    console.log('[forceLayoutEffect] updateNodes done');
 
     // Im Fokus-Modus: Layout berechnen NACH updateNodes
     // (damit die nodeMap synchron ist und Positionen nicht überschrieben werden)
     if (focused.length > 0) {
-      console.log('[forceLayoutEffect] calling calculateFocusModeLayout');
       this.calculateFocusModeLayout();
     }
 
@@ -1095,7 +1091,6 @@ export class AppComponent {
 
   handleNodeClick(node: Node, level: number | string, parent: Node | null, root: Node) {
     const numLevel = Number(level);
-    console.log('=== SINGLE CLICK ===', { nodeId: node.id, level: numLevel });
 
     // Bei Klick auf L0-L2: Offenen Info-Tooltip schließen
     if (numLevel < 3 && this.selectedInfoNode()) {
@@ -1123,7 +1118,6 @@ export class AppComponent {
   private executeNodeClick(node: Node, numLevel: number): void {
     // Im Fokus-Modus: L0/L1/L2 können NICHT ein-/ausgeklappt werden
     if (this.isInFocusMode() && numLevel <= 2) {
-      console.log('[executeNodeClick] IGNORED - focus mode active, level:', numLevel);
       return;
     }
 
@@ -1159,11 +1153,11 @@ export class AppComponent {
 
   // Doppelklick-Handler für Fokus-Modus
   handleNodeDoubleClick(event: MouseEvent, node: Node, level: number, parent: Node | null, root: Node): void {
-    console.log('=== DOUBLE CLICK ===', { nodeId: node.id, level });
     event.stopPropagation();
     event.preventDefault();
 
     const numLevel = Number(level);
+    const isCtrlOrMeta = event.ctrlKey || event.metaKey;  // Multi-Fokus mit Strg/Cmd
 
     // Level 0: Fokus beenden (falls aktiv)
     if (numLevel === 0) {
@@ -1177,10 +1171,14 @@ export class AppComponent {
     const actualParent = parent || this.findParentOfNode(this.rootNode(), node);
     if (!actualParent && numLevel > 1) return;
 
-    // Normaler Doppelklick
-    if (this.isNodeInFocus(node) && this.focusedNodes().length === 1) {
-      // Doppelklick auf einzigen fokussierten Node → Fokus beenden
-      console.log('[handleNodeDoubleClick] exit focus mode');
+    // Strg+Doppelklick auf bereits fokussierten Node → aus Multi-Fokus entfernen
+    if (isCtrlOrMeta && this.isNodeInFocus(node)) {
+      this.removeNodeFromFocus(node);
+      return;
+    }
+
+    // Doppelklick auf einzigen fokussierten Node (ohne Strg) → Fokus beenden
+    if (this.isNodeInFocus(node) && this.focusedNodes().length === 1 && !isCtrlOrMeta) {
       this.exitFocusMode();
       return;
     }
@@ -1188,19 +1186,20 @@ export class AppComponent {
     // Expanded-Zustand speichern VOR dem Fokussieren (nur beim ersten Mal)
     if (!this.isInFocusMode()) {
       this.expandedBeforeFocus = new Set(this.expandedNodes());
-      console.log('[handleNodeDoubleClick] saved expandedBeforeFocus:', this.expandedBeforeFocus.size);
     }
 
     // ERST expandieren damit Kinder in nodeMap sind BEVOR Fokus gesetzt wird!
-    console.log('[handleNodeDoubleClick] expanding node:', node.id);
     const expanded = new Set(this.expandedNodes());
     expanded.add(node.id);
     this.expandedNodes.set(expanded);
-    console.log('[handleNodeDoubleClick] expandedNodes set, now setting focus');
 
-    // DANN Fokus setzen - der effect läuft mit bereits expandierten Kindern
-    this.setFocusedNodeSingle(node, actualParent || this.rootNode(), root, numLevel);
-    console.log('[handleNodeDoubleClick] DONE');
+    // Strg+Doppelklick im Fokus-Modus → zum Multi-Fokus hinzufügen
+    if (isCtrlOrMeta && this.isInFocusMode()) {
+      this.addNodeToFocus(node, actualParent || this.rootNode(), root, numLevel);
+    } else {
+      // Normaler Doppelklick → Single-Fokus (ersetzt)
+      this.setFocusedNodeSingle(node, actualParent || this.rootNode(), root, numLevel);
+    }
   }
 
   // Hilfsmethode: Findet den Parent eines Nodes
@@ -1638,9 +1637,54 @@ export class AppComponent {
           this.saveStateToStorage();
         }
       } else {
-        // Kein Drag - war ein Tap → Node-Klick auslösen
+        // Kein Drag - war ein Tap
+        // Doppel-Tap-Erkennung mit verzögertem Einzeltap
+        const now = Date.now();
+        const isDoubleTap = (
+          this.lastClickNodeId === draggedNode.id &&
+          (now - this.lastClickTime) < this.DOUBLE_CLICK_THRESHOLD
+        );
+
+        this.lastClickTime = now;
+        this.lastClickNodeId = draggedNode.id;
+
         this.forceLayout.unfixNode(draggedNode.id);
-        this.handleNodeClick(draggedNode, this.dragContext.level, this.dragContext.parent, this.dragContext.root);
+
+        if (isDoubleTap) {
+          // Doppel-Tap erkannt → pending Click abbrechen und Doppelklick ausführen
+          if (this.pendingClickTimeout) {
+            clearTimeout(this.pendingClickTimeout);
+            this.pendingClickTimeout = null;
+            this.pendingClickData = null;
+          }
+          this.handleNodeDoubleClick(
+            event as any,
+            draggedNode,
+            this.dragContext.level,
+            this.dragContext.parent,
+            this.dragContext.root
+          );
+        } else {
+          // Erster Tap → verzögerten Klick starten
+          this.pendingClickData = {
+            node: draggedNode,
+            level: this.dragContext.level,
+            parent: this.dragContext.parent,
+            root: this.dragContext.root
+          };
+          this.pendingClickTimeout = setTimeout(() => {
+            if (this.pendingClickData) {
+              this.handleNodeClick(
+                this.pendingClickData.node,
+                this.pendingClickData.level,
+                this.pendingClickData.parent,
+                this.pendingClickData.root
+              );
+              this.pendingClickData = null;
+            }
+            this.pendingClickTimeout = null;
+          }, this.DOUBLE_CLICK_THRESHOLD);
+        }
       }
 
       this.draggingNode.set(null);
@@ -1793,7 +1837,6 @@ export class AppComponent {
             this.pendingClickTimeout = null;
             this.pendingClickData = null;
           }
-          console.log('=== DOUBLE CLICK DETECTED ===', { nodeId: draggedNode.id, level: this.dragContext.level });
           this.handleNodeDoubleClick(
             event,
             draggedNode,
@@ -1811,7 +1854,6 @@ export class AppComponent {
           };
           this.pendingClickTimeout = setTimeout(() => {
             if (this.pendingClickData) {
-              console.log('=== SINGLE CLICK (delayed) ===', { nodeId: this.pendingClickData.node.id });
               this.handleNodeClick(
                 this.pendingClickData.node,
                 this.pendingClickData.level,
@@ -1912,12 +1954,9 @@ export class AppComponent {
       event.stopPropagation();
     }
 
-    console.log('[arrangeChildrenCircular] node:', node.id, 'children:', node.children.length);
-
     // Node muss expandiert sein damit Kinder sichtbar sind
     // NUR setzen wenn noch nicht expandiert (verhindert Endlosschleife im effect)
     if (!this.expandedNodes().has(node.id)) {
-      console.log('[arrangeChildrenCircular] expanding node:', node.id);
       const expanded = new Set(this.expandedNodes());
       expanded.add(node.id);
       this.expandedNodes.set(expanded);
@@ -1925,20 +1964,16 @@ export class AppComponent {
 
     // Kinder-IDs sammeln
     const childIds = node.children.map(child => child.id);
-    console.log('[arrangeChildrenCircular] childIds:', childIds);
 
     if (this.isInFocusMode()) {
       // Fokus-Modus: Halbkreis rechts / Kreis mit Lücke links (temporär)
-      console.log('[arrangeChildrenCircular] FOCUS MODE - calling arrangeChildrenCircularFocusMode');
       this.forceLayout.arrangeChildrenCircularFocusMode(node.id, childIds);
       // NICHT speichern - Fokus-Modus ist temporär!
     } else {
       // Normal-Modus: Voller Kreis (permanent)
-      console.log('[arrangeChildrenCircular] NORMAL MODE - calling arrangeChildrenCircular');
       this.forceLayout.arrangeChildrenCircular(node.id, childIds);
       this.saveStateToStorage();
     }
-    console.log('[arrangeChildrenCircular] DONE');
   }
 
   /**
@@ -2009,7 +2044,6 @@ export class AppComponent {
 
   // Verlässt den Fokus-Modus und setzt Positionen zurück
   private exitFocusMode(): void {
-    console.log('[exitFocusMode] exiting...');
     this.focusedNodes.set([]);
 
     // Positionen auf Original zurücksetzen (mit Animation durch CSS transition)
@@ -2046,13 +2080,11 @@ export class AppComponent {
       setTimeout(() => this.centerOnFilteredNodes(), 100);
     } else if (this.expandedBeforeFocus) {
       // Kein Filter aktiv: Gespeicherten expanded-Zustand wiederherstellen
-      console.log('[exitFocusMode] restoring expandedBeforeFocus:', this.expandedBeforeFocus.size);
       this.expandedNodes.set(this.expandedBeforeFocus);
     }
 
     // Gespeicherten expanded-Zustand zurücksetzen
     this.expandedBeforeFocus = null;
-    console.log('[exitFocusMode] DONE');
   }
 
   isInFocusMode(): boolean {
@@ -2089,6 +2121,25 @@ export class AppComponent {
 
   private setFocusedNodeSingle(node: Node, parent: Node, root: Node, level: number): void {
     this.focusedNodes.set([{ node, parent, root, level }]);
+  }
+
+  // Node zum Multi-Fokus hinzufügen
+  private addNodeToFocus(node: Node, parent: Node, root: Node, level: number): void {
+    const current = this.focusedNodes();
+    if (current.some(f => f.node.id === node.id)) return;  // Keine Duplikate
+    this.focusedNodes.set([...current, { node, parent, root, level }]);
+  }
+
+  // Node aus Multi-Fokus entfernen
+  private removeNodeFromFocus(node: Node): void {
+    const current = this.focusedNodes();
+    const filtered = current.filter(f => f.node.id !== node.id);
+
+    if (filtered.length === 0) {
+      this.exitFocusMode();
+    } else {
+      this.focusedNodes.set(filtered);
+    }
   }
 
   isFocusedParent(node: Node): boolean {
@@ -2670,125 +2721,220 @@ export class AppComponent {
 
     const positions = new Map<string, { x: number; y: number }>();
     const rootNode = this.rootNode();
-    const focusInfo = focused[0];
-
-    // Kinder-Radius berechnen (bestimmt den Mindestabstand L1↔L2)
-    const childCount = focusInfo.node.children?.length || 0;
-    const CHILD_RADIUS = this.calculateChildRadius(childCount);
-
-    // Abstände
-    const L1_TO_FOCUS_SPACING = Math.max(400, CHILD_RADIUS + 180);
-    const L0_TO_L1_SPACING = 350;
-
-    // L0 Position (links vom Fokus)
-    const l0X = -(L0_TO_L1_SPACING + L1_TO_FOCUS_SPACING);
-    positions.set(rootNode.id, { x: l0X, y: 0 });
-
-    // Fokussiertes Element in der Mitte (x=0)
-    const focusX = 0;
-    const focusY = 0;
-    positions.set(focusInfo.node.id, { x: focusX, y: focusY });
-
-    // Eltern-Kette nach links
-    const path = this.findPathToNode(rootNode, focusInfo.node.id);
-
-    if (focusInfo.level === 1) {
-      // L1 fokussiert: L1 ist in der Mitte, L0 links davon
-    } else if (focusInfo.level === 2 && path && path.length >= 2) {
-      // L2 fokussiert: L1 zwischen L0 und L2
-      positions.set(path[1], { x: -L1_TO_FOCUS_SPACING, y: focusY });
-    } else if (focusInfo.level >= 3 && path) {
-      // L3+ fokussiert
-      if (path.length >= 2) {
-        positions.set(path[1], { x: l0X + L0_TO_L1_SPACING, y: 0 });
-      }
-      if (path.length >= 3) {
-        positions.set(path[2], { x: -L1_TO_FOCUS_SPACING, y: focusY });
-      }
-    }
-
-    // Kinder-Positionen VORHER berechnen (für Kollisionsvermeidung)
     const focusChildIds = new Set<string>();
-    if (focusInfo.node.children && focusInfo.node.children.length > 0 &&
-        this.expandedNodes().has(focusInfo.node.id)) {
-      const children = focusInfo.node.children;
-      const count = children.length;
 
-      // Kinder-Positionen berechnen (gleiche Logik wie arrangeChildrenCircularFocusMode)
-      if (count <= 5) {
-        // Halbkreis RECHTS
-        const startAngle = -Math.PI / 2;
-        const endAngle = Math.PI / 2;
-        const angleStep = count > 1 ? (endAngle - startAngle) / (count - 1) : 0;
+    // SCHRITT 1: Alle Pfade zu fokussierten Nodes sammeln
+    const pathsWithFocus = focused.map(f => ({
+      focusInfo: f,
+      path: this.findPathToNode(rootNode, f.node.id) || [rootNode.id]
+    }));
 
-        children.forEach((child, index) => {
-          const angle = count === 1 ? 0 : startAngle + index * angleStep;
-          positions.set(child.id, {
-            x: focusX + Math.cos(angle) * CHILD_RADIUS,
-            y: focusY + Math.sin(angle) * CHILD_RADIUS
-          });
-          focusChildIds.add(child.id);
-        });
-      } else {
-        // Voller Kreis mit Lücke LINKS (160°-200°)
-        const GAP_START_DEG = 160;
-        const GAP_END_DEG = 200;
-        const gapStartRad = GAP_START_DEG * Math.PI / 180;
-        const gapSizeRad = (GAP_END_DEG - GAP_START_DEG) * Math.PI / 180;
-        const availableAngle = 2 * Math.PI - gapSizeRad;
-        const angleStep = availableAngle / count;
+    // SCHRITT 2: Gemeinsame Vorfahren identifizieren
+    const sharedAncestorIds = this.findSharedAncestors(pathsWithFocus.map(p => p.path));
 
-        children.forEach((child, index) => {
-          let angle = index * angleStep;
-          if (angle >= gapStartRad) {
-            angle += gapSizeRad;
-          }
-          positions.set(child.id, {
-            x: focusX + Math.cos(angle) * CHILD_RADIUS,
-            y: focusY + Math.sin(angle) * CHILD_RADIUS
-          });
-          focusChildIds.add(child.id);
-        });
-      }
-    }
+    // SCHRITT 3: Vertikale Positionen berechnen
+    const verticalPositions = this.calculateVerticalPositions(focused);
 
-    console.log('[calculateFocusModeLayout] positions (inkl. Kinder):', positions.size);
+    // SCHRITT 4: Maximale Fokus-Ebene und Parent-Spacing bestimmen
+    const maxFocusLevel = Math.max(...focused.map(f => f.level));
+    const maxChildRadius = Math.max(...focused.map(f =>
+      this.calculateChildRadius(f.node.children?.length || 0)
+    ));
+    const PARENT_SPACING = Math.max(350, maxChildRadius + 150);
 
-    // Positionen anwenden MIT Kollisionsvermeidung für andere Nodes
-    // Jetzt sind auch die Kinder-Positionen bekannt!
-    console.log('[calculateFocusModeLayout] applying with collision avoidance');
+    // SCHRITT 5: Gemeinsame Vorfahren positionieren (horizontal links, y=0)
+    sharedAncestorIds.forEach((nodeId, index) => {
+      const level = index;
+      const x = -PARENT_SPACING * (Math.min(maxFocusLevel, 3) - level);
+      positions.set(nodeId, { x, y: 0 });
+    });
+
+    // SCHRITT 6: Fokussierte Nodes und ihre einzigartigen Vorfahren positionieren
+    focused.forEach((f, index) => {
+      const focusY = verticalPositions[index];
+      const focusX = 0;
+
+      // Fokussierten Node positionieren
+      positions.set(f.node.id, { x: focusX, y: focusY });
+
+      // Nicht-gemeinsame Vorfahren auf gleicher Y-Position
+      const path = pathsWithFocus[index].path;
+      path.forEach((nodeId, pathIndex) => {
+        if (!sharedAncestorIds.includes(nodeId) && nodeId !== f.node.id) {
+          const level = pathIndex;
+          const x = -PARENT_SPACING * (f.level - level);
+          positions.set(nodeId, { x, y: focusY });
+        }
+      });
+
+      // Kinder positionieren
+      this.positionChildrenForFocus(f, focusX, focusY, positions, focusChildIds);
+    });
+
+    // SCHRITT 7: Kollisionsvermeidung anwenden
     this.forceLayout.applyFocusModeWithCollisionAvoidance(positions, focusChildIds);
-    console.log('[calculateFocusModeLayout] collision avoidance applied');
 
-    // Auto-Zoom
-    this.applyInitialFocusZoom(l0X, CHILD_RADIUS);
-    console.log('[calculateFocusModeLayout] DONE');
+    // SCHRITT 8: Auto-Zoom (Multi-Fokus berücksichtigen)
+    this.applyMultiFocusZoom(positions, focused);
   }
 
-  // Einmaliger Auto-Zoom für Fokus-Modus
-  private applyInitialFocusZoom(l0X: number, childRadius: number): void {
-    const leftEdge = l0X - 80;
-    const rightEdge = childRadius + 100;
-    const totalWidth = rightEdge - leftEdge;
+  // Gemeinsame Vorfahren finden (in allen Pfaden enthalten)
+  private findSharedAncestors(paths: string[][]): string[] {
+    if (paths.length === 0) return [];
+    if (paths.length === 1) return paths[0].slice(0, -1);  // Alle außer fokussiertem Node
+
+    const shared: string[] = [];
+    const firstPath = paths[0];
+
+    for (let i = 0; i < firstPath.length; i++) {
+      const nodeId = firstPath[i];
+      const isInAllPaths = paths.every(path => path.length > i && path[i] === nodeId);
+      if (isInAllPaths) {
+        shared.push(nodeId);
+      } else {
+        break;  // Sobald ein Node nicht mehr gemeinsam ist, aufhören
+      }
+    }
+
+    return shared;
+  }
+
+  // Vertikale Positionen berechnen (mit Platz für Kinder)
+  private calculateVerticalPositions(focused: Array<{ node: Node; level: number }>): number[] {
+    if (focused.length === 1) return [0];
+
+    const positions: number[] = [];
+    let currentY = 0;
+
+    focused.forEach((f, index) => {
+      if (index > 0) {
+        // Platz für Kinder des vorherigen Nodes (nach unten)
+        const prevNode = focused[index - 1].node;
+        const prevChildRadius = this.calculateChildRadius(prevNode.children?.length || 0);
+
+        // Platz für Kinder des aktuellen Nodes (nach oben)
+        const currChildRadius = this.calculateChildRadius(f.node.children?.length || 0);
+
+        // Beide Radien addieren + Padding für Node-Größe und Labels
+        const minGap = prevChildRadius + currChildRadius + 180;
+        currentY += minGap;
+      }
+      positions.push(currentY);
+    });
+
+    // Zentrieren um y=0
+    const totalHeight = currentY;
+    const offset = totalHeight / 2;
+    return positions.map(y => y - offset);
+  }
+
+  // Kinder für einen fokussierten Node positionieren
+  private positionChildrenForFocus(
+    focusInfo: { node: Node; level: number },
+    focusX: number,
+    focusY: number,
+    positions: Map<string, { x: number; y: number }>,
+    focusChildIds: Set<string>
+  ): void {
+    if (!focusInfo.node.children || focusInfo.node.children.length === 0) return;
+    if (!this.expandedNodes().has(focusInfo.node.id)) return;
+
+    const children = focusInfo.node.children;
+    const count = children.length;
+    const CHILD_RADIUS = this.calculateChildRadius(count);
+
+    if (count <= 5) {
+      // Halbkreis rechts
+      const startAngle = -Math.PI / 2;
+      const endAngle = Math.PI / 2;
+      const angleStep = count > 1 ? (endAngle - startAngle) / (count - 1) : 0;
+
+      children.forEach((child, i) => {
+        const angle = count === 1 ? 0 : startAngle + i * angleStep;
+        positions.set(child.id, {
+          x: focusX + Math.cos(angle) * CHILD_RADIUS,
+          y: focusY + Math.sin(angle) * CHILD_RADIUS
+        });
+        focusChildIds.add(child.id);
+      });
+    } else {
+      // Voller Kreis mit Lücke links (160°-200°)
+      const GAP_START = 160 * Math.PI / 180;
+      const GAP_SIZE = 40 * Math.PI / 180;
+      const availableAngle = 2 * Math.PI - GAP_SIZE;
+      const angleStep = availableAngle / count;
+
+      children.forEach((child, i) => {
+        let angle = i * angleStep;
+        if (angle >= GAP_START) angle += GAP_SIZE;
+
+        positions.set(child.id, {
+          x: focusX + Math.cos(angle) * CHILD_RADIUS,
+          y: focusY + Math.sin(angle) * CHILD_RADIUS
+        });
+        focusChildIds.add(child.id);
+      });
+    }
+  }
+
+  // Auto-Zoom für Multi-Fokus
+  private applyMultiFocusZoom(
+    positions: Map<string, { x: number; y: number }>,
+    focused: Array<{ node: Node; level: number }>
+  ): void {
+    // Bounding Box berechnen
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    positions.forEach(pos => {
+      minX = Math.min(minX, pos.x);
+      maxX = Math.max(maxX, pos.x);
+      minY = Math.min(minY, pos.y);
+      maxY = Math.max(maxY, pos.y);
+    });
+
+    // Padding für Kinder-Radien
+    const maxChildRadius = Math.max(
+      ...focused.map(f => this.calculateChildRadius(f.node.children?.length || 0))
+    );
+    const padding = maxChildRadius + 150;
+
+    minX -= padding;
+    maxX += padding;
+    minY -= padding;
+    maxY += padding;
+
+    // Zoom berechnen
+    const totalWidth = maxX - minX;
+    const totalHeight = maxY - minY;
     const viewportWidth = window.innerWidth * 0.85;
+    const viewportHeight = window.innerHeight * 0.85;
 
-    let newZoom = viewportWidth / totalWidth;
-    newZoom = Math.max(0.25, Math.min(1.0, newZoom));
+    const zoomX = viewportWidth / totalWidth;
+    const zoomY = viewportHeight / totalHeight;
+    let newZoom = Math.min(zoomX, zoomY);
+    newZoom = Math.max(0.15, Math.min(1.0, newZoom));  // Clamp: 0.15 - 1.0
 
-    const centerX = (leftEdge + rightEdge) / 2;
-    const panX = -centerX * newZoom;
+    // View zentrieren
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
 
     this.zoomLevel.set(newZoom);
-    this.panOffset.set({ x: panX, y: 0 });
+    this.panOffset.set({ x: -centerX * newZoom, y: -centerY * newZoom });
   }
 
   // Berechnet den Radius für Kinder basierend auf der Anzahl
   private calculateChildRadius(childCount: number): number {
-    if (childCount === 0) return 100;
-    if (childCount <= 5) {
-      return 140 + childCount * 30;
+    if (childCount === 0) return 80;
+    if (childCount <= 3) {
+      // Wenige Kinder: kompakter Radius
+      return 100 + childCount * 20;  // 120-160px
+    } else if (childCount <= 6) {
+      // Mittlere Anzahl: moderater Radius
+      return 130 + childCount * 15;  // 190-220px
     } else {
-      const minCircumference = childCount * 90;
+      // Viele Kinder: Umfang-basiert
+      const minCircumference = childCount * 75;
       return Math.max(200, minCircumference / (2 * Math.PI));
     }
   }

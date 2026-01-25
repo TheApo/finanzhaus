@@ -418,8 +418,6 @@ export class ForceLayoutService {
     fixedPositions: Map<string, { x: number; y: number }>,
     focusChildIds: Set<string>
   ): void {
-    console.log('[applyFocusModeWithCollisionAvoidance] fixedPositions:', fixedPositions.size, 'focusChildIds:', focusChildIds.size);
-
     // Sammle alle fixierten Node-IDs
     const fixedNodeIds = new Set<string>(fixedPositions.keys());
     focusChildIds.forEach(id => fixedNodeIds.add(id));
@@ -462,10 +460,9 @@ export class ForceLayoutService {
         .iterations(5)
       );
 
-    // Simulation laufen lassen (synchron, mehr Iterationen)
-    simulation.tick(100);
+    // Simulation laufen lassen (synchron, mehr Iterationen für Multi-Fokus)
+    simulation.tick(150);
     simulation.stop();
-    console.log('[applyFocusModeWithCollisionAvoidance] simulation done');
 
     // 4. Fixierungen aufheben (außer L0)
     for (const node of this.layoutNodes) {
@@ -485,21 +482,17 @@ export class ForceLayoutService {
    * Speichert NICHT in userPositions (temporär).
    */
   arrangeChildrenCircularFocusMode(parentId: string, childIds: string[]): void {
-    console.log('[arrangeChildrenCircularFocusMode] parentId:', parentId, 'childIds:', childIds.length);
     const parent = this.nodeMap.get(parentId);
     if (!parent || parent.x === undefined || parent.y === undefined) {
-      console.log('[arrangeChildrenCircularFocusMode] ABORT - parent not found or no position', parent);
       return;
     }
     if (childIds.length === 0) {
-      console.log('[arrangeChildrenCircularFocusMode] ABORT - no children');
       return;
     }
 
     const parentX = parent.x;
     const parentY = parent.y;
     const count = childIds.length;
-    console.log('[arrangeChildrenCircularFocusMode] parent pos:', parentX, parentY, 'count:', count);
 
     // Radius berechnen
     const childLevel = Math.min(parent.level + 1, 4);

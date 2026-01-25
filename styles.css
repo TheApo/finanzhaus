@@ -1368,8 +1368,8 @@ app-root {
 
 /* Blur-Effekt für nicht-relevante Nodes im Fokus-Modus */
 .node--blurred {
-  filter: blur(1.5px) !important;
-  opacity: 0.5 !important;
+  filter: blur(3px) !important;
+  opacity: 0.4 !important;
   color: var(--color-text-muted) !important;
   cursor: pointer;
 }
@@ -1377,6 +1377,20 @@ app-root {
 .node--blurred .node__circle {
   border-color: var(--color-text-muted) !important;
   background: var(--color-background) !important;
+  position: relative;
+}
+
+/* Weißer Overlay für alle Nodes im Blur-Zustand */
+.node--blurred .node__circle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .node--blurred .node__label {
@@ -1384,15 +1398,6 @@ app-root {
 }
 
 .node--blurred .node__icon {
-  color: var(--color-text-muted) !important;
-}
-
-/* Level 1 blurred - spezifischer Override */
-.node--level-1.node--blurred .node__circle {
-  border-color: var(--color-text-muted) !important;
-}
-
-.node--level-1.node--blurred .node__icon {
   color: var(--color-text-muted) !important;
 }
 
