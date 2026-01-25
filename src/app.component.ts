@@ -2861,9 +2861,12 @@ export class AppComponent {
     });
 
     // SCHRITT 8: L2-Geschwister des fokussierten Nodes positionieren
-    // Erste fokussierte Node: Geschwister oben, Zweite: unten
+    // NUR für L2+-Fokus! Bei L1-Fokus würde das die Kinder-Positionen überschreiben.
     const focusedNodeIds = new Set(focused.map(f => f.node.id));
-    this.positionFocusSiblings(rootNode, focusPathL1Ids, focusedNodeIds, positions, focused, verticalPositions, maxChildRadius);
+    const hasL2OrHigherFocus = focused.some(f => f.level >= 2);
+    if (hasL2OrHigherFocus) {
+      this.positionFocusSiblings(rootNode, focusPathL1Ids, focusedNodeIds, positions, focused, verticalPositions, maxChildRadius);
+    }
 
     // SCHRITT 9: Nicht-fokussierte L1 im Halbkreis links von L0 positionieren
     this.positionBlurredL1InSemicircle(rootNode, focusPathL1Ids, positions, l0X, PARENT_SPACING);
@@ -2985,9 +2988,9 @@ export class AppComponent {
     const startAngle = Math.PI / 2 + anglePerSlot / 2; // Start unten-links
 
     // Radien - je höher das Level, desto weiter weg von L0
-    const L1_RADIUS = 350;
-    const L2_RADIUS = 650;
-    const L3_RADIUS = 900;
+    const L1_RADIUS = 500;   // Größerer Abstand L0 → L1
+    const L2_RADIUS = 800;
+    const L3_RADIUS = 1200;  // Größerer Abstand L2 → L3
 
     l1Slots.forEach(({ l1, l2Count, startSlot }) => {
       // L1 Position - in der Mitte seiner L2 Kinder (falls vorhanden)
