@@ -1169,6 +1169,11 @@ export class AppComponent {
       return;
     }
 
+    // Level 3+: Kein Doppelklick-Fokus (haben keine Kinder, nur Infobox per Klick)
+    if (numLevel >= 3) {
+      return;
+    }
+
     // Level 1+: Fokus-Logik
     const actualParent = parent || this.findParentOfNode(this.rootNode(), node);
     if (!actualParent && numLevel > 1) return;
