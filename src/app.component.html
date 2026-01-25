@@ -170,6 +170,27 @@
           <span>{{ nodeSizes().level3TextSize }}</span>
         </div>
       </div>
+
+      <div class="debug-panel__section">
+        <div class="debug-panel__section-title">Hintergrundfarbe</div>
+        <div class="debug-panel__row debug-panel__row--color">
+          <input
+            type="color"
+            [value]="backgroundColor()"
+            (input)="updateBackgroundColor($any($event.target).value)"
+            class="debug-panel__color-picker"
+          >
+          <input
+            type="text"
+            [value]="backgroundColor()"
+            (input)="updateBackgroundColor($any($event.target).value)"
+            (blur)="updateBackgroundColor($any($event.target).value)"
+            class="debug-panel__color-text"
+            placeholder="#f9f6f1"
+          >
+          <button class="debug-panel__reset-small" (click)="resetBackgroundColor()">Reset</button>
+        </div>
+      </div>
     </div>
   }
 
@@ -340,6 +361,8 @@
         [ngClass]="[
           getNodeLevelClass(level),
           (+level) >= 2 ? 'category-' + getPrimaryCategory(node) : '',
+          (+level) === 1 ? 'l1-border-' + getPrimaryCategory(node) : '',
+          (+level) === 0 ? 'l0-border' : '',
           isNodeDimmed(node, (+level), parentNode?.id) ? 'node--dimmed' : '',
           shouldBlurNode(node, (+level), parentNode) ? 'node--blurred' : '',
           isFocusedNode(node) ? 'node--focused' : '',

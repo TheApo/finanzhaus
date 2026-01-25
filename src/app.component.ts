@@ -173,7 +173,9 @@ export class AppComponent {
   // Debug-Panel für Node-Größen
   debugPanelOpen = signal<boolean>(false);
   nodeSizes = signal<NodeSizeConfig>({ ...DEFAULT_NODE_SIZES });
+  backgroundColor = signal<string>('#f9f6f1');
   private readonly DEBUG_SIZES_STORAGE_KEY = 'finanzhaus-debug-sizes';
+  private readonly BACKGROUND_COLOR_STORAGE_KEY = 'finanzhaus-background-color';
 
   // Flag für automatische Kreisanordnung im Beratung-Modus beim ersten Laden
   private needsBeratungInitialArrangement = false;
@@ -181,6 +183,8 @@ export class AppComponent {
   constructor() {
     // Debug-Größen aus localStorage laden
     this.loadDebugSizesFromStorage();
+    // Hintergrundfarbe aus localStorage laden
+    this.loadBackgroundColorFromStorage();
     // Datenmodus aus localStorage laden (vor dem State laden!)
     this.loadDataModeFromStorage();
     // Zustand aus localStorage laden
@@ -242,6 +246,36 @@ export class AppComponent {
     this.saveDebugSizesToStorage();
   }
 
+  // Hintergrundfarbe Methoden
+  private loadBackgroundColorFromStorage(): void {
+    try {
+      const stored = localStorage.getItem(this.BACKGROUND_COLOR_STORAGE_KEY);
+      if (stored) {
+        this.backgroundColor.set(stored);
+      }
+    } catch (e) {
+      console.warn('Failed to load background color from localStorage:', e);
+    }
+  }
+
+  private saveBackgroundColorToStorage(): void {
+    try {
+      localStorage.setItem(this.BACKGROUND_COLOR_STORAGE_KEY, this.backgroundColor());
+    } catch (e) {
+      console.warn('Failed to save background color to localStorage:', e);
+    }
+  }
+
+  updateBackgroundColor(color: string): void {
+    this.backgroundColor.set(color);
+    this.saveBackgroundColorToStorage();
+  }
+
+  resetBackgroundColor(): void {
+    this.backgroundColor.set('#f9f6f1');
+    this.saveBackgroundColorToStorage();
+  }
+
   private getStorageKey(): string {
     return `${this.STORAGE_KEY_PREFIX}-${this.dataMode()}`;
   }
@@ -272,6 +306,12 @@ export class AppComponent {
         this.applyInitialCircularArrangement();
       }, 100);
     }
+  });
+
+  // Effect: Hintergrundfarbe am Body setzen
+  private backgroundColorEffect = effect(() => {
+    const color = this.backgroundColor();
+    document.body.style.backgroundColor = color;
   });
 
   // Effect: Zustand in localStorage speichern bei jeder Änderung

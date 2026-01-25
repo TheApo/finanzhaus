@@ -78,7 +78,7 @@ html, body {
 
 body {
   font-family: var(--font-family);
-  background-color: var(--color-background);
+  background-color: #f9f6f1;
   color: var(--color-text-primary);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -484,6 +484,50 @@ app-root {
   font-size: var(--font-size-xs);
 }
 
+.debug-panel__row--color {
+  flex-wrap: wrap;
+}
+
+.debug-panel__color-picker {
+  width: 40px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.debug-panel__color-text {
+  flex: 1;
+  min-width: 80px;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-family: monospace;
+}
+
+.debug-panel__color-text:focus {
+  outline: none;
+  border-color: var(--color-gruendung);
+}
+
+.debug-panel__reset-small {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-white);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.debug-panel__reset-small:hover {
+  background-color: var(--color-background);
+  color: var(--color-text-secondary);
+}
+
 /* --------------------------------------------------------------------------
    Header
    -------------------------------------------------------------------------- */
@@ -737,20 +781,20 @@ app-root {
   transition: transform 0.3s ease-out;
 }
 
-/* Piktogramm-Bilder (JPG statt SVG) */
+/* Piktogramm-Bilder (PNG statt SVG) */
 .node__icon-image {
   object-fit: cover;
   border-radius: 50%;
 }
 
 .node__icon-image--l0 {
-  width: 6rem;
-  height: 6rem;
+  width: calc(var(--debug-l0-node-size, 8rem) - 1rem);
+  height: calc(var(--debug-l0-node-size, 8rem) - 1rem);
 }
 
 .node__icon-image--l1 {
-  width: 4rem;
-  height: 4rem;
+  width: calc(var(--debug-l1-node-size, 7rem) - 1rem);
+  height: calc(var(--debug-l1-node-size, 7rem) - 1rem);
 }
 
 .node__icon-image--l2 {
@@ -793,6 +837,9 @@ app-root {
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
 }
 
+/* Level 0 Border Color */
+.node--level-0.l0-border .node__circle { border-color: #197379; }
+
 .node--level-0 .node__icon {
   width: 3rem;
   height: 3rem;
@@ -832,6 +879,17 @@ app-root {
   border: 3px solid var(--color-text-secondary);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
 }
+
+/* Level 1 Category Border Colors (separate class to avoid category background) */
+.node--level-1.l1-border-strategie .node__circle { border-color: var(--color-text-secondary); }
+.node--level-1.l1-border-privat_finanz .node__circle { border-color: var(--color-privat-finanz); }
+.node--level-1.l1-border-gruendung .node__circle { border-color: var(--color-gruendung); }
+.node--level-1.l1-border-absicherung .node__circle { border-color: var(--color-absicherung); }
+.node--level-1.l1-border-vorsorge .node__circle { border-color: var(--color-vorsorge); }
+.node--level-1.l1-border-vermoegen .node__circle { border-color: var(--color-vermoegen); }
+.node--level-1.l1-border-ausland .node__circle { border-color: var(--color-ausland); }
+.node--level-1.l1-border-finanzierung .node__circle { border-color: var(--color-finanzierung); }
+.node--level-1.l1-border-zahlungsverkehr .node__circle { border-color: var(--color-zahlungsverkehr); }
 
 .node--level-1 .node__icon {
   width: 2.5rem;
