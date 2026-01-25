@@ -2795,8 +2795,6 @@ export class AppComponent {
 
   private calculateFocusModeLayout(): void {
     const focused = this.focusedNodes();
-    console.log('=== calculateFocusModeLayout ===');
-    console.log('focused:', focused.map(f => ({ id: f.node.id, level: f.level, hasChildren: !!f.node.children })));
     if (focused.length === 0) return;
 
     // Zoom/Pan speichern beim ersten Fokussieren
@@ -2862,14 +2860,6 @@ export class AppComponent {
       this.positionChildrenForFocus(f, focusX, focusY, positions, focusChildIds);
     });
 
-    console.log('Nach positionChildrenForFocus:');
-    console.log('focusChildIds:', [...focusChildIds]);
-    console.log('positions keys:', [...positions.keys()]);
-    focusChildIds.forEach(id => {
-      const pos = positions.get(id);
-      console.log(`  ${id}: (${pos?.x.toFixed(1)}, ${pos?.y.toFixed(1)})`);
-    });
-
     // SCHRITT 8: L2-Geschwister des fokussierten Nodes positionieren
     // Erste fokussierte Node: Geschwister oben, Zweite: unten
     const focusedNodeIds = new Set(focused.map(f => f.node.id));
@@ -2878,18 +2868,10 @@ export class AppComponent {
     // SCHRITT 9: Nicht-fokussierte L1 im Halbkreis links von L0 positionieren
     this.positionBlurredL1InSemicircle(rootNode, focusPathL1Ids, positions, l0X, PARENT_SPACING);
 
-    // SCHRITT 10: Positionen anwenden (VOR D3, damit D3 darauf aufbauen kann)
+    // SCHRITT 10: Positionen direkt anwenden (OHNE D3 - das war zu langsam!)
     this.forceLayout.setMultiplePositionsTemporary(positions);
 
-    // SCHRITT 11: D3 Kollisionsvermeidung für alle Nodes (außer Fokus-Pfad)
-    const focusPathIds = new Set<string>([rootNode.id]);
-    pathsWithFocus.forEach(({ path }) => path.forEach(id => focusPathIds.add(id)));
-    focused.forEach(f => focusPathIds.add(f.node.id));
-    focusChildIds.forEach(id => focusPathIds.add(id));
-
-    this.forceLayout.applyFocusModeWithCollisionAvoidance(positions, focusPathIds, null);
-
-    // SCHRITT 12: Auto-Zoom NACH allem - nutze die positions Map (fokussierte Elemente wurden nicht von D3 bewegt)
+    // SCHRITT 11: Auto-Zoom
     this.applyMultiFocusZoom(positions, focused);
   }
 
@@ -3106,23 +3088,12 @@ export class AppComponent {
     positions: Map<string, { x: number; y: number }>,
     focusChildIds: Set<string>
   ): void {
-    console.log('=== positionChildrenForFocus ===');
-    console.log('focusInfo.node.id:', focusInfo.node.id);
-    console.log('focusInfo.level:', focusInfo.level);
-    console.log('focusInfo.node.children:', focusInfo.node.children?.map(c => c.id));
-    console.log('focusX:', focusX, 'focusY:', focusY);
-
     // Fokussierte Nodes zeigen IMMER ihre Kinder - kein expandedNodes Check nötig
-    if (!focusInfo.node.children || focusInfo.node.children.length === 0) {
-      console.log('EARLY RETURN: keine Kinder!');
-      return;
-    }
+    if (!focusInfo.node.children || focusInfo.node.children.length === 0) return;
 
     const children = focusInfo.node.children;
     const count = children.length;
     const CHILD_RADIUS = this.calculateChildRadius(count);
-
-    console.log('count:', count, 'CHILD_RADIUS:', CHILD_RADIUS);
 
     if (count <= 5) {
       // Halbkreis rechts
@@ -3132,12 +3103,10 @@ export class AppComponent {
 
       children.forEach((child, i) => {
         const angle = count === 1 ? 0 : startAngle + i * angleStep;
-        const pos = {
+        positions.set(child.id, {
           x: focusX + Math.cos(angle) * CHILD_RADIUS,
           y: focusY + Math.sin(angle) * CHILD_RADIUS
-        };
-        console.log(`Kind ${i} (${child.id}): angle=${(angle * 180 / Math.PI).toFixed(1)}°, pos=(${pos.x.toFixed(1)}, ${pos.y.toFixed(1)})`);
-        positions.set(child.id, pos);
+        });
         focusChildIds.add(child.id);
       });
     } else {
