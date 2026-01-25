@@ -386,6 +386,7 @@ export class AppComponent {
     // State zurücksetzen für neue Daten
     this.expandedNodes.set(new Set());
     this.activeCategories.set(new Set());
+    this.selectedL2NodeIds.set(new Set());
     this.focusedNodes.set([]);
     this.selectedInfoNode.set(null);
     this.tooltipPosition.set(null);
@@ -395,6 +396,10 @@ export class AppComponent {
 
     // Neuen Zustand laden (falls vorhanden)
     this.loadStateFromStorage();
+
+    // Filter explizit zurücksetzen (sollen nicht zwischen Modi übernommen werden)
+    this.activeCategories.set(new Set());
+    this.selectedL2NodeIds.set(new Set());
   }
 
 
@@ -434,7 +439,13 @@ export class AppComponent {
     'building': 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z'
   };
 
-  // L1 Node ID → Piktogramm-Bild Mapping
+  // L0 Root Node ID → Piktogramm-Bild Mapping
+  private l0ImageMap: Record<string, string> = {
+    'ihr_unternehmen': './assets/00_Ihr Unternehmen.png',
+    'mein_unternehmen': './assets/00_Ihr Unternehmen.png'
+  };
+
+  // L1 Node ID → Piktogramm-Bild Mapping (nur Produkte-Modus)
   private l1ImageMap: Record<string, string> = {
     'l1_zahlungsverkehr': './assets/10_FK_Zahlungsverkehr.png',
     'l1_finanzierung': './assets/20_FK_Finanzierung.png',
@@ -442,7 +453,8 @@ export class AppComponent {
     'l1_vorsorge_und_mitarbeiterbindung': './assets/40_FK_Vorsorge & Mitarbeiterbindung.png',
     'l1_vermoegen_eigenkapital': './assets/50_FK_Vermögen & Eigenkapital.png',
     'l1_auslandsgeschaeft': './assets/60_FK_Auslandsgeschäft.png',
-    'l1_gruendung_nachfolge': './assets/70_FK_Gründung & Nachfolge.png'
+    'l1_gruendung_nachfolge': './assets/70_FK_Gründung & Nachfolge.png',
+    'l1_private_finanzplanung': './assets/80_Private FinanzPlanung.png'
   };
 
   // L2 Node ID → Piktogramm-Bild Mapping
@@ -462,8 +474,18 @@ export class AppComponent {
     'l2_auslandsgeschaeft_warengeschaefte_und_dienstleistungen_finanzieren': './assets/62_FK_Warengeschäfte und Dienstleistungen finanzieren.png',
     'l2_auslandsgeschaeft_waehrungsschwankungen_absichern': './assets/63_FK_Währungsschwankungen absichern.png',
     'l2_gruendung_nachfolge_existenzgruendung_finanzieren': './assets/71_FK_Existenzgründung_finanzieren.png',
-    'l2_gruendung_nachfolge_unternehmensnachfolge_regeln': './assets/72_FK_Unternehmensnachfolge_regeln.png'
+    'l2_gruendung_nachfolge_unternehmensnachfolge_regeln': './assets/72_FK_Unternehmensnachfolge_regeln.png',
+    'l2_private_finanzplanung_girokonto_bezahlen': './assets/85_FK_Girokonto.png',
+    'l2_private_finanzplanung_versicherung_schuetzen': './assets/84_FK_Versicherung.png',
+    'l2_private_finanzplanung_geldanlage_und_sparen': './assets/83_FK_Geldanlage.png',
+    'l2_private_finanzplanung_kredit_finanzieren': './assets/81_FK_Kredite_Finanzieren.png',
+    'l2_private_finanzplanung_zukunft_und_vorsorgen': './assets/85_FK_Zukunft_Vorsorge.png',
+    'l2_private_finanzplanung_immobilien_wohnen': './assets/82_FK_Immobilien.png'
   };
+
+  getL0ImagePath(nodeId: string): string | null {
+    return this.l0ImageMap[nodeId] || null;
+  }
 
   getL1ImagePath(nodeId: string): string | null {
     return this.l1ImageMap[nodeId] || null;
@@ -1995,6 +2017,11 @@ export class AppComponent {
 
   isInFocusMode(): boolean {
     return this.focusedNode() !== null;
+  }
+
+  getFocusedLevel(): number | null {
+    const focused = this.focusedNode();
+    return focused ? focused.level : null;
   }
 
   isFocusedNode(node: Node): boolean {

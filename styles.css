@@ -743,6 +743,11 @@ app-root {
   border-radius: 50%;
 }
 
+.node__icon-image--l0 {
+  width: 6rem;
+  height: 6rem;
+}
+
 .node__icon-image--l1 {
   width: 4rem;
   height: 4rem;
@@ -1466,6 +1471,14 @@ app-root {
   stroke: #64748b;
   stroke-width: 2;
   opacity: 0.6;
+}
+
+/* L2 zu L3 Linien: noch schwächer wenn L1 fokussiert ist */
+.mindmap__center--focus-level-1 .connections--level-2 .connections__line {
+  stroke: #cbd5e1;
+  stroke-width: 1.5;
+  opacity: 0.4;
+  filter: blur(0.5px);
 }
 
 .connections__arrowhead {
