@@ -1576,32 +1576,76 @@ app-root {
 }
 
 /* --------------------------------------------------------------------------
-   Info Panel (für L3+ Click) - außerhalb MindMap, position: fixed
+   Info Panel (für L3+ Click) - fixed rechts am Viewport
    -------------------------------------------------------------------------- */
 .info-panel {
   position: fixed;
   z-index: 100000;
   pointer-events: auto;
-  /* left/top zeigen auf Node-Mitte */
-  /* translateX(-50%) zentriert horizontal */
-  /* translateY(-100%) + margin-top verschiebt ÜBER den Node */
-  transform: translateX(-50%) translateY(-100%);
-  margin-top: -30px; /* Abstand zwischen Box und Node */
+  right: var(--spacing-lg);
+  top: 50%;
+  transform: translateY(-50%);
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: info-panel-slide-in 0.2s ease-out;
+}
+
+@keyframes info-panel-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.info-panel__banner {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.info-panel__banner img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--color-white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.info-panel__icon {
+  width: 64px;
+  height: 64px;
+  padding: 14px;
+  border-radius: 50%;
+  background: var(--color-white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .info-panel__content {
   background-color: var(--color-white);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md) 1.25rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1);
-  min-width: 280px;
-  max-width: 320px;
+  width: 320px;
   color: var(--color-text-secondary);
   font-size: var(--font-size-base);
   line-height: 1.6;
   text-align: left;
-  animation: tooltip-appear 0.15s ease-out;
   white-space: normal;
+}
+
+.info-panel__banner + .info-panel__content {
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .info-panel__content b {

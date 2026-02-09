@@ -279,16 +279,24 @@
     </div>
   </div>
 
-  <!-- Info-Panel für L3+ Nodes (außerhalb MindMap, immer oben) -->
+  <!-- Info-Panel für L3+ Nodes (fixed rechts) -->
   @if (selectedInfoNode(); as infoNode) {
-    @if (infoNode.tooltip && infoPanelPosition(); as pos) {
+    @if (infoNode.tooltip) {
       <div
         class="info-panel"
-        [style.left.px]="pos.x"
-        [style.top.px]="pos.y"
         (click)="$event.stopPropagation()"
         (mousedown)="$event.stopPropagation()"
       >
+        <div class="info-panel__banner" [ngClass]="'category-' + getPrimaryCategory(infoNode)">
+          @if (getInfoPanelImagePath(); as imagePath) {
+            <img [src]="imagePath" [alt]="infoNode.label">
+          } @else {
+            <svg class="info-panel__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              [style.color]="'var(--color-' + getPrimaryCategory(infoNode).replaceAll('_', '-') + ')'">
+              <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getNodeIconPath(infoNode, 3)" />
+            </svg>
+          }
+        </div>
         <div class="info-panel__content" [innerHTML]="infoNode.tooltip"></div>
       </div>
     }

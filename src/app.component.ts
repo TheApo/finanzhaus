@@ -92,30 +92,25 @@ export class AppComponent {
   // Gespeicherter Zustand vor Fokus-Modus (für Wiederherstellung)
   private expandedBeforeFocus: Set<string> | null = null;
 
-  // Computed: Bildschirm-Position des Info-Panels (reaktiv!)
-  infoPanelPosition = computed(() => {
+  // Findet das passende Piktogramm-Bild für das Info-Panel (L2 → L1 → L0 Fallback)
+  getInfoPanelImagePath(): string | null {
     const node = this.selectedInfoNode();
     if (!node) return null;
 
-    const forcePos = this.forcePositions().get(node.id);
-    if (!forcePos) return null;
+    const path = this.findPathToNode(this.rootNode(), node.id);
+    if (!path) return null;
 
-    const zoom = this.zoomLevel();
-    const pan = this.panOffset();
+    // Vom nächsten Vorfahren zum entferntesten suchen: L2 → L1 (L0 zu generisch)
+    for (let i = path.length - 2; i >= 0; i--) {
+      const ancestorId = path[i];
+      const l2Img = this.l2ImageMap[ancestorId];
+      if (l2Img) return l2Img;
+      const l1Img = this.l1ImageMap[ancestorId];
+      if (l1Img) return l1Img;
+    }
 
-    // Viewport-Mitte (Ursprung des mindmap__center)
-    const viewportCenterX = window.innerWidth / 2;
-    const viewportCenterY = window.innerHeight / 2;
-
-    // Node-Position auf dem Bildschirm:
-    // 1. forcePos ist im Force-Koordinatensystem (Ursprung = Zentrum)
-    // 2. Zoom skaliert die Force-Koordinaten
-    // 3. Pan ist in Pixel-Koordinaten (nicht skaliert)
-    const nodeScreenX = viewportCenterX + forcePos.x * zoom + pan.x;
-    const nodeScreenY = viewportCenterY + forcePos.y * zoom + pan.y;
-
-    return { x: nodeScreenX, y: nodeScreenY };
-  });
+    return null;
+  }
   tooltipPosition = signal<{ x: number; y: number; showBelow: boolean } | null>(null);
   finanzhausVisible = signal<boolean>(true);
 
@@ -2747,15 +2742,16 @@ export class AppComponent {
   }
 
 
-  // Prüft ob ein Node auf dem Pfad vom gehoverten Node bis Level 0 liegt
+  // Prüft ob ein Node auf dem Pfad vom gehoverten/selektierten Node bis Level 0 liegt
   isOnHoveredPath(node: Node): boolean {
-    const hovered = this.hoveredPathNode();
+    // Hover hat Vorrang, Fallback auf selektierten Info-Node (persistentes Highlighting)
+    const hovered = this.hoveredPathNode() || this.selectedInfoNode();
     if (!hovered) return false;
 
-    // Der gehoverte Node selbst
+    // Der gehoverte/selektierte Node selbst
     if (node.id === hovered.id) return true;
 
-    // Ist dieser Node ein Vorfahre des gehoverten Nodes?
+    // Ist dieser Node ein Vorfahre?
     const pathToHovered = this.findPathToNode(this.rootNode(), hovered.id);
     if (!pathToHovered) return false;
 
@@ -3224,7 +3220,8 @@ export class AppComponent {
 
   // Prüft ob eine Verbindungslinie hervorgehoben werden soll (von Parent zu Child)
   isLineOnHoveredPath(parentNode: Node, childNode: Node, level: number): boolean {
-    const hovered = this.hoveredPathNode();
+    // Hover hat Vorrang, Fallback auf selektierten Info-Node (persistentes Highlighting)
+    const hovered = this.hoveredPathNode() || this.selectedInfoNode();
     if (!hovered) return false;
 
     const root = this.rootNode();
